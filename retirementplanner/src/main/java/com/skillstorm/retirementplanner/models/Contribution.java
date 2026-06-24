@@ -9,6 +9,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 /**
  * Contribution Class
@@ -24,7 +26,7 @@ import jakarta.validation.constraints.Positive;
  *      - all variabiables include Validation as needed
  * 
  *      - Defined no param Constructor and full param constructor
- *      = Defined all proper Getter/Setter methods
+ *      - Defined all proper Getter/Setter methods
  */
 @Entity
 @Table(name = "contribution_record")
@@ -32,36 +34,40 @@ public class Contribution {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
+    @NotNull(message="Field cannot be empty")
+    @Column        
     private Long id;
 
-    @NotNull
+    @NotNull(message="Field cannot be empty")
     @Positive
+    @Column
     private BigDecimal amount;
 
     @Column(name = "contribution_date")
-    @NotNull
+    @NotNull(message="Field cannot be empty")
     private LocalDate date;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @NotNull(message="Field cannot be empty")
+    @Column(length=50)
     private ContributionCategory category;
 
+    @Column
     private String notes;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @NotNull
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable=false)
+    @NotNull(message="Field cannot be empty")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "goal_id", referencedColumnName = "id")
-    @NotNull
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "goal_id", referencedColumnName = "id", nullable=false)
+    @NotNull(message="Field cannot be empty")
     private Goal goal;
 
-    @ManyToOne
-    @JoinColumn(name = "funding_source_id", referencedColumnName = "id")
-    @NotNull
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "funding_source_id", referencedColumnName = "id", nullable=false)
+    @NotNull(message="Field cannot be empty")
     private FundingSource fundingSource;
 
     public Contribution() {
