@@ -18,6 +18,14 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+/**
+ * Contribution Class
+ *      - Defined database columns: id, amount, contribution_date, category, notes, user_id, goal_id, and funding_source_id
+ *      - all variabiables include Validation as needed
+ * 
+ *      - Defined no param Constructor and full param constructor
+ *      = Defined all proper Getter/Setter methods
+ */
 @Entity
 @Table(name = "contribution_record")
 public class Contribution {

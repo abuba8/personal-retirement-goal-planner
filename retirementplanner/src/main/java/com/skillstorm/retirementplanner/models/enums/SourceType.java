@@ -1,5 +1,10 @@
 package com.skillstorm.retirementplanner.models.enums;
 
+/**
+* SourceType Enum
+ *      - enum used to determine Souce Type
+ *      - types defined
+ */
 public enum SourceType {
 
     TRADITIONAL_401K,

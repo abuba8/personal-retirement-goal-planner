@@ -15,6 +15,15 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+
+/**
+ * FundingSource Class
+ *      - Defined database columns: id, name, institution, notes, and user_id
+ *      - all variabiables include Validation as needed
+ * 
+ *      - Defined no param Constructor and full param constructor
+ *      = Defined all proper Getter/Setter methods
+ */
 @Entity
 @Table(name = "funding_source")
 public class FundingSource {

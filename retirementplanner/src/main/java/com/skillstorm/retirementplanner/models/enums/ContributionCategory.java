@@ -1,5 +1,10 @@
 package com.skillstorm.retirementplanner.models.enums;
 
+/**
+ * ContributionCategory Enum
+ *      - enum used to determine Contribution Category
+ *      - types defined
+ */
 public enum ContributionCategory {
     
     EMPLOYEE_SALARY_DEFERRAL,
