@@ -24,10 +24,7 @@ CREATE TABLE goal (
         FOREIGN KEY (user_id)
         REFERENCES app_user(id)
         ON DELETE CASCADE
-        ON UPDATE CASCADE,
-
-    CONSTRAINT uq_goal_user_id
-        UNIQUE (user_id, id)
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE funding_source (
@@ -36,12 +33,12 @@ CREATE TABLE funding_source (
     name VARCHAR(150) NOT NULL,
     source_type VARCHAR(50) NOT NULL CHECK (
         source_type IN (
-            'Traditional 401k',
-            'Roth 401k',
-            'Traditional IRA',
-            'Roth IRA',
-            'SEP IRA',
-            'Taxable Brokerage'
+            'TRADITIONAL_401K',
+            'ROTH_401K',
+            'TRADITIONAL_IRA',
+            'ROTH_IRA',
+            'SEP_IRA',
+            'TAXABLE_BROKERAGE'
         )
     ),
     institution VARCHAR(150),
@@ -51,10 +48,7 @@ CREATE TABLE funding_source (
         FOREIGN KEY (user_id)
         REFERENCES app_user(id)
         ON DELETE CASCADE
-        ON UPDATE CASCADE,
-
-    CONSTRAINT uq_funding_source_user_id
-        UNIQUE (user_id, id)
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE contribution_record (
@@ -66,10 +60,10 @@ CREATE TABLE contribution_record (
     contribution_date DATE NOT NULL,
     category VARCHAR(50) NOT NULL CHECK (
         category IN (
-            'Employee Salary Deferral',
-            'Employer Match',
-            'Catch-up Contribution',
-            'Rollover'
+            'EMPLOYEE_SALARY_DEFERRAL',
+            'EMPLOYER_MATCH',
+            'CATCH_UP_CONTRIBUTION',
+            'ROLLOVER'
         )
     ),
     notes TEXT,
@@ -81,18 +75,16 @@ CREATE TABLE contribution_record (
         ON UPDATE CASCADE,
 
     CONSTRAINT fk_contribution_goal
-        FOREIGN KEY (user_id, goal_id)
-        REFERENCES goal(user_id, id)
+        FOREIGN KEY (goal_id)
+        REFERENCES goal(id)
         ON DELETE NO ACTION
-        ON UPDATE CASCADE
-        DEFERRABLE INITIALLY DEFERRED,
+        ON UPDATE CASCADE,
 
     CONSTRAINT fk_contribution_funding_source
-        FOREIGN KEY (user_id, funding_source_id)
-        REFERENCES funding_source(user_id, id)
+        FOREIGN KEY (funding_source_id)
+        REFERENCES funding_source(id)
         ON DELETE NO ACTION
         ON UPDATE CASCADE
-        DEFERRABLE INITIALLY DEFERRED
 );
 
 CREATE INDEX idx_goal_user_id
