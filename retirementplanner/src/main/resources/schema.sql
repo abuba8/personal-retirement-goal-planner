@@ -1,0 +1,114 @@
+CREATE DATABASE retirement_goals;
+
+DROP TABLE IF EXISTS contribution_record;
+DROP TABLE IF EXISTS funding_source;
+DROP TABLE IF EXISTS goal;
+DROP TABLE IF EXISTS app_user;
+
+CREATE TABLE app_user (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE goal (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    target_retirement_age INT NOT NULL CHECK (target_retirement_age > 0),
+    target_amount DECIMAL(15, 2) NOT NULL CHECK (target_amount > 0),
+    notes TEXT,
+
+    CONSTRAINT fk_goal_user
+        FOREIGN KEY (user_id)
+        REFERENCES app_user(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT uq_goal_user_id
+        UNIQUE (user_id, id)
+);
+
+CREATE TABLE funding_source (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    source_type VARCHAR(50) NOT NULL CHECK (
+        source_type IN (
+            'Traditional 401k',
+            'Roth 401k',
+            'Traditional IRA',
+            'Roth IRA',
+            'SEP IRA',
+            'Taxable Brokerage'
+        )
+    ),
+    institution VARCHAR(150),
+    notes TEXT,
+
+    CONSTRAINT fk_funding_source_user
+        FOREIGN KEY (user_id)
+        REFERENCES app_user(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT uq_funding_source_user_id
+        UNIQUE (user_id, id)
+);
+
+CREATE TABLE contribution_record (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    goal_id BIGINT NOT NULL,
+    funding_source_id BIGINT NOT NULL,
+    amount DECIMAL(15, 2) NOT NULL CHECK (amount > 0),
+    contribution_date DATE NOT NULL,
+    category VARCHAR(50) NOT NULL CHECK (
+        category IN (
+            'Employee Salary Deferral',
+            'Employer Match',
+            'Catch-up Contribution',
+            'Rollover'
+        )
+    ),
+    notes TEXT,
+
+    CONSTRAINT fk_contribution_user
+        FOREIGN KEY (user_id)
+        REFERENCES app_user(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_contribution_goal
+        FOREIGN KEY (user_id, goal_id)
+        REFERENCES goal(user_id, id)
+        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
+
+    CONSTRAINT fk_contribution_funding_source
+        FOREIGN KEY (user_id, funding_source_id)
+        REFERENCES funding_source(user_id, id)
+        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
+);
+
+CREATE INDEX idx_goal_user_id
+    ON goal(user_id);
+
+CREATE INDEX idx_funding_source_user_id
+    ON funding_source(user_id);
+
+CREATE INDEX idx_contribution_user_id
+    ON contribution_record(user_id);
+
+CREATE INDEX idx_contribution_goal_id
+    ON contribution_record(goal_id);
+
+CREATE INDEX idx_contribution_funding_source_id
+    ON contribution_record(funding_source_id);
+
+CREATE INDEX idx_contribution_date
+    ON contribution_record(contribution_date);
