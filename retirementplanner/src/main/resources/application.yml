@@ -1,0 +1,25 @@
+spring:
+  application:
+   name: retirement-planner
+   version: 1.0.0
+  output: 
+    ansi:
+      enabled: always
+  # Store all sensitive information within .env
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  
+  # used to pass .env values to .yml file
+  config:
+    import: option:file:.env[.properties]
+
+# may use different ports so store in .env
+server:
+  port: ${PORT}
+
