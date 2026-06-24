@@ -17,7 +17,7 @@ spring:
   
   # used to pass .env values to .yml file
   config:
-    import: option:file:.env[.properties]
+    import: optional:file:.env[.properties]
 
 # may use different ports so store in .env
 server:
