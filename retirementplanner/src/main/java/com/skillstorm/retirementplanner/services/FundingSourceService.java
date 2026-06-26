@@ -2,6 +2,7 @@ package com.skillstorm.retirementplanner.services;
 
 import com.skillstorm.retirementplanner.dtos.FundingSourceDto;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -10,19 +11,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.skillstorm.retirementplanner.models.Contribution;
 import com.skillstorm.retirementplanner.models.FundingSource;
 import com.skillstorm.retirementplanner.models.User;
+import com.skillstorm.retirementplanner.repositories.ContributionsRepository;
 import com.skillstorm.retirementplanner.repositories.FundingSourceRepository;
 
 @Service
 public class FundingSourceService {
 
+    private final ContributionsRepository contributionRepo;
     private final FundingSourceRepository repo;
     // private final UserService userService;
     // private final ContributionService contributionService;
 
-    public FundingSourceService(FundingSourceRepository repo) {
+    public FundingSourceService(FundingSourceRepository repo, ContributionsRepository contributionRepo) {
         this.repo = repo;
+        this.contributionRepo = contributionRepo;
     }
 
     /**
@@ -106,7 +111,7 @@ public class FundingSourceService {
 
         /**
          * logic needed to find user by userId
-         *      if(userService.existsById(userId)) {
+         *      if(userRepository.existsById(userId)) {
          *          User user = userService.findUserById(userId);
          *      } else {
          *          return ResponseEntity.status(404).build();
@@ -132,28 +137,30 @@ public class FundingSourceService {
      * Delete One method takes in a funding source id, User id and Contribution Id
      * @param id - used to identify what funding Source is being worked with
      * @param userId - used to make sure the User has access to the source
-     * @param contributionId - used to validate that the funding source has no contributions before deletion
-     * @return - returns a Respone Entity status wrapped around void because nothing is returned in the delete
+     * @return - returns a no Content if delete is successful and 409 code if there are Contributions with the current source Id
      */
-    public ResponseEntity<Void> deleteOne(Long id, Long userId, Long contributionId) {
+    public ResponseEntity<Void> deleteOne(Long id, Long userId) {
 
         /**
          * logic needed to find user by userId
-         *      if(userService.existsById(userId)) {
+         *      if(userRepository.existsById(userId)) {
          *          User user = userService.findUserById(userId);
          *      } else {
          *          return ResponseEntity.status(404).build();
          *      }
          */
 
-        /**
-         * Also need to check if present in Contribution Table
-         *      && contributionService.findByFundingSourceId(id).isEmpty();
-         */
-
         if(this.repo.findOneByUserId(userId, id).isPresent()) {
-            this.repo.deleteById(id);
-            return ResponseEntity.noContent().build();
+
+            Pageable pages = PageRequest.of(0, 6);
+            Page<Contribution> contributionPage = this.contributionRepo.findBySourceId(id, userId, pages);
+            List<Contribution> contributionList = contributionPage.getContent();
+
+            if(contributionList.isEmpty()) {
+                this.repo.deleteById(id);
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.status(409).build();
         }
         return ResponseEntity.status(404).build();
     }

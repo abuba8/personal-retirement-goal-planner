@@ -8,6 +8,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,9 +29,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.skillstorm.retirementplanner.dtos.FundingSourceDto;
+import com.skillstorm.retirementplanner.models.Contribution;
 import com.skillstorm.retirementplanner.models.FundingSource;
+import com.skillstorm.retirementplanner.models.Goal;
 import com.skillstorm.retirementplanner.models.User;
+import com.skillstorm.retirementplanner.models.enums.ContributionCategory;
 import com.skillstorm.retirementplanner.models.enums.SourceType;
+import com.skillstorm.retirementplanner.repositories.ContributionsRepository;
 import com.skillstorm.retirementplanner.repositories.FundingSourceRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,26 +47,35 @@ public class FundingSourceServiceTest {
     // @Mock
     // private UserService userService;
 
-    // @Mock
-    // private ContributionService contributionService
+    @Mock
+    private ContributionsRepository contributionRepo;
 
     @InjectMocks
     private FundingSourceService fundingService;
 
     private FundingSource testSource;
+    private Contribution testContribution;
     private Pageable testPage;
     private List<FundingSource> sources;
+    private List<Contribution> contributions;
     private Page<FundingSource> sourcePage;
+    private Page<Contribution> contributionPage;
+    private Page<Contribution> emptyPage;
     private FundingSourceDto testDto;
 
     @BeforeEach
     void dataInit() {
         testSource = new FundingSource(1L, "Work 401k", "Fidelity",  "Primary employer retirement account.", 
-                                        new User(1L, "kevin", "kevin@example.com", "hashed_password_1"), SourceType.ROTH_IRA);
+                                        new User(), SourceType.ROTH_IRA);
+        testContribution = new Contribution(1L, new BigDecimal("500.00"), LocalDate.now().plusDays(1), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.", 
+                            new User(), new Goal(), new FundingSource());
         
         testPage = PageRequest.of(0, 6);
         sources = List.of(testSource, testSource, testSource, testSource, testSource, testSource);
+        contributions = List.of(testContribution, testContribution, testContribution, testContribution, testContribution, testContribution);
         sourcePage = new PageImpl<>(sources,testPage, sources.size());
+        contributionPage = new PageImpl<>(contributions, testPage, contributions.size());
+        emptyPage = new PageImpl<>(List.of(), testPage, 0);
         testDto = new FundingSourceDto("Work 401k", "Fidelity",  
         "Primary employer retirement account.", 1L, SourceType.ROTH_IRA);
     }
@@ -192,13 +207,36 @@ public class FundingSourceServiceTest {
             when(fundingRepo.findOneByUserId(1L, 1L))
             .thenReturn(Optional.of(testSource));
 
-            ResponseEntity<Void> results = fundingService.deleteOne(1L, 1L, 1L);
+            when(contributionRepo.findBySourceId(1L, 1L, testPage))
+            .thenReturn(emptyPage);
+
+            ResponseEntity<Void> results = fundingService.deleteOne(1L, 1L);
 
             assertEquals(HttpStatus.NO_CONTENT, results.getStatusCode());
             assertNull(results.getBody());
 
             verify(fundingRepo).findOneByUserId(1L, 1L);
+            verify(contributionRepo).findBySourceId(1L, 1L, testPage);
             verify(fundingRepo).deleteById(1L);
+        }
+
+        @Test
+        @DisplayName("deleteSourceBlockedIfContributionFound")
+        void returnsConflictIfContributionFound() {
+            when(fundingRepo.findOneByUserId(1L, 1L))
+            .thenReturn(Optional.of(testSource));
+
+            when(contributionRepo.findBySourceId(1L, 1L, testPage))
+            .thenReturn(contributionPage);
+
+            ResponseEntity<Void> results = fundingService.deleteOne(1L, 1L);
+
+            assertEquals(HttpStatus.CONFLICT, results.getStatusCode());
+            assertNull(results.getBody());
+
+            verify(fundingRepo).findOneByUserId(1L, 1L);
+            verify(contributionRepo).findBySourceId(1L, 1L, testPage);
+            verify(fundingRepo, never()).deleteById(1L);
         }
 
         @Test
@@ -207,13 +245,14 @@ public class FundingSourceServiceTest {
             when(fundingRepo.findOneByUserId(2L, 1L))
             .thenReturn(Optional.empty());
 
-            ResponseEntity<Void> results = fundingService.deleteOne(1L, 2L, 1L);
+            ResponseEntity<Void> results = fundingService.deleteOne(1L, 2L);
 
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());
 
             verify(fundingRepo).findOneByUserId(2L, 1L);
-            verify(fundingRepo, never()).deleteById(1L);
+            verify(contributionRepo, never()).findBySourceId(anyLong(), anyLong(), any(Pageable.class));
+            verify(fundingRepo, never()).deleteById(anyLong());
         }
     }
 }
