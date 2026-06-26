@@ -9,11 +9,11 @@ INSERT INTO goal (user_id, name, target_retirement_age, target_amount, notes) VA
     (3, 'Brokerage Growth Goal', 60, 350000.00, 'Extra taxable investment goal for flexibility.');
 
 INSERT INTO funding_source (user_id, name, source_type, institution, notes) VALUES
-    (1, 'Work 401k', 'Traditional 401k', 'Fidelity', 'Primary employer retirement account.'),
-    (1, 'Roth IRA', 'Roth IRA', 'Vanguard', 'Personal Roth account.'),
-    (2, 'Work 401k', 'Traditional 401k', 'Fidelity', 'Employer retirement account for standard plan.'),
-    (2, 'Old Job Rollover IRA', 'Traditional IRA', 'Fidelity', 'Rolled over from previous employer.'),
-    (3, 'Taxable Investment Account', 'Taxable Brokerage', 'Charles Schwab', 'Flexible brokerage account.');
+    (1, 'Work 401k', 'TRADITIONAL_401K', 'Fidelity', 'Primary employer retirement account.'),
+    (1, 'Roth IRA', 'ROTH_IRA', 'Vanguard', 'Personal Roth account.'),
+    (2, 'Work 401k', 'TRADITIONAL_401K', 'Fidelity', 'Employer retirement account for standard plan.'),
+    (2, 'Old Job Rollover IRA', 'TRADITIONAL_IRA', 'Fidelity', 'Rolled over from previous employer.'),
+    (3, 'Taxable Investment Account', 'TAXABLE_BROKERAGE', 'Charles Schwab', 'Flexible brokerage account.');
 
 INSERT INTO contribution_record (
     user_id,
@@ -24,10 +24,10 @@ INSERT INTO contribution_record (
     category,
     notes
 ) VALUES
-    (1, 1, 1, 500.00, '2026-01-15', 'Employee Salary Deferral', 'January paycheck contribution.'),
-    (1, 1, 1, 150.00, '2026-01-15', 'Employer Match', 'Employer match for January.'),
-    (1, 1, 2, 300.00, '2026-02-01', 'Employee Salary Deferral', 'Monthly Roth IRA contribution.'),
-    (2, 2, 3, 400.00, '2026-02-15', 'Employee Salary Deferral', 'Regular 401k contribution.'),
-    (2, 2, 4, 2500.00, '2026-03-05', 'Rollover', 'Partial rollover from previous account.'),
-    (3, 3, 5, 200.00, '2026-03-20', 'Employee Salary Deferral', 'Brokerage investment contribution.'),
-    (3, 3, 5, 100.00, '2026-04-20', 'Catch-up Contribution', 'Extra contribution for testing category filtering.');
+    (1, 1, 1, 500.00, '2026-01-15', 'EMPLOYEE_SALARY_DEFERRAL', 'January paycheck contribution.'),
+    (1, 1, 1, 150.00, '2026-01-15', 'EMPLOYER_MATCH', 'Employer match for January.'),
+    (1, 1, 2, 300.00, '2026-02-01', 'EMPLOYEE_SALARY_DEFERRAL', 'Monthly Roth IRA contribution.'),
+    (2, 2, 3, 400.00, '2026-02-15', 'EMPLOYEE_SALARY_DEFERRAL', 'Regular 401k contribution.'),
+    (2, 2, 4, 2500.00, '2026-03-05', 'ROLLOVER', 'Partial rollover from previous account.'),
+    (3, 3, 5, 200.00, '2026-03-20', 'EMPLOYEE_SALARY_DEFERRAL', 'Brokerage investment contribution.'),
+    (3, 3, 5, 100.00, '2026-04-20', 'CATCH_UP_CONTRIBUTION', 'Extra contribution for testing category filtering.');
