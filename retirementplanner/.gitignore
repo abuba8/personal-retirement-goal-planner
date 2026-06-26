@@ -6,6 +6,7 @@ target/
 
 *.env
 .DS_Store
+.vscode/
 
 ### STS ###
 .apt_generated
