@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+*.env
+.DS_Store
+.vscode/
+
 ### STS ###
 .apt_generated
 .classpath
