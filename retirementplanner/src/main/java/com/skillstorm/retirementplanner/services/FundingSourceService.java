@@ -81,7 +81,7 @@ public class FundingSourceService {
      *              userId that is used to recieve a User, and the source Type
      * @return - returns a Response Entity status wrapped around a Funding Source object
      */
-    public ResponseEntity<FundingSource> createOne(FundingSourceDto dto) {
+    public ResponseEntity<FundingSource> createOne(Long userId, FundingSourceDto dto) {
 
         /**
          * logic needed to find user by userId

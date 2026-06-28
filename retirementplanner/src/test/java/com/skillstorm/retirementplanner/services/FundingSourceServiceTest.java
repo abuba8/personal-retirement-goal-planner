@@ -77,7 +77,7 @@ public class FundingSourceServiceTest {
         contributionPage = new PageImpl<>(contributions, testPage, contributions.size());
         emptyPage = new PageImpl<>(List.of(), testPage, 0);
         testDto = new FundingSourceDto("Work 401k", "Fidelity",  
-        "Primary employer retirement account.", 1L, SourceType.ROTH_IRA);
+        "Primary employer retirement account.", SourceType.ROTH_IRA);
     }
 
     @Nested
@@ -153,7 +153,7 @@ public class FundingSourceServiceTest {
         when(fundingRepo.save(any(FundingSource.class)))
         .thenReturn(testSource);
 
-        ResponseEntity<FundingSource> results = fundingService.createOne(testDto);
+        ResponseEntity<FundingSource> results = fundingService.createOne(1L, testDto);
 
         assertEquals(HttpStatus.CREATED, results.getStatusCode());
         assertEquals(testSource, results.getBody());

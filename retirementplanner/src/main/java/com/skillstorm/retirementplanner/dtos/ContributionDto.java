@@ -5,8 +5,5 @@ import java.time.LocalDate;
 
 import com.skillstorm.retirementplanner.models.enums.ContributionCategory;
 
-public record ContributionDto(BigDecimal amount, LocalDate date, ContributionCategory category, String notes,
-                            Long userId, Long goalId, Long sourceId
-) {
-
-}
+public record ContributionDto(BigDecimal amount, LocalDate date, 
+    ContributionCategory category, String notes) { }

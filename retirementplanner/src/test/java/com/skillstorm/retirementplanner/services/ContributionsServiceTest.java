@@ -77,8 +77,7 @@ public class ContributionsServiceTest {
         testPage = PageRequest.of(0, 6);
         contributions = List.of(testContribution, testContribution, testContribution, testContributionPast, testContribution, testContribution);
         contributionPage = new PageImpl<>(contributions, testPage, contributions.size());
-        testDto = new ContributionDto(new BigDecimal("500.00"), LocalDate.of(2026, Month.JANUARY, 15), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.",
-                    1L, 1L, 1L);
+        testDto = new ContributionDto(new BigDecimal("500.00"), LocalDate.of(2026, Month.JANUARY, 15), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.");
     }
 
     @Nested
@@ -136,7 +135,7 @@ public class ContributionsServiceTest {
         }
 
         @Test
-        @DisplayName("FindAllWithSouceId")
+        @DisplayName("FindAllWithSourceId")
         void returnsAllContributionsBySourceId() {
             when(repo.findBySourceId(1L, 1L, testPage)).thenReturn(contributionPage);
 
@@ -195,7 +194,7 @@ public class ContributionsServiceTest {
 
             when(repo.save(any(Contribution.class))).thenReturn(testContribution);
 
-            ResponseEntity<Contribution> results = contributionService.createOne(testDto);
+            ResponseEntity<Contribution> results = contributionService.createOne(testDto, 1L, 1L, 1L);
 
             assertEquals(HttpStatus.CREATED, results.getStatusCode());
             assertEquals(testContribution, results.getBody());
@@ -209,7 +208,7 @@ public class ContributionsServiceTest {
         void returnsNoContributionIfBadSource() {
             when(fundingRepo.findOneByUserId(1L, 1L)).thenReturn(Optional.empty());
 
-            ResponseEntity<Contribution> results = contributionService.createOne(testDto);
+            ResponseEntity<Contribution> results = contributionService.createOne(testDto, 1L, 1L, 1L);
 
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());

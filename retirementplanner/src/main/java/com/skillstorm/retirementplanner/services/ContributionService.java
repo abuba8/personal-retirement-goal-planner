@@ -84,7 +84,7 @@ public class ContributionService {
      *              and goalId that is used to receive a goal
      * @return - returns a Response Entity status wrapped around a Contribution object
      */
-    public ResponseEntity<Contribution> createOne(ContributionDto dto) {
+    public ResponseEntity<Contribution> createOne(ContributionDto dto, Long userId, Long sourceId, Long goalId) {
 
         /**
          * logic needed to find user by userId
@@ -104,7 +104,7 @@ public class ContributionService {
          *      }
          */
 
-        Optional<FundingSource> temp = fundingRepo.findOneByUserId(dto.userId(), dto.sourceId());
+        Optional<FundingSource> temp = fundingRepo.findOneByUserId(userId, sourceId);
         FundingSource source;
         if(temp.isPresent()) {
             source = temp.get();
