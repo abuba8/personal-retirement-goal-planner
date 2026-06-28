@@ -20,9 +20,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Controller
+@RestController
 @RequestMapping("/users")
 @CrossOrigin({"http://127.0.0.1:5500", "http://localhost:4200"})
 public class UserController {
@@ -47,18 +48,6 @@ public class UserController {
         this.securityUtils = securityUtils;
     }
 
-    // TEMP method: get all for testing purposes
-    @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUser() {
-        return this.userService.getAllUserProfile();
-    }
-
-    // TEMP method: get by id for testing purposes
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getCurrentUser(@PathVariable Long id) {
-        return this.userService.getCurrentUserProfile(id);  
-    }
-
     // GET Request: get current user profile
     @GetMapping()
     public ResponseEntity<UserDto> getCurrentUser() {
@@ -66,7 +55,7 @@ public class UserController {
     }
     
     // PUT Request: Update current user (things to check: try without passing id, once the currentUser functionality is up and running)
-    @PutMapping("/update")
+    @PutMapping()
     public ResponseEntity<UserDto> updateCurrentUser(@Valid @RequestBody UpdateProfileDto dto){
         return this.userService.updateProfile(this.securityUtils.getCurrentUserId(), dto);
     }

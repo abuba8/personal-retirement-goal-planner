@@ -7,6 +7,6 @@ import java.math.BigDecimal;
  * Carries goal data in and out. The owning user is NOT in the DTO 
  * it comes from the authenticated request, never from the client body
  */
-public record GoalDto(Long id, String name, Integer targetRetirementAge, BigDecimal targetAmount, String notes) {
+public record GoalResponse(Long id, String name, Integer targetRetirementAge, BigDecimal targetAmount, String notes) {
 
 }

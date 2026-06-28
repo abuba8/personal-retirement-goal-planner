@@ -14,14 +14,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.skillstorm.retirementplanner.dtos.GoalDto;
+import com.skillstorm.retirementplanner.dtos.GoalRequest;
+import com.skillstorm.retirementplanner.dtos.GoalResponse;
 import com.skillstorm.retirementplanner.security.SecurityUtils;
 import com.skillstorm.retirementplanner.services.GoalService;
 
 import jakarta.validation.Valid;
 
-@Controller
+@RestController
 @RequestMapping("/goals")
 @CrossOrigin({"http://127.0.0.1:5500", "http://localhost:4200"})
 public class GoalController {
@@ -56,7 +58,7 @@ public class GoalController {
 
     // Create goal request, using POST mapping
     @PostMapping
-    public ResponseEntity<GoalDto> createGoal(@Valid @RequestBody GoalDto goalDto) {
+    public ResponseEntity<GoalResponse> createGoal(@Valid @RequestBody GoalRequest goalDto) {
         return this.goalService.createGoal(this.securityUtils.getCurrentUserId(), goalDto); // Create a goal for the current user
     }
 
@@ -69,27 +71,27 @@ public class GoalController {
 
     // Get all goals for the current user with pagination
     @GetMapping
-    public ResponseEntity<Page<GoalDto>> getAllGoals(@RequestParam(value = "page", defaultValue = "0") int page) {
+    public ResponseEntity<Page<GoalResponse>> getAllGoals(@RequestParam(value = "page", defaultValue = "0") int page) {
         return this.goalService.getAllGoalsPaged(this.securityUtils.getCurrentUserId(), page);
     }
 
     // Get request by id for the current user
     @GetMapping("/{id}")
-    public ResponseEntity<GoalDto> getGoalById(@PathVariable("id") Long id) {
+    public ResponseEntity<GoalResponse> getGoalById(@PathVariable("id") Long id) {
         return this.goalService.getGoalById(this.securityUtils.getCurrentUserId(), id);
     }
 
     // Update request using Put Mapping
     // Update by id
     @PutMapping("/{id}")
-    public ResponseEntity<GoalDto> updateGoalById(@PathVariable("id") Long id, @Valid @RequestBody GoalDto goalDto) {
+    public ResponseEntity<GoalResponse> updateGoalById(@PathVariable("id") Long id, @Valid @RequestBody GoalRequest goalDto) {
         return this.goalService.updateGoalById(this.securityUtils.getCurrentUserId(), id, goalDto);
     }
 
     // Delete request using Delete mapping
     // delete by id
     @DeleteMapping("/{id}")
-    public ResponseEntity<GoalDto> deleteGoalById(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteGoalById(@PathVariable("id") Long id) {
         return this.goalService.deleteGoalById(this.securityUtils.getCurrentUserId(), id);
     }
 }

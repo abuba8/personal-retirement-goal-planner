@@ -11,7 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.skillstorm.retirementplanner.dtos.GoalDto;
+import com.skillstorm.retirementplanner.dtos.GoalRequest;
+import com.skillstorm.retirementplanner.dtos.GoalResponse;
 import com.skillstorm.retirementplanner.mappers.GoalMapper;
 import com.skillstorm.retirementplanner.models.Goal;
 import com.skillstorm.retirementplanner.models.User;
@@ -66,14 +67,15 @@ public class GoalService {
      * - 404: if object is empty
      * - 201: if object is successfully created
      */
-    public ResponseEntity<GoalDto> createGoal(Long userId, GoalDto goalDto){
+    public ResponseEntity<GoalResponse> createGoal(Long userId, GoalRequest goalDto){
         Optional<User> userObj = this.userRepository.findById(userId);
         if(userObj.isEmpty()){
             return ResponseEntity.notFound().build();
         }
         Goal obj = new Goal(null, userObj.get(), goalDto.name(), goalDto.targetRetirementAge(), goalDto.targetAmount(), goalDto.notes());
         Goal saved = this.goalRepository.save(obj);
-        return ResponseEntity.status(201).body(this.goalMapper.toDto(saved));    }
+        return ResponseEntity.status(201).body(this.goalMapper.toDto(saved));    
+    }
 
     // GET REQUESTS
     /**
@@ -88,8 +90,8 @@ public class GoalService {
      * - 200: if successfully found goals
      * Note: if there are no goals for the user, return empty list, no need to return 404
      */
-    public ResponseEntity<List<GoalDto>> getAllGoals(Long userId) {
-        List<GoalDto> goals = this.goalRepository.findByUserId(userId).stream()
+    public ResponseEntity<List<GoalResponse>> getAllGoals(Long userId) {
+        List<GoalResponse> goals = this.goalRepository.findByUserId(userId).stream()
             .sorted(Comparator.comparing(Goal::getId))
             .map(this.goalMapper::toDto)
             .toList();
@@ -107,17 +109,14 @@ public class GoalService {
      * - 200: if successfully found goals
      * Note: if there are no goals for the user, return empty list, no need to return 404
      */
-    public ResponseEntity<Page<GoalDto>> getAllGoalsPaged(Long userId, int page) {
+    public ResponseEntity<Page<GoalResponse>> getAllGoalsPaged(Long userId, int page) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-        Page<GoalDto> goals = this.goalRepository.findByUserId(userId, pageable)
+        Page<GoalResponse> goals = this.goalRepository.findByUserId(userId, pageable)
                 .map(this.goalMapper::toDto);
-        if (goals.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
 
         return ResponseEntity.ok(goals);
     }
-    
+
     /**
      * getGoalById:
      * GET request, fetch a specific goal for the current user by its ID.
@@ -130,7 +129,7 @@ public class GoalService {
      * - 404: if the goal object is empty or doesn't belong to the user
      * - 200: if successfully found it
      */
-    public ResponseEntity<GoalDto> getGoalById(Long userId, Long id){
+    public ResponseEntity<GoalResponse> getGoalById(Long userId, Long id){
         Optional<Goal> goalObj = this.goalRepository.findByIdAndUserId(id, userId);
         if(goalObj.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -150,7 +149,7 @@ public class GoalService {
      * - 404: if the goal object is empty or doesn't belong to the user
      * - 204: no content, if successfully deleted
      */
-    public ResponseEntity<GoalDto> deleteGoalById(Long userId, Long id){
+    public ResponseEntity<Void> deleteGoalById(Long userId, Long id){
         Optional<Goal> goalObj = this.goalRepository.findByIdAndUserId(id, userId);
         if(goalObj.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -172,7 +171,7 @@ public class GoalService {
      * - 404: if the goal object is empty or doesn't belong to the user
      * - 200: if successfully updated
      */
-    public ResponseEntity<GoalDto> updateGoalById(Long userId, Long id, GoalDto goalDto){
+    public ResponseEntity<GoalResponse> updateGoalById(Long userId, Long id, GoalRequest goalDto){
         Optional<Goal> goalObj = this.goalRepository.findByIdAndUserId(id, userId);
         if(goalObj.isEmpty()){
             return ResponseEntity.notFound().build();

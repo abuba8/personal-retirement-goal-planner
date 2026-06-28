@@ -2,7 +2,7 @@ package com.skillstorm.retirementplanner.mappers;
 
 import org.springframework.stereotype.Component;
 
-import com.skillstorm.retirementplanner.dtos.GoalDto;
+import com.skillstorm.retirementplanner.dtos.GoalResponse;
 import com.skillstorm.retirementplanner.models.Goal;
 
 @Component
@@ -15,7 +15,7 @@ public class GoalMapper {
      * Methods:
      * - toDto(Goal goal): builds the outgoing GoalDto from the entity
      */
-    public GoalDto toDto(Goal goal){
-        return new GoalDto(goal.getId(), goal.getName(), goal.getTargetRetirementAge(), goal.getTargetAmount(), goal.getNotes());
+    public GoalResponse toDto(Goal goal){
+        return new GoalResponse(goal.getId(), goal.getName(), goal.getTargetRetirementAge(), goal.getTargetAmount(), goal.getNotes());
     }
 }

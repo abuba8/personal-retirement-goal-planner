@@ -127,7 +127,7 @@ public class Goal {
     // toString method
     @Override
     public String toString() {
-        return "Goal [id=" + id + ", user=" + user + ", name=" + name + ", targetRetirementAge=" + targetRetirementAge
+        return "Goal [id=" + id + ", name=" + name + ", targetRetirementAge=" + targetRetirementAge
                 + ", targetAmount=" + targetAmount + ", notes=" + notes + "]";
     }
     
