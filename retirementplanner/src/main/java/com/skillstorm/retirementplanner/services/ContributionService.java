@@ -49,7 +49,7 @@ public class ContributionService {
             } else if(goalId != null) {
                 return ResponseEntity.ok(this.repo.findByGoalId(goalId, userId, pages));
             } 
-            return ResponseEntity.ok(this.repo.findBySourceId(sourceId, userId, pages));
+            return ResponseEntity.ok(this.repo.findByFundingSourceIdAndUserId(sourceId, userId, pages));
         }
     }
 
@@ -69,7 +69,7 @@ public class ContributionService {
          *          return ResponseEntity.status(404).build();
          *      }
          */
-        Optional<Contribution> temp = this.repo.findOneByUserId(userId, id);
+        Optional<Contribution> temp = this.repo.findByUserIdAndId(userId, id);
         if(temp.isPresent()) {
             return ResponseEntity.ok(temp.get());
         }
@@ -104,7 +104,7 @@ public class ContributionService {
          *      }
          */
 
-        Optional<FundingSource> temp = fundingRepo.findOneByUserId(userId, sourceId);
+        Optional<FundingSource> temp = fundingRepo.findByIdAndUserId(userId, sourceId);
         FundingSource source;
         if(temp.isPresent()) {
             source = temp.get();
@@ -138,7 +138,7 @@ public class ContributionService {
          *      }
          */
 
-        Optional<Contribution> current = this.repo.findOneByUserId(userId, id);
+        Optional<Contribution> current = this.repo.findByUserIdAndId(userId, id);
         if(current.isPresent()) {
             Contribution temp = current.get();
 
@@ -172,7 +172,7 @@ public class ContributionService {
          *      }
          */
 
-        Optional<Contribution> temp = this.repo.findOneByUserId(userId, id);
+        Optional<Contribution> temp = this.repo.findByUserIdAndId(userId, id);
         if(temp.isPresent()) {
             Contribution current = temp.get();
             if(current.getDate().isAfter(LocalDate.now())) {

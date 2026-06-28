@@ -97,7 +97,7 @@ public class ContributionsServiceTest {
             verify(repo).findAll(testPage);
             verify(repo, never()).findByUserId(anyLong(), any(Pageable.class));
             verify(repo, never()).findByGoalId(anyLong(), anyLong(), any(Pageable.class));
-            verify(repo, never()).findBySourceId(anyLong(), anyLong(), any(Pageable.class));
+            verify(repo, never()).findByFundingSourceIdAndUserId(anyLong(), anyLong(), any(Pageable.class));
         }
 
         @Test
@@ -114,7 +114,7 @@ public class ContributionsServiceTest {
             verify(repo).findByUserId(1L, testPage);
             verify(repo, never()).findAll(testPage);
             verify(repo, never()).findByGoalId(anyLong(), anyLong(), any(Pageable.class));
-            verify(repo, never()).findBySourceId(anyLong(), anyLong(), any(Pageable.class));
+            verify(repo, never()).findByFundingSourceIdAndUserId(anyLong(), anyLong(), any(Pageable.class));
         }
 
         @Test
@@ -131,13 +131,13 @@ public class ContributionsServiceTest {
             verify(repo).findByGoalId(1L, 1L, testPage);
             verify(repo, never()).findAll(testPage);
             verify(repo, never()).findByUserId(anyLong(), any(Pageable.class));
-            verify(repo, never()).findBySourceId(anyLong(), anyLong(), any(Pageable.class));
+            verify(repo, never()).findByFundingSourceIdAndUserId(anyLong(), anyLong(), any(Pageable.class));
         }
 
         @Test
         @DisplayName("FindAllWithSourceId")
         void returnsAllContributionsBySourceId() {
-            when(repo.findBySourceId(1L, 1L, testPage)).thenReturn(contributionPage);
+            when(repo.findByFundingSourceIdAndUserId(1L, 1L, testPage)).thenReturn(contributionPage);
 
             ResponseEntity<Page<Contribution>> results = contributionService.getAll(1L, null, 1L, 0);
 
@@ -145,7 +145,7 @@ public class ContributionsServiceTest {
             assertEquals(contributionPage, results.getBody());
             assertEquals(6, results.getBody().getContent().size());
 
-            verify(repo).findBySourceId(1L, 1L, testPage);
+            verify(repo).findByFundingSourceIdAndUserId(1L, 1L, testPage);
             verify(repo, never()).findAll(testPage);
             verify(repo, never()).findByUserId(anyLong(), any(Pageable.class));
             verify(repo, never()).findByGoalId(anyLong(), anyLong(), any(Pageable.class));
@@ -158,7 +158,7 @@ public class ContributionsServiceTest {
         @Test
         @DisplayName("getOneContributionWithParams")
         void returnsOneContributionWithParams() {
-            when(repo.findOneByUserId(1L, 1L))
+            when(repo.findByUserIdAndId(1L, 1L))
             .thenReturn(Optional.of(testContribution));
 
             ResponseEntity<Contribution>  results = contributionService.getOne(1L, 1L);
@@ -166,13 +166,13 @@ public class ContributionsServiceTest {
             assertEquals(HttpStatus.OK, results.getStatusCode());
             assertEquals(testContribution, results.getBody());
 
-            verify(repo).findOneByUserId(1L, 1L);
+            verify(repo).findByUserIdAndId(1L, 1L);
         }
 
         @Test
         @DisplayName("getNoContributionWithParams")
         void returnsNoContributionWithParams() {
-            when(repo.findOneByUserId(2L, 2L))
+            when(repo.findByUserIdAndId(2L, 2L))
             .thenReturn(Optional.empty());
 
             ResponseEntity<Contribution>  results = contributionService.getOne(2L, 2L);
@@ -180,7 +180,7 @@ public class ContributionsServiceTest {
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(repo).findOneByUserId(2L, 2L);
+            verify(repo).findByUserIdAndId(2L, 2L);
         }
     }
 
@@ -190,7 +190,7 @@ public class ContributionsServiceTest {
         @Test
         @DisplayName("createOneWithCorrectSource")
         void returnsNewContributionWithSource() {
-            when(fundingRepo.findOneByUserId(1L, 1L)).thenReturn(Optional.of(testSource));
+            when(fundingRepo.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(testSource));
 
             when(repo.save(any(Contribution.class))).thenReturn(testContribution);
 
@@ -199,21 +199,21 @@ public class ContributionsServiceTest {
             assertEquals(HttpStatus.CREATED, results.getStatusCode());
             assertEquals(testContribution, results.getBody());
 
-            verify(fundingRepo).findOneByUserId(1L, 1L);
+            verify(fundingRepo).findByIdAndUserId(1L, 1L);
             verify(repo).save(any(Contribution.class));
         }
 
         @Test
         @DisplayName("createOneWithBadSource")
         void returnsNoContributionIfBadSource() {
-            when(fundingRepo.findOneByUserId(1L, 1L)).thenReturn(Optional.empty());
+            when(fundingRepo.findByIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
 
             ResponseEntity<Contribution> results = contributionService.createOne(testDto, 1L, 1L, 1L);
 
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(fundingRepo).findOneByUserId(1L, 1L);
+            verify(fundingRepo).findByIdAndUserId(1L, 1L);
             verify(repo, never()).save(any(Contribution.class));
         }
     }
@@ -224,21 +224,21 @@ public class ContributionsServiceTest {
         @Test
         @DisplayName("updateOneNotFound")
         void returnsNoContributionIfNotFound() {
-            when(repo.findOneByUserId(1L, 2L)).thenReturn(Optional.empty());
+            when(repo.findByUserIdAndId(1L, 2L)).thenReturn(Optional.empty());
 
             ResponseEntity<Contribution> results = contributionService.updateOne(2L, 1L, testDto);
 
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(repo).findOneByUserId(1L, 2L);
+            verify(repo).findByUserIdAndId(1L, 2L);
             verify(repo, never()).save(any(Contribution.class));
         }
 
         @Test
         @DisplayName("updateOneFound")
         void returnsUpdatedContributionIfFound() {
-            when(repo.findOneByUserId(1L, 1L)).thenReturn(Optional.of(testContribution));
+            when(repo.findByUserIdAndId(1L, 1L)).thenReturn(Optional.of(testContribution));
 
             when(repo.save(any(Contribution.class))).thenReturn(testContribution);
 
@@ -247,7 +247,7 @@ public class ContributionsServiceTest {
             assertEquals(HttpStatus.OK, results.getStatusCode());
             assertEquals(testContribution, results.getBody());
 
-            verify(repo).findOneByUserId(1L, 1L);
+            verify(repo).findByUserIdAndId(1L, 1L);
             verify(repo).save(any(Contribution.class));
         }
     }
@@ -258,42 +258,42 @@ public class ContributionsServiceTest {
         @Test
         @DisplayName("deleteOneIfNotFound")
         void returnsNotFoundIfNotFound() {
-            when(repo.findOneByUserId(1L, 2L)).thenReturn(Optional.empty());
+            when(repo.findByUserIdAndId(1L, 2L)).thenReturn(Optional.empty());
 
             ResponseEntity<Void> results = contributionService.deleteOne(2L, 1L);
 
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(repo).findOneByUserId(1L, 2L);
+            verify(repo).findByUserIdAndId(1L, 2L);
             verify(repo, never()).deleteById(anyLong());
         }
 
         @Test
         @DisplayName("deleteOneBlockedIfDatePast")
         void returnsConflictIfDatePast() {
-            when(repo.findOneByUserId(1L, 4L)).thenReturn(Optional.of(testContributionPast));
+            when(repo.findByUserIdAndId(1L, 4L)).thenReturn(Optional.of(testContributionPast));
 
             ResponseEntity<Void> results = contributionService.deleteOne(4L, 1L);
 
             assertEquals(HttpStatus.CONFLICT, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(repo).findOneByUserId(1L, 4L);
+            verify(repo).findByUserIdAndId(1L, 4L);
             verify(repo, never()).deleteById(anyLong());
         }
 
         @Test
         @DisplayName("deleteOneIfDateFuture")
         void returnsNoContentIfDateFuture() {
-            when(repo.findOneByUserId(1L, 1L)).thenReturn(Optional.of(testContribution));
+            when(repo.findByUserIdAndId(1L, 1L)).thenReturn(Optional.of(testContribution));
 
             ResponseEntity<Void> results = contributionService.deleteOne(1L, 1L);
 
             assertEquals(HttpStatus.NO_CONTENT, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(repo).findOneByUserId(1L, 1L);
+            verify(repo).findByUserIdAndId(1L, 1L);
             verify(repo).deleteById(1L);
         }
     }

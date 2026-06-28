@@ -68,7 +68,7 @@ public class FundingSourceService {
          *          return ResponseEntity.status(404).build();
          *      }
          */
-        Optional<FundingSource> temp = this.repo.findOneByUserId(userId, id);
+        Optional<FundingSource> temp = this.repo.findByIdAndUserId(userId, id);
         if(temp.isPresent()) {
             return ResponseEntity.ok(temp.get());
         }
@@ -117,7 +117,7 @@ public class FundingSourceService {
          *          return ResponseEntity.status(404).build();
          *      }
          */
-        Optional<FundingSource> current = this.repo.findOneByUserId(userId, id);
+        Optional<FundingSource> current = this.repo.findByIdAndUserId(userId, id);
         if(current.isPresent()) {
             FundingSource temp = current.get();
 
@@ -150,10 +150,10 @@ public class FundingSourceService {
          *      }
          */
 
-        if(this.repo.findOneByUserId(userId, id).isPresent()) {
+        if(this.repo.findByIdAndUserId(userId, id).isPresent()) {
 
             Pageable pages = PageRequest.of(0, 6);
-            Page<Contribution> contributionPage = this.contributionRepo.findBySourceId(id, userId, pages);
+            Page<Contribution> contributionPage = this.contributionRepo.findByFundingSourceIdAndUserId(id, userId, pages);
             List<Contribution> contributionList = contributionPage.getContent();
 
             if(contributionList.isEmpty()) {

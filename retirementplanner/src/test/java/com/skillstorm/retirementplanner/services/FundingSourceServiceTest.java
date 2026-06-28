@@ -121,7 +121,7 @@ public class FundingSourceServiceTest {
         @Test
         @DisplayName("getOneSourceWithParams")
         void returnsOneSourceWithUserIdandSourceId() {
-            when(fundingRepo.findOneByUserId(1L, 1L))
+            when(fundingRepo.findByIdAndUserId(1L, 1L))
             .thenReturn(Optional.of(testSource));
 
             ResponseEntity<FundingSource> results = fundingService.getOne(1L, 1L);
@@ -129,13 +129,13 @@ public class FundingSourceServiceTest {
             assertEquals(HttpStatus.OK, results.getStatusCode());
             assertEquals(testSource, results.getBody());
             
-            verify(fundingRepo).findOneByUserId(1L, 1L);
+            verify(fundingRepo).findByIdAndUserId(1L, 1L);
         }
 
         @Test
         @DisplayName("getNoSourceWithParms")
         void returnsNoSourceWithUserIdandSourceId() {
-            when(fundingRepo.findOneByUserId(2L, 2L))
+            when(fundingRepo.findByIdAndUserId(2L, 2L))
             .thenReturn(Optional.empty());
 
             ResponseEntity<FundingSource> results = fundingService.getOne(2L, 2L);
@@ -143,7 +143,7 @@ public class FundingSourceServiceTest {
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(fundingRepo).findOneByUserId(2L, 2L);
+            verify(fundingRepo).findByIdAndUserId(2L, 2L);
         }
     }
 
@@ -167,7 +167,7 @@ public class FundingSourceServiceTest {
         @Test
         @DisplayName("updateWithMatchingParam")
         void returnsNewUpdatedSourceIfMatching() {
-            when(fundingRepo.findOneByUserId(1L, 1L))
+            when(fundingRepo.findByIdAndUserId(1L, 1L))
             .thenReturn(Optional.of(testSource));
 
             when(fundingRepo.save(any(FundingSource.class)))
@@ -178,14 +178,14 @@ public class FundingSourceServiceTest {
             assertEquals(HttpStatus.OK, results.getStatusCode());
             assertEquals(testSource, results.getBody());
 
-            verify(fundingRepo).findOneByUserId(1L, 1L);
+            verify(fundingRepo).findByIdAndUserId(1L, 1L);
             verify(fundingRepo).save(any(FundingSource.class));
         }
 
         @Test
         @DisplayName("noUpdateWithBadSourceId")
         void returnsNoUpdatedSource() {
-            when(fundingRepo.findOneByUserId(2L, 2L))
+            when(fundingRepo.findByIdAndUserId(2L, 2L))
             .thenReturn(Optional.empty());
 
             ResponseEntity<FundingSource> results = fundingService.updateOne(2L, 2L, testDto);
@@ -193,7 +193,7 @@ public class FundingSourceServiceTest {
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(fundingRepo).findOneByUserId(2L, 2L);
+            verify(fundingRepo).findByIdAndUserId(2L, 2L);
             verify(fundingRepo, never()).save(any(FundingSource.class));
         }
     }
@@ -204,10 +204,10 @@ public class FundingSourceServiceTest {
         @Test
         @DisplayName("deleteSourceWithMatchingParams")
         void returnsNoContentOnGoodDelete() {
-            when(fundingRepo.findOneByUserId(1L, 1L))
+            when(fundingRepo.findByIdAndUserId(1L, 1L))
             .thenReturn(Optional.of(testSource));
 
-            when(contributionRepo.findBySourceId(1L, 1L, testPage))
+            when(contributionRepo.findByFundingSourceIdAndUserId(1L, 1L, testPage))
             .thenReturn(emptyPage);
 
             ResponseEntity<Void> results = fundingService.deleteOne(1L, 1L);
@@ -215,18 +215,18 @@ public class FundingSourceServiceTest {
             assertEquals(HttpStatus.NO_CONTENT, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(fundingRepo).findOneByUserId(1L, 1L);
-            verify(contributionRepo).findBySourceId(1L, 1L, testPage);
+            verify(fundingRepo).findByIdAndUserId(1L, 1L);
+            verify(contributionRepo).findByFundingSourceIdAndUserId(1L, 1L, testPage);
             verify(fundingRepo).deleteById(1L);
         }
 
         @Test
         @DisplayName("deleteSourceBlockedIfContributionFound")
         void returnsConflictIfContributionFound() {
-            when(fundingRepo.findOneByUserId(1L, 1L))
+            when(fundingRepo.findByIdAndUserId(1L, 1L))
             .thenReturn(Optional.of(testSource));
 
-            when(contributionRepo.findBySourceId(1L, 1L, testPage))
+            when(contributionRepo.findByFundingSourceIdAndUserId(1L, 1L, testPage))
             .thenReturn(contributionPage);
 
             ResponseEntity<Void> results = fundingService.deleteOne(1L, 1L);
@@ -234,15 +234,15 @@ public class FundingSourceServiceTest {
             assertEquals(HttpStatus.CONFLICT, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(fundingRepo).findOneByUserId(1L, 1L);
-            verify(contributionRepo).findBySourceId(1L, 1L, testPage);
+            verify(fundingRepo).findByIdAndUserId(1L, 1L);
+            verify(contributionRepo).findByFundingSourceIdAndUserId(1L, 1L, testPage);
             verify(fundingRepo, never()).deleteById(1L);
         }
 
         @Test
         @DisplayName("failDeleteIfWrongUser")
         void returnsMethodNotAllowedIfWrongUser() {
-            when(fundingRepo.findOneByUserId(2L, 1L))
+            when(fundingRepo.findByIdAndUserId(2L, 1L))
             .thenReturn(Optional.empty());
 
             ResponseEntity<Void> results = fundingService.deleteOne(1L, 2L);
@@ -250,8 +250,8 @@ public class FundingSourceServiceTest {
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());
 
-            verify(fundingRepo).findOneByUserId(2L, 1L);
-            verify(contributionRepo, never()).findBySourceId(anyLong(), anyLong(), any(Pageable.class));
+            verify(fundingRepo).findByIdAndUserId(2L, 1L);
+            verify(contributionRepo, never()).findByFundingSourceIdAndUserId(anyLong(), anyLong(), any(Pageable.class));
             verify(fundingRepo, never()).deleteById(anyLong());
         }
     }
