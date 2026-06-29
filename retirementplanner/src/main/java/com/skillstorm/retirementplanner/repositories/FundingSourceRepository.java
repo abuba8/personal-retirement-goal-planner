@@ -11,6 +11,6 @@ import com.skillstorm.retirementplanner.models.FundingSource;
 public interface FundingSourceRepository extends JpaRepository<FundingSource, Long> {
 
     Page<FundingSource> findByUserId(Long userId, Pageable pageable);
-    Optional<FundingSource> findByIdAndUserId(Long userId, Long sourceId);
+    Optional<FundingSource> findByIdAndUserId(Long sourceId, Long userId);
 
 }

@@ -1,6 +1,9 @@
 package com.skillstorm.retirementplanner.services;
 
+import com.skillstorm.retirementplanner.dtos.ContributionRequest;
 import com.skillstorm.retirementplanner.repositories.FundingSourceRepository;
+import com.skillstorm.retirementplanner.repositories.GoalRepository;
+import com.skillstorm.retirementplanner.repositories.UserRepository;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -8,10 +11,12 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.skillstorm.retirementplanner.dtos.ContributionDto;
+import com.skillstorm.retirementplanner.dtos.ContributionResponse;
+import com.skillstorm.retirementplanner.mappers.ContributionMapper;
 import com.skillstorm.retirementplanner.models.Contribution;
 import com.skillstorm.retirementplanner.models.FundingSource;
 import com.skillstorm.retirementplanner.models.Goal;
@@ -22,12 +27,19 @@ import com.skillstorm.retirementplanner.repositories.ContributionsRepository;
 public class ContributionService {
     
     private final FundingSourceRepository fundingRepo;
+    private final GoalRepository goalRepo;
     private final ContributionsRepository repo;
-    // private final UserService userService;
+    private final UserRepository userRepo;
+    private final ContributionMapper contributionMapper;
+    private static final int PAGE_SIZE = 10;
 
-    public ContributionService(ContributionsRepository repo, FundingSourceRepository fundingSourceRepository) {
+    public ContributionService(FundingSourceRepository fundingRepo, GoalRepository goalRepo,
+            ContributionsRepository repo, UserRepository userRepo, ContributionMapper contributionMapper) {
+        this.fundingRepo = fundingRepo;
+        this.goalRepo = goalRepo;
         this.repo = repo;
-        this.fundingRepo = fundingSourceRepository;
+        this.userRepo = userRepo;
+        this.contributionMapper = contributionMapper;
     }
 
     /**
@@ -39,17 +51,17 @@ public class ContributionService {
      * @param page - tells how many pages to split the response data into
      * @return - returns a Response Entity status wrapped around a page of Contributions
      */
-    public ResponseEntity<Page<Contribution>> getAll(Long userId, Long goalId, Long sourceId, int page) {
-        Pageable pages = PageRequest.of(page, 6);
+    public ResponseEntity<Page<ContributionResponse>> getAll(Long userId, Long goalId, Long sourceId, int page) {
+        Pageable pages = PageRequest.of(page, PAGE_SIZE, Sort.by("id"));
         if(userId == null) {
-            return ResponseEntity.ok(this.repo.findAll(pages));
+            return ResponseEntity.ok(this.repo.findAll(pages).map(this.contributionMapper::toDto));
         } else {
             if(goalId == null && sourceId == null) {
-                return ResponseEntity.ok(this.repo.findByUserId(userId, pages));
+                return ResponseEntity.ok(this.repo.findByUserId(userId, pages).map(this.contributionMapper::toDto));
             } else if(goalId != null) {
-                return ResponseEntity.ok(this.repo.findByGoalId(goalId, userId, pages));
+                return ResponseEntity.ok(this.repo.findByGoalIdAndUserId(goalId, userId, pages).map(this.contributionMapper::toDto));
             } 
-            return ResponseEntity.ok(this.repo.findByFundingSourceIdAndUserId(sourceId, userId, pages));
+            return ResponseEntity.ok(this.repo.findByFundingSourceIdAndUserId(sourceId, userId, pages).map(this.contributionMapper::toDto));
         }
     }
 
@@ -59,19 +71,11 @@ public class ContributionService {
      * @param id - used to see if a given contribution is attached to the given user
      * @return - returns a contribution if the contribution and user are linked together
      */
-    public ResponseEntity<Contribution> getOne(Long userId, Long id) {
+    public ResponseEntity<ContributionResponse> getOne(Long userId, Long id) {
 
-        /**
-         * logic needed to find user by userId
-         *      if(userRepository.existsById(userId)) {
-         *          User user = userService.findUserById(userId);
-         *      } else {
-         *          return ResponseEntity.status(404).build();
-         *      }
-         */
         Optional<Contribution> temp = this.repo.findByUserIdAndId(userId, id);
         if(temp.isPresent()) {
-            return ResponseEntity.ok(temp.get());
+            return ResponseEntity.ok(this.contributionMapper.toDto(temp.get()));
         }
         return ResponseEntity.notFound().build();
         
@@ -84,38 +88,27 @@ public class ContributionService {
      *              and goalId that is used to receive a goal
      * @return - returns a Response Entity status wrapped around a Contribution object
      */
-    public ResponseEntity<Contribution> createOne(ContributionDto dto, Long userId, Long sourceId, Long goalId) {
+    public ResponseEntity<ContributionResponse> createOne(ContributionRequest dto, Long userId, Long sourceId, Long goalId) {
 
-        /**
-         * logic needed to find user by userId
-         *      if(userRepository.existsById(userId)) {
-         *          User user = userService.findUserById(userId);
-         *      } else {
-         *          return ResponseEntity.status(404).build();
-         *      }
-         */
-
-        /**
-         * logic needed to find goal by goalId
-         *      if(goalRepository.existsById(goalId)) {
-         *          Goal goal = goalService.findgGoalById(goalId);
-         *      } else {
-         *          return ResponseEntity.status(404).build();
-         *      }
-         */
-
-        Optional<FundingSource> temp = fundingRepo.findByIdAndUserId(userId, sourceId);
-        FundingSource source;
-        if(temp.isPresent()) {
-            source = temp.get();
-        } else {
-            return ResponseEntity.status(404).build();
+        Optional<User> userObj = this.userRepo.findById(userId);
+        if(userObj.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
 
-        Contribution contribution = this.repo.save(new Contribution(0L, dto.amount(), dto.date(), dto.category(), dto.notes(),
-                                                new User(), new Goal(), source));
+        Optional<Goal> goalObj = this.goalRepo.findByIdAndUserId(goalId, userId);
+        if(goalObj.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<FundingSource> sourceObj = fundingRepo.findByIdAndUserId(sourceId, userId);
+        if(sourceObj.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Contribution contribution = this.repo.save(new Contribution(null, dto.amount(), dto.date(), dto.category(), dto.notes(),
+                                                userObj.get(), goalObj.get(), sourceObj.get()));
         
-        return ResponseEntity.status(201).body(contribution);
+        return ResponseEntity.status(201).body(this.contributionMapper.toDto(contribution));
     }
 
     /**
@@ -127,16 +120,7 @@ public class ContributionService {
      *              and goalId that is used to receive a goal
      * @return - returns a Response Entity status code wrapped around a Contribution object
      */
-    public ResponseEntity<Contribution> updateOne(Long id, Long userId, ContributionDto dto) {
-        
-        /**
-         * logic needed to find user by userId
-         *      if(userRepository.existsById(userId)) {
-         *          User user = userService.findUserById(userId);
-         *      } else {
-         *          return ResponseEntity.status(404).build();
-         *      }
-         */
+    public ResponseEntity<ContributionResponse> updateOne(Long id, Long userId, ContributionRequest dto) {
 
         Optional<Contribution> current = this.repo.findByUserIdAndId(userId, id);
         if(current.isPresent()) {
@@ -149,7 +133,7 @@ public class ContributionService {
 
             Contribution updated = this.repo.save(temp);
 
-            return ResponseEntity.ok().body(updated);
+            return ResponseEntity.ok().body(this.contributionMapper.toDto(updated));
         }
         return ResponseEntity.notFound().build();
     }
@@ -162,15 +146,6 @@ public class ContributionService {
      *           has already passed preventing deleting past contributions
      */
     public ResponseEntity<Void> deleteOne(Long id, Long userId) {
-
-        /**
-         * logic needed to find user by userId
-         *      if(userRepository.existsById(userId)) {
-         *          User user = userService.findUserById(userId);
-         *      } else {
-         *          return ResponseEntity.status(404).build();
-         *      }
-         */
 
         Optional<Contribution> temp = this.repo.findByUserIdAndId(userId, id);
         if(temp.isPresent()) {

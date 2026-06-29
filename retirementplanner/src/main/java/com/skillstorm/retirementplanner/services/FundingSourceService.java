@@ -1,33 +1,42 @@
 package com.skillstorm.retirementplanner.services;
 
-import com.skillstorm.retirementplanner.dtos.FundingSourceDto;
-
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.skillstorm.retirementplanner.dtos.FundingSourceRequest;
+import com.skillstorm.retirementplanner.dtos.FundingSourceResponse;
+import com.skillstorm.retirementplanner.mappers.FundingSourceMapper;
 import com.skillstorm.retirementplanner.models.Contribution;
 import com.skillstorm.retirementplanner.models.FundingSource;
 import com.skillstorm.retirementplanner.models.User;
 import com.skillstorm.retirementplanner.repositories.ContributionsRepository;
 import com.skillstorm.retirementplanner.repositories.FundingSourceRepository;
+import com.skillstorm.retirementplanner.repositories.UserRepository;
 
 @Service
 public class FundingSourceService {
 
     private final ContributionsRepository contributionRepo;
     private final FundingSourceRepository repo;
-    // private final UserService userService;
-    // private final ContributionService contributionService;
+    private final UserRepository userRepo;
+    private final FundingSourceMapper sourceMapper;
+    private static final int PAGE_SIZE = 10;
 
-    public FundingSourceService(FundingSourceRepository repo, ContributionsRepository contributionRepo) {
-        this.repo = repo;
+    
+
+    public FundingSourceService(ContributionsRepository contributionRepo, FundingSourceRepository repo,
+            UserRepository userRepo, FundingSourceMapper sourceMapper) {
         this.contributionRepo = contributionRepo;
+        this.repo = repo;
+        this.userRepo = userRepo;
+        this.sourceMapper = sourceMapper;
     }
 
     /**
@@ -37,20 +46,14 @@ public class FundingSourceService {
      * @param page - tells how many pages the data should be split into
      * @return - returns a Response Entity status wrapped around a page of funding sources
      */
-    public ResponseEntity<Page<FundingSource>> getAll(Long userId, int page) {
-        Pageable pages = PageRequest.of(page, 6);
+    public ResponseEntity<Page<FundingSourceResponse>> getAll(Long userId, int page) {
+        Pageable pages = PageRequest.of(page, PAGE_SIZE, Sort.by("id"));
+        Page<FundingSourceResponse> sources = this.repo.findByUserId(userId, pages)
+            .map(this.sourceMapper::toDto);
         if(userId != null) {
-            /**
-             * logic needed to find user by userId
-             *      if(userService.existsById(userId)) {
-             *          User user = userService.findUserById(userId);
-             *      } else {
-             *          return ResponseEntity.status(404).build();
-             *      }
-             */
-            return ResponseEntity.ok(this.repo.findByUserId(userId, pages));
+            return ResponseEntity.ok(sources);
         }
-        return ResponseEntity.ok(this.repo.findAll(pages));
+        return ResponseEntity.ok(this.repo.findAll(pages).map(this.sourceMapper::toDto));
     }
 
     /**
@@ -59,18 +62,11 @@ public class FundingSourceService {
      * @param id - make sure the funding source given is attached to the user
      * @return - returns a funding source if the source and user are attached together
      */
-    public ResponseEntity<FundingSource> getOne(Long userId, Long id) {
-        /**
-         * logic needed to find user by userId
-         *      if(userService.existsById(userId)) {
-         *          User user = userService.findUserById(userId);
-         *      } else {
-         *          return ResponseEntity.status(404).build();
-         *      }
-         */
-        Optional<FundingSource> temp = this.repo.findByIdAndUserId(userId, id);
+    public ResponseEntity<FundingSourceResponse> getOne(Long id, Long userId) {
+        
+        Optional<FundingSource> temp = this.repo.findByIdAndUserId(id, userId);
         if(temp.isPresent()) {
-            return ResponseEntity.ok(temp.get());
+            return ResponseEntity.ok(this.sourceMapper.toDto(temp.get()));
         }
         return ResponseEntity.notFound().build();
     }
@@ -81,22 +77,15 @@ public class FundingSourceService {
      *              userId that is used to recieve a User, and the source Type
      * @return - returns a Response Entity status wrapped around a Funding Source object
      */
-    public ResponseEntity<FundingSource> createOne(Long userId, FundingSourceDto dto) {
+    public ResponseEntity<FundingSourceResponse> createOne(Long userId, FundingSourceRequest dto) {
 
-        /**
-         * logic needed to find user by userId
-         *      if(userService.existsById(userId)) {
-         *          User user = userService.findUserById(userId);
-         *      } else {
-         *          return ResponseEntity.status(404).build();
-         *      }
-         */
-        
-        // replace new User() with found user
-        FundingSource source = this.repo.save(new FundingSource(0L, dto.name(), dto.institution(), dto.notes(), 
-                                      new User() , dto.type()));
+        Optional<User> userObj = this.userRepo.findById(userId);
+        if(userObj.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        FundingSource source = this.repo.save(new FundingSource(null, dto.name(), dto.institution(), dto.notes(), userObj.get(), dto.type()));
 
-        return ResponseEntity.status(201).body(source);
+        return ResponseEntity.status(201).body(this.sourceMapper.toDto(source));
     }
 
     /**
@@ -107,17 +96,9 @@ public class FundingSourceService {
      *              userId that is used to recieve a User, and the source Type
      * @return - returns a Response Entity status code wrapped around a Funding Source object
      */
-    public ResponseEntity<FundingSource> updateOne(Long id, Long userId, FundingSourceDto dto) {
+    public ResponseEntity<FundingSourceResponse> updateOne(Long id, Long userId, FundingSourceRequest dto) {
 
-        /**
-         * logic needed to find user by userId
-         *      if(userRepository.existsById(userId)) {
-         *          User user = userService.findUserById(userId);
-         *      } else {
-         *          return ResponseEntity.status(404).build();
-         *      }
-         */
-        Optional<FundingSource> current = this.repo.findByIdAndUserId(userId, id);
+        Optional<FundingSource> current = this.repo.findByIdAndUserId(id, userId);
         if(current.isPresent()) {
             FundingSource temp = current.get();
 
@@ -128,7 +109,7 @@ public class FundingSourceService {
 
             FundingSource updated = this.repo.save(temp);
 
-            return ResponseEntity.ok().body(updated);
+            return ResponseEntity.ok().body(this.sourceMapper.toDto(updated));
         }
         return ResponseEntity.notFound().build();
     }
@@ -141,18 +122,9 @@ public class FundingSourceService {
      */
     public ResponseEntity<Void> deleteOne(Long id, Long userId) {
 
-        /**
-         * logic needed to find user by userId
-         *      if(userRepository.existsById(userId)) {
-         *          User user = userService.findUserById(userId);
-         *      } else {
-         *          return ResponseEntity.status(404).build();
-         *      }
-         */
+        if(this.repo.findByIdAndUserId(id, userId).isPresent()) {
 
-        if(this.repo.findByIdAndUserId(userId, id).isPresent()) {
-
-            Pageable pages = PageRequest.of(0, 6);
+            Pageable pages = PageRequest.of(0, PAGE_SIZE);
             Page<Contribution> contributionPage = this.contributionRepo.findByFundingSourceIdAndUserId(id, userId, pages);
             List<Contribution> contributionList = contributionPage.getContent();
 

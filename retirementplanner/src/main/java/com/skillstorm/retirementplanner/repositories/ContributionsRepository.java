@@ -12,6 +12,7 @@ public interface ContributionsRepository extends JpaRepository<Contribution, Lon
 
     Page<Contribution> findByGoalId(Long goalId, Long userId, Pageable pageable);
     Page<Contribution> findByUserId(Long userId, Pageable pageable);
+    Page<Contribution> findByGoalIdAndUserId(Long goalId, Long userId, Pageable pageable);
     Page<Contribution> findByFundingSourceIdAndUserId(Long sourceId, Long userId, Pageable pageable);
     Optional<Contribution> findByUserIdAndId(Long userId, Long id);
 

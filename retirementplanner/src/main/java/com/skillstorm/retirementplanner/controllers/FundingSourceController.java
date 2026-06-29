@@ -7,9 +7,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.skillstorm.retirementplanner.dtos.FundingSourceDto;
-import com.skillstorm.retirementplanner.models.FundingSource;
+import com.skillstorm.retirementplanner.dtos.FundingSourceRequest;
+import com.skillstorm.retirementplanner.dtos.FundingSourceResponse;
+import com.skillstorm.retirementplanner.security.SecurityUtils;
 import com.skillstorm.retirementplanner.services.FundingSourceService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,35 +29,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class FundingSourceController {
     
     private final FundingSourceService service;
+    private final SecurityUtils securityUtils;
 
-    public FundingSourceController(FundingSourceService service) {
+    public FundingSourceController(FundingSourceService service, SecurityUtils securityUtils) {
         this.service = service;
+        this.securityUtils = securityUtils;
     }
 
     @GetMapping
-    public ResponseEntity<Page<FundingSource>> getAll(@RequestParam(required = false) Long userId, 
-        @RequestParam(defaultValue = "0") int page) {
-
-            return service.getAll(userId, page);
+    public ResponseEntity<Page<FundingSourceResponse>> getAll(@RequestParam(value="page", defaultValue = "0") int page) {
+        return this.service.getAll(this.securityUtils.getCurrentUserId(), page);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FundingSource> getOne(@RequestParam(required = true) Long userId, @PathVariable Long id) {
-        return service.getOne(userId, id);
+    public ResponseEntity<FundingSourceResponse> getOne(@PathVariable("id") Long id) {
+        return this.service.getOne(id, this.securityUtils.getCurrentUserId());
     }
 
     @PostMapping
-    public ResponseEntity<FundingSource> createOne(@RequestParam(required = true) Long userId, @RequestBody FundingSourceDto dto) {        
-        return service.createOne(userId, dto);
+    public ResponseEntity<FundingSourceResponse> createOne(@Valid @RequestBody FundingSourceRequest dto) {        
+        return this.service.createOne(this.securityUtils.getCurrentUserId(), dto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FundingSource> updateOne(@RequestParam(required = true) Long userId, @PathVariable Long id, @RequestBody FundingSourceDto dto) {
-        return service.updateOne(id, userId, dto);
+    public ResponseEntity<FundingSourceResponse> updateOne(@PathVariable Long id, @Valid @RequestBody FundingSourceRequest dto) {
+        return this.service.updateOne(id, this.securityUtils.getCurrentUserId(), dto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOne(@RequestParam(required = true) Long userId, @PathVariable Long id) {
-        return service.deleteOne(id, userId);
+    public ResponseEntity<Void> deleteOne(@PathVariable Long id) {
+        return this.service.deleteOne(id, this.securityUtils.getCurrentUserId());
     }      
 }
