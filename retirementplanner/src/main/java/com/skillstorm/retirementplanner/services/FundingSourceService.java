@@ -47,11 +47,12 @@ public class FundingSourceService {
      * @return - returns a Response Entity status wrapped around a page of funding sources
      */
     public ResponseEntity<Page<FundingSourceResponse>> getAll(Long userId, int page) {
+        
         Pageable pages = PageRequest.of(page, PAGE_SIZE, Sort.by("id"));
-        Page<FundingSourceResponse> sources = this.repo.findByUserId(userId, pages)
-            .map(this.sourceMapper::toDto);
+
         if(userId != null) {
-            return ResponseEntity.ok(sources);
+            return ResponseEntity.ok(this.repo.findByUserId(userId, pages)
+                .map(this.sourceMapper::toDto));
         }
         return ResponseEntity.ok(this.repo.findAll(pages).map(this.sourceMapper::toDto));
     }
@@ -124,7 +125,7 @@ public class FundingSourceService {
 
         if(this.repo.findByIdAndUserId(id, userId).isPresent()) {
 
-            Pageable pages = PageRequest.of(0, PAGE_SIZE);
+            Pageable pages = PageRequest.of(0, PAGE_SIZE, Sort.by("id"));
             Page<Contribution> contributionPage = this.contributionRepo.findByFundingSourceIdAndUserId(id, userId, pages);
             List<Contribution> contributionList = contributionPage.getContent();
 

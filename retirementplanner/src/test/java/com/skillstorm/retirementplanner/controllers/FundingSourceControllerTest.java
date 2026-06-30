@@ -25,10 +25,13 @@
 // import org.springframework.test.web.servlet.MockMvc;
 
 // import com.fasterxml.jackson.databind.ObjectMapper;
-// import com.skillstorm.retirementplanner.dtos.FundingSourceDto;
+// import com.skillstorm.retirementplanner.dtos.FundingSourceRequest;
+// import com.skillstorm.retirementplanner.dtos.FundingSourceResponse;
+// import com.skillstorm.retirementplanner.mappers.FundingSourceMapper;
 // import com.skillstorm.retirementplanner.models.FundingSource;
 // import com.skillstorm.retirementplanner.models.User;
 // import com.skillstorm.retirementplanner.models.enums.SourceType;
+// import com.skillstorm.retirementplanner.security.SecurityUtils;
 // import com.skillstorm.retirementplanner.services.FundingSourceService;
 
 // @WebMvcTest(FundingSourceController.class)
@@ -44,21 +47,26 @@
 //     @MockitoBean
 //     private FundingSourceService service;
 
+//     @MockitoBean
+//     private SecurityUtils securityUtils;
+
 //     private FundingSource testSource;
+//     private FundingSourceResponse testResponse;
 //     private Pageable testPage;
-//     private List<FundingSource> sources;
-//     private Page<FundingSource> sourcePage;
-//     private FundingSourceDto testDto;
+//     private List<FundingSourceResponse> sources;
+//     private Page<FundingSourceResponse> sourcePage;
+//     private FundingSourceRequest testDto;
 
 //     @BeforeEach
 //     void dataInit() {
 //         testSource = new FundingSource(1L, "Work 401k", "Fidelity",  "Primary employer retirement account.", 
 //                                         new User(), SourceType.ROTH_IRA);
         
+//         testResponse = this.sourceMapper.toDto(testSource);
 //         testPage = PageRequest.of(0, 6);
-//         sources = List.of(testSource, testSource, testSource, testSource, testSource, testSource);
+//         sources = List.of(testResponse, testResponse, testResponse, testResponse, testResponse, testResponse);
 //         sourcePage = new PageImpl<>(sources,testPage, sources.size());
-//         testDto = new FundingSourceDto("Work 401k", "Fidelity",  
+//         testDto = new FundingSourceRequest("Work 401k", "Fidelity",  
 //         "Primary employer retirement account.", SourceType.ROTH_IRA);
 //     }
 
@@ -79,7 +87,7 @@
 //         void returnsAllUsersSources() throws Exception {
 //             when(service.getAll(1L, 0)).thenReturn(ResponseEntity.ok(sourcePage));
 
-//             mockMvc.perform(get("/sources").param("userId", "1")).andExpect(status().isOk());
+//             mockMvc.perform(get("/sources")).andExpect(status().isOk());
 //         }
 //     }
 
@@ -90,17 +98,17 @@
 //         @Test
 //         @DisplayName("404 NOT FOUND when User doesn't have the given Source")
 //         void returnsNoSourceIfNotFound() throws Exception {
-//             when(service.getOne(1L, 2L)).thenReturn(ResponseEntity.notFound().build());
+//             when(service.getOne(2L, 1L)).thenReturn(ResponseEntity.notFound().build());
 
-//             mockMvc.perform(get("/sources/2").param("userId", "1")).andExpect(status().isNotFound());
+//             mockMvc.perform(get("/sources/2")).andExpect(status().isNotFound());
 //         }
 
 //         @Test
 //         @DisplayName("200 OK if User has the matching Source")
 //         void returnsOneSourceIfFound() throws Exception {
-//             when(service.getOne(1L, 1L)).thenReturn(ResponseEntity.ok(testSource));
+//             when(service.getOne(1L, 1L)).thenReturn(ResponseEntity.ok(testResponse));
 
-//             mockMvc.perform(get("/sources/1").param("userId", "1")).andExpect(status().isOk());
+//             mockMvc.perform(get("/sources/1")).andExpect(status().isOk());
 //         }
 //     }
 
@@ -111,7 +119,7 @@
 //         @Test
 //         @DisplayName("201 CREATED if User is Found")
 //         void returnsCreatedSourceIfUserFound() throws Exception {
-//             when(service.createOne(1L, testDto)).thenReturn(ResponseEntity.status(201).body(testSource));
+//             when(service.createOne(1L, testDto)).thenReturn(ResponseEntity.status(201).body(testResponse));
 
 //             mockMvc.perform(post("/sources").param("userId", "1")
 //             .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
@@ -136,7 +144,7 @@
 //         @Test
 //         @DisplayName("200 OK if Source is Found for Updating")
 //         void returnsUpdatedSourceIfFound() throws Exception {
-//             when(service.updateOne(1L, 1L, testDto)).thenReturn(ResponseEntity.ok(testSource));
+//             when(service.updateOne(1L, 1L, testDto)).thenReturn(ResponseEntity.ok(testResponse));
 
 //             mockMvc.perform(put("/sources/1").param("userId", "1")
 //             .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
@@ -153,8 +161,8 @@
 //         void returnsNoDeletedSourceIfNotFound() throws Exception {
 //             when(service.deleteOne(2L, 1L)).thenReturn(ResponseEntity.notFound().build());
 
-//             mockMvc.perform(delete("/sources/2").param("userId", "1")
-//             .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto))).andExpect(status().isNotFound());
+//             mockMvc.perform(delete("/sources/2").contentType(MediaType.APPLICATION_JSON)
+//                 .content(objectMapper.writeValueAsString(testDto))).andExpect(status().isNotFound());
 //         }
 
 //         @Test
@@ -162,7 +170,7 @@
 //         void returnsConflictIfContributionsFound() throws Exception {
 //             when(service.deleteOne(1L, 1L)).thenReturn(ResponseEntity.status(409).build());
 
-//             mockMvc.perform(delete("/sources/1").param("userId", "1")).andExpect(status().isConflict());
+//             mockMvc.perform(delete("/sources/1")).andExpect(status().isConflict());
 //         }
 
 //         @Test
@@ -170,7 +178,7 @@
 //         void returnsNoContentIfContributionsEmpty() throws Exception {
 //             when(service.deleteOne(1L, 1L)).thenReturn(ResponseEntity.noContent().build());
 
-//             mockMvc.perform(delete("/sources/1").param("userId", "1")).andExpect(status().isNoContent());
+//             mockMvc.perform(delete("/sources/1")).andExpect(status().isNoContent());
 //         }
 //     }
     
