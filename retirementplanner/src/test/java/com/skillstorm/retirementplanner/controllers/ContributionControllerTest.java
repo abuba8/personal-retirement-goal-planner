@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,16 +31,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillstorm.retirementplanner.dtos.ContributionRequest;
 import com.skillstorm.retirementplanner.dtos.ContributionResponse;
-import com.skillstorm.retirementplanner.mappers.ContributionMapper;
-import com.skillstorm.retirementplanner.models.Contribution;
-import com.skillstorm.retirementplanner.models.FundingSource;
-import com.skillstorm.retirementplanner.models.Goal;
-import com.skillstorm.retirementplanner.models.User;
 import com.skillstorm.retirementplanner.models.enums.ContributionCategory;
 import com.skillstorm.retirementplanner.security.SecurityUtils;
 import com.skillstorm.retirementplanner.services.ContributionService;
 
 @WebMvcTest(ContributionsController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @DisplayName("Contribution Controller - Web Layer Tests")
 public class ContributionControllerTest {
     
@@ -49,18 +46,13 @@ public class ContributionControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private ContributionMapper contributionMapper;
-
     @MockitoBean
     private ContributionService service;
 
     @MockitoBean
     private SecurityUtils securityUtils;
 
-    private Contribution testContribution;
     private ContributionResponse testResponse;
-    private Contribution testContributionPast;
     private Pageable testPage;
     private List<ContributionResponse> contributions;
     private Page<ContributionResponse> contributionPage;
@@ -68,12 +60,10 @@ public class ContributionControllerTest {
 
     @BeforeEach
     void dataInit() {
-        testContribution = new Contribution(1L, new BigDecimal("500.00"), LocalDate.now().plusDays(1), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.", 
-                            new User(), new Goal(), new FundingSource());
-        testContributionPast = new Contribution(4L, new BigDecimal("500.00"), LocalDate.now().minusDays(1), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.", 
-                            new User(), new Goal(), new FundingSource());
+        when(securityUtils.getCurrentUserId()).thenReturn(1L);
+        testResponse = new ContributionResponse(1L, new BigDecimal("500.00"), LocalDate.now().plusDays(1), 
+            ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.");
 
-        testResponse = this.contributionMapper.toDto(testContribution);
         testPage = PageRequest.of(0, 6);
         contributions = List.of(testResponse, testResponse, testResponse, testResponse, testResponse, testResponse);
         contributionPage = new PageImpl<>(contributions, testPage, contributions.size());
@@ -87,6 +77,7 @@ public class ContributionControllerTest {
         @Test
         @DisplayName("200 OK with a Page of all Contributions with no User")
         void returnsAllContributions() throws Exception {
+            when(securityUtils.getCurrentUserId()).thenReturn(null);
             when(service.getAll(null, null, null, 0)).thenReturn(ResponseEntity.ok(contributionPage));
 
             mockMvc.perform(get("/contributions")).andExpect(status().isOk());
@@ -97,7 +88,7 @@ public class ContributionControllerTest {
         void returnsAllUsersContributions() throws Exception {
             when(service.getAll(1L, null, null, 0)).thenReturn(ResponseEntity.ok(contributionPage));
 
-            mockMvc.perform(get("/contributions").param("userId", "1")).andExpect(status().isOk());
+            mockMvc.perform(get("/contributions")).andExpect(status().isOk());
         }
 
         @Test
@@ -105,7 +96,7 @@ public class ContributionControllerTest {
         void returnsAllUsersContributionsByGoal() throws Exception {
             when(service.getAll(1L, 2L, null, 0)).thenReturn(ResponseEntity.ok(contributionPage));
 
-            mockMvc.perform(get("/contributions").param("userId", "1").param("goalId", "2")).andExpect(status().isOk());
+            mockMvc.perform(get("/contributions").param("goalId", "2")).andExpect(status().isOk());
         }
 
         @Test
@@ -113,7 +104,7 @@ public class ContributionControllerTest {
         void returnsAllUsersContributionsBySource() throws Exception {
             when(service.getAll(1L, null, 3L, 0)).thenReturn(ResponseEntity.ok(contributionPage));
 
-            mockMvc.perform(get("/contributions").param("userId", "1").param("sourceId", "3")).andExpect(status().isOk());
+            mockMvc.perform(get("/contributions").param("sourceId", "3")).andExpect(status().isOk());
         }
     }
 
@@ -126,7 +117,7 @@ public class ContributionControllerTest {
         void returnsNoContributionIfNotFound() throws Exception {
             when(service.getOne(1L, 2L)).thenReturn(ResponseEntity.notFound().build());
 
-            mockMvc.perform(get("/contributions/2").param("userId", "1")).andExpect(status().isNotFound());
+            mockMvc.perform(get("/contributions/2")).andExpect(status().isNotFound());
         }
 
         @Test
@@ -134,7 +125,7 @@ public class ContributionControllerTest {
         void returnsOneContributionIfFound() throws Exception {
             when(service.getOne(1L, 1L)).thenReturn(ResponseEntity.ok(testResponse));
 
-            mockMvc.perform(get("/contributions/1").param("userId", "1")).andExpect(status().isOk());
+            mockMvc.perform(get("/contributions/1")).andExpect(status().isOk());
         }
     }
 
@@ -147,10 +138,33 @@ public class ContributionControllerTest {
         void returnsCreatedContributionIfAllFound() throws Exception {
             when(service.createOne(testDto, 1L, 3L, 2L)).thenReturn(ResponseEntity.status(201).body(testResponse));
 
-            mockMvc.perform(post("/contributions").param("userId", "1")
+            mockMvc.perform(post("/contributions")
             .param("goalId", "2").param("sourceId", "3")
             .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
             .andExpect(status().isCreated());
+        }
+
+        @Test
+        @DisplayName("404 NOT FOUND if User Not Found")
+        void returnsNotFoundIfUserNotFound() throws Exception {
+            when(securityUtils.getCurrentUserId()).thenReturn(2L);
+            when(service.createOne(testDto, 2L, 3L, 2L)).thenReturn(ResponseEntity.status(404).build());
+
+            mockMvc.perform(post("/contributions")
+            .param("goalId", "2").param("sourceId", "3")
+            .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
+            .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("404 NOT FOUND if Goal Not Found")
+        void returnsNotFoundIfGoalNotFound() throws Exception {
+            when(service.createOne(testDto, 1L, 2L, 4L)).thenReturn(ResponseEntity.status(404).build());
+
+            mockMvc.perform(post("/contributions")
+            .param("goalId", "4").param("sourceId", "2")
+            .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
+            .andExpect(status().isNotFound());
         }
 
         @Test
@@ -158,7 +172,7 @@ public class ContributionControllerTest {
         void returnsNotFoundIfSourceNotFound() throws Exception {
             when(service.createOne(testDto, 1L, 4L, 2L)).thenReturn(ResponseEntity.status(404).build());
 
-            mockMvc.perform(post("/contributions").param("userId", "1")
+            mockMvc.perform(post("/contributions")
             .param("goalId", "2").param("sourceId", "4")
             .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
             .andExpect(status().isNotFound());
@@ -174,7 +188,7 @@ public class ContributionControllerTest {
         void returnsNoUpdatedContributionIfNotFound() throws Exception {
             when(service.updateOne(2L, 1L, testDto)).thenReturn(ResponseEntity.notFound().build());
 
-            mockMvc.perform(put("/contributions/2").param("userId", "1")
+            mockMvc.perform(put("/contributions/2")
             .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
             .andExpect(status().isNotFound());
         }
@@ -184,7 +198,7 @@ public class ContributionControllerTest {
         void returnsUpdatedContributionIfFound() throws Exception {
             when(service.updateOne(1L, 1L, testDto)).thenReturn(ResponseEntity.ok(testResponse));
 
-            mockMvc.perform(put("/contributions/1").param("userId", "1")
+            mockMvc.perform(put("/contributions/1")
             .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
             .andExpect(status().isOk());
         }
@@ -199,7 +213,7 @@ public class ContributionControllerTest {
         void returnsNoDeletedContributionIfNotFound() throws Exception {
             when(service.deleteOne(2L, 1L)).thenReturn(ResponseEntity.notFound().build());
 
-            mockMvc.perform(delete("/contributions/2").param("userId", "1")).andExpect(status().isNotFound());
+            mockMvc.perform(delete("/contributions/2")).andExpect(status().isNotFound());
         }
 
         @Test
@@ -207,7 +221,7 @@ public class ContributionControllerTest {
         void returnsConflictIfDatePast() throws Exception {
             when(service.deleteOne(1L, 1L)).thenReturn(ResponseEntity.status(409).build());
 
-            mockMvc.perform(delete("/contributions/1").param("userId", "1")).andExpect(status().isConflict());
+            mockMvc.perform(delete("/contributions/1")).andExpect(status().isConflict());
         }
 
         @Test
@@ -215,7 +229,7 @@ public class ContributionControllerTest {
         void returnsNoContentIfDateFuture() throws Exception {
             when(service.deleteOne(1L, 1L)).thenReturn(ResponseEntity.noContent().build());
 
-            mockMvc.perform(delete("/contributions/1").param("userId", "1")).andExpect(status().isNoContent());
+            mockMvc.perform(delete("/contributions/1")).andExpect(status().isNoContent());
         }
     }
 }
