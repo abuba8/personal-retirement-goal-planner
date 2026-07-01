@@ -43,12 +43,12 @@ public class ContributionService {
     }
 
     /**
-     * Get All Method takes in userId, goalId, sourceId and the amount of pages
+     * Get All Method takes in userId, goalId, sourceId and the page number to return
      * @param userId - used to find all Contributions by User conditionally
      *                  - can find with no UserId for later implementation of admin of some sort
      * @param goalId - used to find all Contributions associated with a given goal
      * @param sourceId - used to find all Contributions associated with a given funding source
-     * @param page - tells how many pages to split the response data into
+     * @param page - the page number of results to return
      * @return - returns a Response Entity status wrapped around a page of Contributions
      */
     public ResponseEntity<Page<ContributionResponse>> getAll(Long userId, Long goalId, Long sourceId, int page) {
@@ -69,7 +69,7 @@ public class ContributionService {
      * Get One Method takes in a userId and contributionId
      * @param userId - determines if the given user is in the database
      * @param id - used to see if a given contribution is attached to the given user
-     * @return - returns a contribution if the contribution and user are linked together
+     * @return - returns a contribution if the contribution and user are linked together, otherwise a 404
      */
     public ResponseEntity<ContributionResponse> getOne(Long userId, Long id) {
 
@@ -82,11 +82,12 @@ public class ContributionService {
     }
 
     /**
-     * Create One Method takes in a contribution Dto
-     * @param dto - populates a contribution entity with an amount, date, category, notes, 
-     *              userId that is used to receive a user, sourceId that is used to receive a source,
-     *              and goalId that is used to receive a goal
-     * @return - returns a Response Entity status wrapped around a Contribution object
+     * Create One Method takes in a contribution Dto, userId, sourceId, and goalId
+     * @param dto - populates a contribution entity with an amount, date, category, and notes
+     * @param userId - used to find the User the new contribution should belong to
+     * @param sourceId - used to find the funding source the new contribution should be linked to
+     * @param goalId - used to find the goal the new contribution should be linked to
+     * @return - returns a Response Entity status wrapped around a Contribution object, or a 404 if the user, goal, or source isn't found
      */
     public ResponseEntity<ContributionResponse> createOne(ContributionRequest dto, Long userId, Long sourceId, Long goalId) {
 
@@ -115,10 +116,8 @@ public class ContributionService {
      * Update One Method takes in a contribution Id, userId, and a contribution dto
      * @param id - used to identify what contribution is being modified
      * @param userId - used to make sure the current User has access to the given contribution
-     * @param dto - populates a contribution entity with an amount, date, category, notes, 
-     *              userId that is used to receive a user, sourceId that is used to receive a source,
-     *              and goalId that is used to receive a goal
-     * @return - returns a Response Entity status code wrapped around a Contribution object
+     * @param dto - updates the contribution's amount, date, category, and notes when provided
+     * @return - returns a Response Entity status code wrapped around a Contribution object, or a 404 if not found
      */
     public ResponseEntity<ContributionResponse> updateOne(Long id, Long userId, ContributionRequest dto) {
 
@@ -140,10 +139,10 @@ public class ContributionService {
 
     /**
      * Delete One Method takes in a contribution Id and a userId
-     * @param id - used to identify what contribution is being modified
+     * @param id - used to identify what contribution is being deleted
      * @param userId - used to make sure the current User has access to the given contribution
-     * @return - returns a no content response on successful delete and a 409 code if the contribution target date 
-     *           has already passed preventing deleting past contributions
+     * @return - returns a no content response on successful delete, a 409 if the contribution's date has already
+     *           passed preventing deletion of past contributions, or a 404 if not found
      */
     public ResponseEntity<Void> deleteOne(Long id, Long userId) {
 

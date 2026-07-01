@@ -55,6 +55,7 @@ public class FundingSourceControllerTest {
     private Page<FundingSourceResponse> sourcePage;
     private FundingSourceRequest testDto;
 
+    // Sets up a default user, a sample funding source, and a page of sources reused across the tests below
     @BeforeEach
     void dataInit() {
         when(this.securityUtils.getCurrentUserId()).thenReturn(1L);
@@ -68,6 +69,7 @@ public class FundingSourceControllerTest {
         "Primary employer retirement account.", SourceType.ROTH_IRA);
     }
 
+    // Verifies GET /sources returns a page of funding sources, filtered by user when one is present
     @Nested
     @DisplayName("GET /sources")
     class GetAllSources {
@@ -90,6 +92,7 @@ public class FundingSourceControllerTest {
         }
     }
 
+    // Verifies GET /sources/{id} returns a single funding source, or 404 if it isn't the user's
     @Nested
     @DisplayName("GET /sources/{id}")
     class GetOneSource {
@@ -111,6 +114,7 @@ public class FundingSourceControllerTest {
         }
     }
 
+    // Verifies POST /sources creates a funding source, or returns 404 if the user is missing
     @Nested
     @DisplayName("POST /sources")
     class CreateSource {
@@ -137,6 +141,7 @@ public class FundingSourceControllerTest {
         }
     }
 
+    // Verifies PUT /sources/{id} updates a funding source, or returns 404 if it isn't the user's
     @Nested
     @DisplayName("PUT /sources/{id}")
     class UpdateSources {
@@ -162,6 +167,7 @@ public class FundingSourceControllerTest {
         }
     }
 
+    // Verifies DELETE /sources/{id} removes a funding source, blocked only when contributions still reference it
     @Nested
     @DisplayName("DELETE /sources/{id}")
     class DeleteSource {

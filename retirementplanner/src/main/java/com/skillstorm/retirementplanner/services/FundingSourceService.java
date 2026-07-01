@@ -40,10 +40,10 @@ public class FundingSourceService {
     }
 
     /**
-     * Get All Method takes in userId and the amount of pages
+     * Get All Method takes in userId and the page number to return
      * @param userId - used to find all Funding Sources By User conditionally
      *                      - can find with no UserId for later implementation of admin of some sort
-     * @param page - tells how many pages the data should be split into
+     * @param page - the page number of results to return
      * @return - returns a Response Entity status wrapped around a page of funding sources
      */
     public ResponseEntity<Page<FundingSourceResponse>> getAll(Long userId, int page) {
@@ -58,10 +58,10 @@ public class FundingSourceService {
     }
 
     /**
-     * Get One Method used to find one funding Source by user Id
+     * Get One Method used to find one funding Source by id and user Id
+     * @param id - used to identify what funding Source is being requested
      * @param userId - used to make sure the given user has the funding source
-     * @param id - make sure the funding source given is attached to the user
-     * @return - returns a funding source if the source and user are attached together
+     * @return - returns a funding source if the source and user are attached together, otherwise a 404
      */
     public ResponseEntity<FundingSourceResponse> getOne(Long id, Long userId) {
         
@@ -73,10 +73,10 @@ public class FundingSourceService {
     }
 
     /**
-     * Create One method takes in a funding source dto
-     * @param dto - populates a funding source entity with a name, institution, notes, 
-     *              userId that is used to recieve a User, and the source Type
-     * @return - returns a Response Entity status wrapped around a Funding Source object
+     * Create One method takes in a userId and a funding source dto
+     * @param userId - used to find the User the new funding source should belong to
+     * @param dto - populates a funding source entity with a name, institution, notes, and source Type
+     * @return - returns a Response Entity status wrapped around a Funding Source object, or a 404 if the user isn't found
      */
     public ResponseEntity<FundingSourceResponse> createOne(Long userId, FundingSourceRequest dto) {
 
@@ -93,9 +93,8 @@ public class FundingSourceService {
      * Update One method takes in a funding Source Id, User Id, and a Funding Source Dto
      * @param id - used to identify what funding Source is being worked with
      * @param userId - used to make sure the User has access to the source
-     * @param dto - populates a funding source entity with a name, institution, notes, 
-     *              userId that is used to recieve a User, and the source Type
-     * @return - returns a Response Entity status code wrapped around a Funding Source object
+     * @param dto - populates a funding source entity with a name, institution, notes, and source Type
+     * @return - returns a Response Entity status code wrapped around a Funding Source object, or a 404 if not found
      */
     public ResponseEntity<FundingSourceResponse> updateOne(Long id, Long userId, FundingSourceRequest dto) {
 
@@ -116,10 +115,10 @@ public class FundingSourceService {
     }
 
     /**
-     * Delete One method takes in a funding source id, User id and Contribution Id
-     * @param id - used to identify what funding Source is being worked with
+     * Delete One method takes in a funding source id and User id
+     * @param id - used to identify what funding Source is being deleted
      * @param userId - used to make sure the User has access to the source
-     * @return - returns a no Content if delete is successful and 409 code if there are Contributions with the current source Id
+     * @return - returns a no Content if delete is successful, a 409 if Contributions still reference the source, or a 404 if not found
      */
     public ResponseEntity<Void> deleteOne(Long id, Long userId) {
 

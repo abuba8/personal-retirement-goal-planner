@@ -72,9 +72,10 @@ public class ContributionServiceTest {
     private Page<Contribution> contributionPage;
     private ContributionRequest testDto;
 
+    // Sets up sample contributions (one future, one past) and a page reused across the tests below
     @BeforeEach
     void dataInit() {
-        testContribution = new Contribution(1L, new BigDecimal("500.00"), LocalDate.now().plusDays(1), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.", 
+        testContribution = new Contribution(1L, new BigDecimal("500.00"), LocalDate.now().plusDays(1), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.",
                             new User(), new Goal(), new FundingSource());
         testContributionPast = new Contribution(4L, new BigDecimal("500.00"), LocalDate.now().minusDays(1), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.", 
                             new User(), new Goal(), new FundingSource());
@@ -88,6 +89,7 @@ public class ContributionServiceTest {
         testDto = new ContributionRequest(new BigDecimal("500.00"), LocalDate.of(2026, Month.JANUARY, 15), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.");
     }
 
+    // Verifies getAll() returns a page of contributions, filtered by user, goal, or funding source as given
     @Nested
     @DisplayName("getAllContributions")
     class GetContributions {
@@ -160,6 +162,7 @@ public class ContributionServiceTest {
         }
     }
 
+    // Verifies getOne() returns a contribution when it belongs to the user, otherwise 404
     @Nested
     @DisplayName("getOneContribution")
     class GetOneContribution {
@@ -192,6 +195,7 @@ public class ContributionServiceTest {
         }
     }
 
+    // Verifies createOne() saves a new contribution only when the user, goal, and source all exist
     @Nested
     @DisplayName("createOneContribution")
     class CreateOneContribution {
@@ -272,6 +276,7 @@ public class ContributionServiceTest {
         }
     }
 
+    // Verifies updateOne() saves changes when the contribution belongs to the user, otherwise 404
     @Nested
     @DisplayName("updateOneContribution")
     class UpdateOneContribution {
@@ -306,6 +311,7 @@ public class ContributionServiceTest {
         }
     }
 
+    // Verifies deleteOne() removes a contribution with a future date, blocks deletion once the date has passed, and returns 404 if not found
     @Nested
     @DisplayName("deleteOneContribution")
     class DeleteOneContribution {

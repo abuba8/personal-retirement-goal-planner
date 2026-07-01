@@ -58,6 +58,7 @@ public class ContributionControllerTest {
     private Page<ContributionResponse> contributionPage;
     private ContributionRequest testDto;
 
+    // Sets up a default user, a sample contribution, and a page of contributions reused across the tests below
     @BeforeEach
     void dataInit() {
         when(securityUtils.getCurrentUserId()).thenReturn(1L);
@@ -70,6 +71,7 @@ public class ContributionControllerTest {
         testDto = new ContributionRequest(new BigDecimal("500.00"), LocalDate.of(2026, Month.JANUARY, 15), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.");
     }
 
+    // Verifies GET /contributions returns a page of contributions, optionally filtered by goal or funding source
     @Nested
     @DisplayName("GET /contributions")
     class GetAllContributions {
@@ -108,6 +110,7 @@ public class ContributionControllerTest {
         }
     }
 
+    // Verifies GET /contributions/{id} returns a single contribution, or 404 if it isn't the user's
     @Nested
     @DisplayName("GET /contributions/{id}")
     class GetOneContribution {
@@ -129,6 +132,7 @@ public class ContributionControllerTest {
         }
     }
 
+    // Verifies POST /contributions creates a contribution, or returns 404 if the user, goal, or source is missing
     @Nested
     @DisplayName("POST /contributions")
     class CreateContribution {
@@ -179,6 +183,7 @@ public class ContributionControllerTest {
         }
     }
 
+    // Verifies PUT /contributions/{id} updates a contribution, or returns 404 if it isn't the user's
     @Nested
     @DisplayName("PUT /contributions/{id}")
     class UpdateContributions {
@@ -204,6 +209,7 @@ public class ContributionControllerTest {
         }
     }
 
+    // Verifies DELETE /contributions/{id} removes a contribution, blocked only when its date has already passed
     @Nested
     @DisplayName("DELETE /contributions/{id}")
     class DeleteContribution {

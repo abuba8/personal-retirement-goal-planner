@@ -71,9 +71,10 @@ public class FundingSourceServiceTest {
     private Page<Contribution> emptyPage;
     private FundingSourceRequest testDto;
 
+    // Sets up a sample funding source, a linked contribution, and pages of each reused across the tests below
     @BeforeEach
     void dataInit() {
-        testSource = new FundingSource(1L, "Work 401k", "Fidelity",  "Primary employer retirement account.", 
+        testSource = new FundingSource(1L, "Work 401k", "Fidelity",  "Primary employer retirement account.",
                                         new User(), SourceType.ROTH_IRA);
         testContribution = new Contribution(1L, new BigDecimal("500.00"), LocalDate.now().plusDays(1), ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.", 
                             new User(), new Goal(), new FundingSource());
@@ -93,6 +94,7 @@ public class FundingSourceServiceTest {
         "Primary employer retirement account.", SourceType.ROTH_IRA);
     }
 
+    // Verifies getAll() returns a page of sources, filtered by user when a userId is given
     @Nested
     @DisplayName("getAllSources()")
     class GetSources {
@@ -128,6 +130,7 @@ public class FundingSourceServiceTest {
         }
     }
 
+    // Verifies getOne() returns a source when it belongs to the user, otherwise 404
     @Nested
     @DisplayName("getOneSource")
     class GetOneSource {
@@ -160,6 +163,7 @@ public class FundingSourceServiceTest {
         }
     }
 
+    // Verifies createOne() saves a new source when the user exists, otherwise 404
     @Nested
     @DisplayName("createOneFundingSource")
     class CreateOneSource {
@@ -195,6 +199,7 @@ public class FundingSourceServiceTest {
         }
     }
 
+    // Verifies updateOne() saves changes when the source belongs to the user, otherwise 404
     @Nested
     @DisplayName("updateSource")
     class UpdateSource {
@@ -232,6 +237,7 @@ public class FundingSourceServiceTest {
         }
     }
 
+    // Verifies deleteOne() removes a source with no contributions, blocks deletion if contributions exist, and returns 404 if not found
     @Nested
     @DisplayName("deleteSource")
     class DeleteSource {
