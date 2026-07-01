@@ -2,6 +2,7 @@ package com.skillstorm.retirementplanner.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.skillstorm.retirementplanner.dtos.UpdateProfileDto;
@@ -52,5 +53,11 @@ public class UserController {
     @PutMapping()
     public ResponseEntity<UserDto> updateCurrentUser(@Valid @RequestBody UpdateProfileDto dto){
         return this.userService.updateProfile(this.securityUtils.getCurrentUserId(), dto);
+    }
+
+    // DELETE Request: delete the current user's account
+    @DeleteMapping
+    public ResponseEntity<Void> deleteCurrentUser(){
+        return this.userService.deleteCurrentUser(this.securityUtils.getCurrentUserId());
     }
 }
