@@ -8,9 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.skillstorm.retirementplanner.models.Contribution;
 
-public interface ContributionsRepository extends JpaRepository<Contribution, Long> {
+public interface ContributionRepository extends JpaRepository<Contribution, Long> {
 
-    Page<Contribution> findByGoalId(Long goalId, Long userId, Pageable pageable);
     Page<Contribution> findByUserId(Long userId, Pageable pageable);
     Page<Contribution> findByGoalIdAndUserId(Long goalId, Long userId, Pageable pageable);
     Page<Contribution> findByFundingSourceIdAndUserId(Long sourceId, Long userId, Pageable pageable);

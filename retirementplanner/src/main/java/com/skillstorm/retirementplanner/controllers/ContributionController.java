@@ -24,14 +24,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
-@RequestMapping("contributions")
+@RequestMapping("/contributions")
 @CrossOrigin({"http://127.0.0.1:5500", "http://localhost:4200"})
-public class ContributionsController {
+public class ContributionController {
 
     private final ContributionService service;
     private final SecurityUtils securityUtils;
     
-    public ContributionsController(ContributionService service, SecurityUtils securityUtils) {
+    public ContributionController(ContributionService service, SecurityUtils securityUtils) {
         this.service = service;
         this.securityUtils = securityUtils;
     }

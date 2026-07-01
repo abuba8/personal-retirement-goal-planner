@@ -38,7 +38,7 @@ import com.skillstorm.retirementplanner.models.Goal;
 import com.skillstorm.retirementplanner.models.User;
 import com.skillstorm.retirementplanner.models.enums.ContributionCategory;
 import com.skillstorm.retirementplanner.models.enums.SourceType;
-import com.skillstorm.retirementplanner.repositories.ContributionsRepository;
+import com.skillstorm.retirementplanner.repositories.ContributionRepository;
 import com.skillstorm.retirementplanner.repositories.FundingSourceRepository;
 import com.skillstorm.retirementplanner.repositories.UserRepository;
 
@@ -49,7 +49,7 @@ public class FundingSourceServiceTest {
     private FundingSourceRepository fundingRepo;
 
     @Mock
-    private ContributionsRepository contributionRepo;
+    private ContributionRepository contributionRepo;
 
     @Mock
     private UserRepository userRepo;

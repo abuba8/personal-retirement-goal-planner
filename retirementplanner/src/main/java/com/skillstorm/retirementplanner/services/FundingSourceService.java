@@ -16,14 +16,14 @@ import com.skillstorm.retirementplanner.mappers.FundingSourceMapper;
 import com.skillstorm.retirementplanner.models.Contribution;
 import com.skillstorm.retirementplanner.models.FundingSource;
 import com.skillstorm.retirementplanner.models.User;
-import com.skillstorm.retirementplanner.repositories.ContributionsRepository;
+import com.skillstorm.retirementplanner.repositories.ContributionRepository;
 import com.skillstorm.retirementplanner.repositories.FundingSourceRepository;
 import com.skillstorm.retirementplanner.repositories.UserRepository;
 
 @Service
 public class FundingSourceService {
 
-    private final ContributionsRepository contributionRepo;
+    private final ContributionRepository contributionRepo;
     private final FundingSourceRepository repo;
     private final UserRepository userRepo;
     private final FundingSourceMapper sourceMapper;
@@ -31,7 +31,7 @@ public class FundingSourceService {
 
     
 
-    public FundingSourceService(ContributionsRepository contributionRepo, FundingSourceRepository repo,
+    public FundingSourceService(ContributionRepository contributionRepo, FundingSourceRepository repo,
             UserRepository userRepo, FundingSourceMapper sourceMapper) {
         this.contributionRepo = contributionRepo;
         this.repo = repo;

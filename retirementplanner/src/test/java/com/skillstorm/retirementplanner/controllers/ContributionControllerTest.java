@@ -35,7 +35,7 @@ import com.skillstorm.retirementplanner.models.enums.ContributionCategory;
 import com.skillstorm.retirementplanner.security.SecurityUtils;
 import com.skillstorm.retirementplanner.services.ContributionService;
 
-@WebMvcTest(ContributionsController.class)
+@WebMvcTest(ContributionController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @DisplayName("Contribution Controller - Web Layer Tests")
 public class ContributionControllerTest {

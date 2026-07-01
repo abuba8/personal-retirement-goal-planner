@@ -21,20 +21,20 @@ import com.skillstorm.retirementplanner.models.Contribution;
 import com.skillstorm.retirementplanner.models.FundingSource;
 import com.skillstorm.retirementplanner.models.Goal;
 import com.skillstorm.retirementplanner.models.User;
-import com.skillstorm.retirementplanner.repositories.ContributionsRepository;
+import com.skillstorm.retirementplanner.repositories.ContributionRepository;
 
 @Service
 public class ContributionService {
     
     private final FundingSourceRepository fundingRepo;
     private final GoalRepository goalRepo;
-    private final ContributionsRepository repo;
+    private final ContributionRepository repo;
     private final UserRepository userRepo;
     private final ContributionMapper contributionMapper;
     private static final int PAGE_SIZE = 10;
 
     public ContributionService(FundingSourceRepository fundingRepo, GoalRepository goalRepo,
-            ContributionsRepository repo, UserRepository userRepo, ContributionMapper contributionMapper) {
+            ContributionRepository repo, UserRepository userRepo, ContributionMapper contributionMapper) {
         this.fundingRepo = fundingRepo;
         this.goalRepo = goalRepo;
         this.repo = repo;

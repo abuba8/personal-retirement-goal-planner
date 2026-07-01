@@ -38,16 +38,16 @@ import com.skillstorm.retirementplanner.models.FundingSource;
 import com.skillstorm.retirementplanner.models.Goal;
 import com.skillstorm.retirementplanner.models.User;
 import com.skillstorm.retirementplanner.models.enums.ContributionCategory;
-import com.skillstorm.retirementplanner.repositories.ContributionsRepository;
+import com.skillstorm.retirementplanner.repositories.ContributionRepository;
 import com.skillstorm.retirementplanner.repositories.FundingSourceRepository;
 import com.skillstorm.retirementplanner.repositories.GoalRepository;
 import com.skillstorm.retirementplanner.repositories.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class ContributionsServiceTest {
+public class ContributionServiceTest {
 
     @Mock
-    private ContributionsRepository repo;
+    private ContributionRepository repo;
 
     @Mock
     private FundingSourceRepository fundingRepo;
@@ -104,7 +104,7 @@ public class ContributionsServiceTest {
 
             verify(repo).findAll(testPage);
             verify(repo, never()).findByUserId(anyLong(), any(Pageable.class));
-            verify(repo, never()).findByGoalId(anyLong(), anyLong(), any(Pageable.class));
+            verify(repo, never()).findByGoalIdAndUserId(anyLong(), anyLong(), any(Pageable.class));
             verify(repo, never()).findByFundingSourceIdAndUserId(anyLong(), anyLong(), any(Pageable.class));
         }
 
@@ -156,7 +156,7 @@ public class ContributionsServiceTest {
             verify(repo).findByFundingSourceIdAndUserId(1L, 1L, testPage);
             verify(repo, never()).findAll(testPage);
             verify(repo, never()).findByUserId(anyLong(), any(Pageable.class));
-            verify(repo, never()).findByGoalId(anyLong(), anyLong(), any(Pageable.class));
+            verify(repo, never()).findByGoalIdAndUserId(anyLong(), anyLong(), any(Pageable.class));
         }
     }
 
