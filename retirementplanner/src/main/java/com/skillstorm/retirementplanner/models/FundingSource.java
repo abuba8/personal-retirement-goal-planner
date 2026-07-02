@@ -31,7 +31,6 @@ public class FundingSource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull(message="Field cannot be empty")
     @Column
     private Long id;
 
@@ -47,7 +46,6 @@ public class FundingSource {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable=false)
-    @NotNull(message="Field cannot be empty")
     private User user;
     
     @Enumerated(EnumType.STRING)

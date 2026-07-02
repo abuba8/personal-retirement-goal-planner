@@ -18,7 +18,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
 
 /**
  * Contribution Class
@@ -34,7 +33,6 @@ public class Contribution {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull(message="Field cannot be empty")
     @Column        
     private Long id;
 
@@ -57,17 +55,14 @@ public class Contribution {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable=false)
-    @NotNull(message="Field cannot be empty")
     private User user;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "goal_id", referencedColumnName = "id", nullable=false)
-    @NotNull(message="Field cannot be empty")
     private Goal goal;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "funding_source_id", referencedColumnName = "id", nullable=false)
-    @NotNull(message="Field cannot be empty")
     private FundingSource fundingSource;
 
     public Contribution() {

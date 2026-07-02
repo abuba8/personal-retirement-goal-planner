@@ -1,0 +1,212 @@
+package com.skillstorm.retirementplanner.controllers;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skillstorm.retirementplanner.config.TestSecurityConfig;
+import com.skillstorm.retirementplanner.dtos.FundingSourceRequest;
+import com.skillstorm.retirementplanner.dtos.FundingSourceResponse;
+import com.skillstorm.retirementplanner.models.enums.SourceType;
+import com.skillstorm.retirementplanner.security.JwtAuthenticationFilter;
+import com.skillstorm.retirementplanner.security.JwtService;
+import com.skillstorm.retirementplanner.security.SecurityUtils;
+import com.skillstorm.retirementplanner.services.FundingSourceService;
+
+@WebMvcTest(FundingSourceController.class)
+@AutoConfigureMockMvc(addFilters = false)
+@Import(TestSecurityConfig.class)
+@DisplayName("Funding Source Controller - Web Layer Tests")
+public class FundingSourceControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private FundingSourceService service;
+
+    @MockitoBean
+    private SecurityUtils securityUtils;
+
+    @MockitoBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @MockitoBean
+    private JwtService jwtService;
+
+    private FundingSourceResponse testResponse;
+    private Pageable testPage;
+    private List<FundingSourceResponse> sources;
+    private Page<FundingSourceResponse> sourcePage;
+    private FundingSourceRequest testDto;
+
+    // Sets up a default user, a sample funding source, and a page of sources reused across the tests below
+    @BeforeEach
+    void dataInit() {
+        when(this.securityUtils.getCurrentUserId()).thenReturn(1L);
+        testResponse = new FundingSourceResponse(1L, "Work 401k", "Fidelity",  "Primary employer retirement account.", 
+                            SourceType.ROTH_IRA);
+
+        testPage = PageRequest.of(0, 6);
+        sources = List.of(testResponse, testResponse, testResponse, testResponse, testResponse, testResponse);
+        sourcePage = new PageImpl<>(sources,testPage, sources.size());
+        testDto = new FundingSourceRequest("Work 401k", "Fidelity",  
+        "Primary employer retirement account.", SourceType.ROTH_IRA);
+    }
+
+    // Verifies GET /sources returns a page of funding sources, filtered by user when one is present
+    @Nested
+    @DisplayName("GET /sources")
+    class GetAllSources {
+
+        @Test
+        @DisplayName("200 OK with a Page of all Funding Sources with no User")
+        void returnsAllSources() throws Exception {
+            when(securityUtils.getCurrentUserId()).thenReturn(null);
+            when(service.getAll(null, 0)).thenReturn(ResponseEntity.ok(sourcePage));
+
+            mockMvc.perform(get("/sources")).andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("200 OK with a Page of all Funding Sources of a given User")
+        void returnsAllUsersSources() throws Exception {
+            when(service.getAll(1L, 0)).thenReturn(ResponseEntity.ok(sourcePage));
+
+            mockMvc.perform(get("/sources")).andExpect(status().isOk());
+        }
+    }
+
+    // Verifies GET /sources/{id} returns a single funding source, or 404 if it isn't the user's
+    @Nested
+    @DisplayName("GET /sources/{id}")
+    class GetOneSource {
+        
+        @Test
+        @DisplayName("404 NOT FOUND when User doesn't have the given Source")
+        void returnsNoSourceIfNotFound() throws Exception {
+            when(service.getOne(2L, 1L)).thenReturn(ResponseEntity.notFound().build());
+
+            mockMvc.perform(get("/sources/2")).andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("200 OK if User has the matching Source")
+        void returnsOneSourceIfFound() throws Exception {
+            when(service.getOne(1L, 1L)).thenReturn(ResponseEntity.ok(testResponse));
+
+            mockMvc.perform(get("/sources/1")).andExpect(status().isOk());
+        }
+    }
+
+    // Verifies POST /sources creates a funding source, or returns 404 if the user is missing
+    @Nested
+    @DisplayName("POST /sources")
+    class CreateSource {
+
+        @Test
+        @DisplayName("201 CREATED if User is Found")
+        void returnsCreatedSourceIfUserFound() throws Exception {
+            when(service.createOne(1L, testDto)).thenReturn(ResponseEntity.status(201).body(testResponse));
+
+            mockMvc.perform(post("/sources")
+            .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
+            .andExpect(status().isCreated());
+        }
+
+        @Test
+        @DisplayName("404 NOT FOUND if User is Not Found")
+        void returnsNotFoundIfUserNotFound() throws Exception {
+            when(securityUtils.getCurrentUserId()).thenReturn(2L);
+            when(service.createOne(2L, testDto)).thenReturn(ResponseEntity.status(404).build());
+
+            mockMvc.perform(post("/sources")
+            .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
+            .andExpect(status().isNotFound());
+        }
+    }
+
+    // Verifies PUT /sources/{id} updates a funding source, or returns 404 if it isn't the user's
+    @Nested
+    @DisplayName("PUT /sources/{id}")
+    class UpdateSources {
+    
+        @Test
+        @DisplayName("404 NOT FOUND if User doesn't have the given Source to Update")
+        void returnsNoUpdatedSourceIfNotFound() throws Exception {
+            when(service.updateOne(2L, 1L, testDto)).thenReturn(ResponseEntity.notFound().build());
+
+            mockMvc.perform(put("/sources/2")
+            .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
+            .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("200 OK if Source is Found for Updating")
+        void returnsUpdatedSourceIfFound() throws Exception {
+            when(service.updateOne(1L, 1L, testDto)).thenReturn(ResponseEntity.ok(testResponse));
+
+            mockMvc.perform(put("/sources/1")
+            .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
+            .andExpect(status().isOk());
+        }
+    }
+
+    // Verifies DELETE /sources/{id} removes a funding source, blocked only when contributions still reference it
+    @Nested
+    @DisplayName("DELETE /sources/{id}")
+    class DeleteSource {
+
+        @Test
+        @DisplayName("404 NOT FOUND if User doesn't have the Source to Delete")
+        void returnsNoDeletedSourceIfNotFound() throws Exception {
+            when(service.deleteOne(2L, 1L)).thenReturn(ResponseEntity.notFound().build());
+
+            mockMvc.perform(delete("/sources/2").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testDto))).andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("409 CONFLICT if Source has Contributions")
+        void returnsConflictIfContributionsFound() throws Exception {
+            when(service.deleteOne(1L, 1L)).thenReturn(ResponseEntity.status(409).build());
+
+            mockMvc.perform(delete("/sources/1")).andExpect(status().isConflict());
+        }
+
+        @Test
+        @DisplayName("204 NO CONTENT if Source has no Contributions")
+        void returnsNoContentIfContributionsEmpty() throws Exception {
+            when(service.deleteOne(1L, 1L)).thenReturn(ResponseEntity.noContent().build());
+
+            mockMvc.perform(delete("/sources/1")).andExpect(status().isNoContent());
+        }
+    }
+    
+}
