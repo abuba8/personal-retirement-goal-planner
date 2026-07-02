@@ -100,5 +100,24 @@ public class UserService {
         User saved = this.userRepository.save(user);
         return ResponseEntity.ok(this.userMapper.toDto(saved));
     }
+
+    /**
+     * deleteCurrentUser:
+     * Delete the current user profile
+     * 
+     * args: 
+     * - Long userId: current user
+     * 
+     * return:
+     * - 404: if object's empty
+     * - 204: if successful deletion, return no content
+     */
+    public ResponseEntity<Void> deleteCurrentUser(Long userId){
+        if(!this.userRepository.existsById(userId)){
+            return ResponseEntity.notFound().build();
+        }
+        this.userRepository.deleteById(userId);
+        return ResponseEntity.noContent().build();
+    }
     
 }

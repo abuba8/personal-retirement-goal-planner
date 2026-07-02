@@ -19,8 +19,6 @@ import com.skillstorm.retirementplanner.models.User;
 import com.skillstorm.retirementplanner.repositories.GoalRepository;
 import com.skillstorm.retirementplanner.repositories.UserRepository;
 
-import jakarta.validation.Valid;
-
 @Service
 public class GoalService {
     /**
