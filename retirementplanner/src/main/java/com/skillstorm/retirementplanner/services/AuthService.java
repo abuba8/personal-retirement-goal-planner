@@ -105,25 +105,45 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    /**
+     * verifyUser:
+     * Confirms the emailed 6 digit code and set the enable property
+     *
+     * args:
+     * - VerifyRequest request: email + verificationCode
+     *
+     * throws:
+     * - RuntimeException: user not found, already verified, code expired, or code mismatch
+     */
     public void verifyUser(VerifyRequest request) {
-    User user = userRepository.findByEmail(request.email())
-            .orElseThrow(() -> new RuntimeException("User not found"));
-    if (user.isEnabled()) {
-        throw new RuntimeException("Account is already verified");
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.isEnabled()) {
+            throw new RuntimeException("Account is already verified");
+        }
+        if (user.getVerificationCodeExpiresAt() == null
+                || user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Verification code has expired. Please request a new one.");
+        }
+        if (!user.getVerificationCode().equals(request.verificationCode())) {
+            throw new RuntimeException("Invalid verification code");
+        }
+        user.setEnabled(true);
+        user.setVerificationCode(null);
+        user.setVerificationCodeExpiresAt(null);
+        userRepository.save(user);
     }
-    if (user.getVerificationCodeExpiresAt() == null
-            || user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
-        throw new RuntimeException("Verification code has expired. Please request a new one.");
-    }
-    if (!user.getVerificationCode().equals(request.verificationCode())) {
-        throw new RuntimeException("Invalid verification code");
-    }
-    user.setEnabled(true);
-    user.setVerificationCode(null);
-    user.setVerificationCodeExpiresAt(null);
-    userRepository.save(user);
-}
 
+    /**
+     * resendVerificationCode:
+     * Issues a fresh code and emails it again 
+     *
+     * args:
+     * - ResendRequest request: email
+     *
+     * throws:
+     * - RuntimeException: user not found or already verified
+     */
     public void resendVerificationCode(ResendRequest request) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -136,6 +156,15 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    /**
+     * sendVerificationEmail:
+     * Builds the HTML email body and hands it to EmailService (private helper).
+     * In case of failure -> RuntimeException.
+     * Signup, resend reports a clear error msg instead of silently succeeding with no email sent
+     *
+     * args:
+     * - User user: the recipient, whose current code is embedded in the email
+     */
     private void sendVerificationEmail(User user) {
         String subject = "Verify your Retirement Planner account";
         String htmlBody = "<html><body style=\"font-family: Arial, sans-serif;\">"
@@ -154,6 +183,13 @@ public class AuthService {
         }
     }
 
+    /**
+     * generateVerificationCode:
+     * Returns a random 6-digit code as a String (private helper).
+     *
+     * returns:
+     * - String: a value in the range "100000".."999999"
+     */
     private String generateVerificationCode() {
         int code = RANDOM.nextInt(900000) + 100000;
         return String.valueOf(code);

@@ -47,6 +47,7 @@ public class AuthController {
     }
 
     /**
+     * signup:
      * POST request to create a new account.
      *
      * args:
@@ -67,6 +68,7 @@ public class AuthController {
     }
     
     /**
+     * authenticate:
      * POST request to log in and receive a JWT.
      *
      * args:
@@ -87,6 +89,17 @@ public class AuthController {
         }
     }
 
+    /**
+     * verify:
+     * POST request to verify the 6 digit code
+     *
+     * args:
+     * - VerifyRequest request
+     *
+     * returns:
+     * - 200: returns String message indicating successful msg
+     * - 400: if credentials are invalid
+     */
     @PostMapping("/verify")
     public ResponseEntity<?> verify(@Valid @RequestBody VerifyRequest request){
         try{
@@ -97,6 +110,18 @@ public class AuthController {
         }
     }
 
+    /**
+     * resend:
+     * POST request to resend the verification code
+     * if failed earlier
+     *
+     * args:
+     * - Resend Request request
+     *
+     * returns:
+     * - 200: returns String message 
+     * - 400: if credentials are invalid
+     */
     @PostMapping("/resend")
     public ResponseEntity<?> resend(@Valid @RequestBody ResendRequest request){
         try{
@@ -107,6 +132,13 @@ public class AuthController {
         }
     }
 
+    /**
+     * logout:
+     * POST request for logging out
+     *
+     * returns:
+     * - 200: returns successful response
+     */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(){
         return ResponseEntity.ok("Logged out!"); // discard the token on the client/fron-end side
