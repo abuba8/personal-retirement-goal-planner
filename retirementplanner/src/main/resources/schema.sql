@@ -9,7 +9,12 @@ CREATE TABLE app_user (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL
+    password_hash VARCHAR(255) NOT NULL,
+    provider VARCHAR(20) NOT NULL DEFAULT 'LOCAL' CHECK (provider IN ('LOCAL', 'GOOGLE')),
+    role VARCHAR(20) NOT NULL DEFAULT 'USER' CHECK (role IN ('USER', 'ADMIN')),
+    enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    verification_code VARCHAR(6),
+    verification_code_expires_at TIMESTAMP
 );
 
 CREATE TABLE goal (

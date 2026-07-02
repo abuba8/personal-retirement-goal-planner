@@ -5,7 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-public class PasswordConfig {
+public class PasswordConfiguration {
     /**
      * Config Class:
      * Exposes a PasswordEncoder bean so services can hash passwords.

@@ -1,7 +1,15 @@
-INSERT INTO app_user (username, email, password_hash) VALUES
-    ('kevin', 'kevin@example.com', 'hashed_password_1'),
-    ('abdullah', 'abdullah@example.com', 'hashed_password_2'),
-    ('john', 'john@example.com', 'hashed_password_3');
+INSERT INTO  (username, email, password_hash, provider, role) VALUES
+    ('kevin', 'kevin@example.com', 'hashed_password_1', 'LOCAL', 'USER'),
+    ('abdullah', 'abdullah@example.com', 'hashed_password_2', 'LOCAL', 'USER'),
+    ('john', 'john@example.com', 'hashed_password_3', 'LOCAL', 'USER'),
+    ('admin', 'admin@example.com','admin.n89','LOCAL', 'ADMIN');
+
+INSERT INTO app_user (username, email, password_hash, provider, role) VALUES
+    ('kevin', 'kevin@example.com', '$2y$10$kXQPfkg4vtbpYnnJqLUzh.mLt1C2/TU0FoedJeNLghzCVHYgcpb3a', 'LOCAL', 'USER'),
+    ('abdullah', 'abdullah@example.com', '$2y$10$m7MTsdYKpBnMN7V4.dZ/nefdEadRxAg3u2Rmo7eVhM/ZLGroOcG12', 'LOCAL', 'USER'),
+    ('john', 'john@example.com', '$2y$10$RSFagnGeDvKZcxb4v2WdT.uRd8DLTTXnvcMLlpTj8pI.rzNAcM3SC', 'LOCAL', 'USER'),
+    ('admin', 'admin@example.com','$2y$10$DAHbwDfZyrQEO7blm2zmDekVQlCpiitEO0eKyTSU3vV1xjsvSrnpO','LOCAL', 'ADMIN')
+
 
 INSERT INTO goal (user_id, name, target_retirement_age, target_amount, notes) VALUES
     (1, 'Early Retirement Plan', 55, 1200000.00, 'Main retirement goal focused on retiring early.'),
