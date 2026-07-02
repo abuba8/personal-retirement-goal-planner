@@ -1,4 +1,0 @@
-# may use different ports so store in .env
-server:
-  port: 8081
-

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,14 +27,18 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.skillstorm.retirementplanner.config.TestSecurityConfig;
 import com.skillstorm.retirementplanner.dtos.FundingSourceRequest;
 import com.skillstorm.retirementplanner.dtos.FundingSourceResponse;
 import com.skillstorm.retirementplanner.models.enums.SourceType;
+import com.skillstorm.retirementplanner.security.JwtAuthenticationFilter;
+import com.skillstorm.retirementplanner.security.JwtService;
 import com.skillstorm.retirementplanner.security.SecurityUtils;
 import com.skillstorm.retirementplanner.services.FundingSourceService;
 
 @WebMvcTest(FundingSourceController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(TestSecurityConfig.class)
 @DisplayName("Funding Source Controller - Web Layer Tests")
 public class FundingSourceControllerTest {
 
@@ -48,6 +53,12 @@ public class FundingSourceControllerTest {
 
     @MockitoBean
     private SecurityUtils securityUtils;
+
+    @MockitoBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @MockitoBean
+    private JwtService jwtService;
 
     private FundingSourceResponse testResponse;
     private Pageable testPage;
