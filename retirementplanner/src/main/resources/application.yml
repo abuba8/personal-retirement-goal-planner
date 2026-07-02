@@ -19,6 +19,12 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+# JWT settings (secret-key must be a Base64-encoded value; keep it in .env)
+security:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    expiration-time: 3600000
+
 # may use different ports so store in .env
 server:
   port: ${PORT}

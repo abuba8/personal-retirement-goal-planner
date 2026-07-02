@@ -55,6 +55,13 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
+    // signup constructor (no id; id is generated on save)
+    public User(String username, String email, String passwordHash) {
+        this.username = username;
+        this.email = email;
+        this.passwordHash = passwordHash;
+    }
+
     // getters and setters
     public Long getId() {
         return id;
