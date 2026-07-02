@@ -1,0 +1,25 @@
+<p>Funding Source Component</p>
+
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Institution</th>
+                <th>Notes</th>
+                <th>Source Type</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for (source of allSources(); track $index) {
+            <td>{{ source.name }}</td>
+            <td>{{ source.institution }}</td>
+            <td>{{ source.notes }}</td>
+            <td>{{ source.sourceType }}</td>
+        }
+        @empty {
+            <td>No Data</td>
+        }
+        </tbody>
+    </table>
+</div>
