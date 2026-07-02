@@ -1,8 +1,8 @@
 spring:
   application:
-   name: retirement-planner
-   version: 1.0.0
-  output: 
+    name: retirement-planner
+    version: 1.0.0
+  output:
     ansi:
       enabled: always
   # Store all sensitive information within .env
@@ -14,18 +14,28 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  
   # used to pass .env values to .yml file
   config:
     import: optional:file:.env[.properties]
+  # SMTP for verification emails (Spring's own mail properties)
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
-# JWT settings (secret-key must be a Base64-encoded value; keep it in .env)
+# Your OWN custom property (read via @Value("${security.jwt...}")), so it
+# stays at the TOP level, NOT under spring:
 security:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
     expiration-time: 3600000
 
-# may use different ports so store in .env
 server:
   port: ${PORT}
-
