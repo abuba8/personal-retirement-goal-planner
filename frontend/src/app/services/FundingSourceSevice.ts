@@ -17,7 +17,7 @@ export class FundingSourceService {
         const params = new HttpParams()
             .set("page", page);
 
-        return this.http.get<SourcePage>(this.URL + "/page", {params})
+        return this.http.get<SourcePage>(this.URL, {params})
             .pipe(
                 catchError(() => throwError(() => new Error("Failed to load Funding Sources"))
             )
@@ -47,7 +47,7 @@ export class FundingSourceService {
     }
 
     updateSource(id: number, source: FundingSource): Observable<FundingSource> {
-        return this.http.put<FundingSource>(this.URL + `${id}`, source)
+        return this.http.put<FundingSource>(this.URL + `/${id}`, source)
             .pipe(
                 catchError(
                     () => throwError(
