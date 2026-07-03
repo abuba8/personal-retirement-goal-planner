@@ -4,7 +4,7 @@ import { FundingSourceService } from '../../services/FundingSourceSevice';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { SourceTypeLabelPipe } from '../../../pipes/source-type-label-pipe';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SourceType } from '../../types/enums/SourceType';
+import { SourceType, SourceTypeLabels } from '../../types/enums/SourceType';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
@@ -27,7 +27,10 @@ export class FundingSources {
   showDeleteDialog = signal<boolean>(false);
   dialogTitle = signal<string>("");
 
-  sourceTypeOptions = Object.values(SourceType);
+  sourceTypeOptions = Object.values(SourceType).map(type => ({
+    label: SourceTypeLabels[type],
+    value: type
+  }));
   form! : FormGroup;
 
   constructor(
@@ -39,8 +42,8 @@ export class FundingSources {
     this.loadSources();
 
     this.form = this.formBuilder.group({
-      name: ["", [Validators.required, Validators.max(150)]],
-      institution: ["", [Validators.required, Validators.max(150)]],
+      name: ["", [Validators.required, Validators.maxLength(150)]],
+      institution: ["", [Validators.required, Validators.maxLength(150)]],
       notes: [""],
       type: [null, [Validators.required]]
     })
@@ -110,7 +113,8 @@ export class FundingSources {
 
   handleCreateSource() {
 
-    this.dialogTitle.set("Create Funding Souce");
+    this.dialogTitle.set("Create Funding Source");
+    this.selectedSource.set(null);
 
     this.form.setValue({
       name: "",
