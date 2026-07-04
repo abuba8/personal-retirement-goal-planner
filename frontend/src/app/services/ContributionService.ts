@@ -19,7 +19,7 @@ export class ContributionService {
             .set("sourceId", sourceId ?? "")
             .set("page", page);
 
-        return this.http.get<ContributionPage>(this.URL + "/page", {params})
+        return this.http.get<ContributionPage>(this.URL, {params})
             .pipe(
                 catchError(() => throwError(() => new Error("Failed to laod Contributions"))
             )
@@ -38,7 +38,7 @@ export class ContributionService {
     }
 
     createContribution(contribution: Contribution): Observable<Contribution> {
-        return this.http.put<Contribution>(this.URL, contribution)
+        return this.http.post<Contribution>(this.URL, contribution)
             .pipe(
                 catchError(
                     () => throwError(
@@ -49,7 +49,7 @@ export class ContributionService {
     }
 
     updateContribution(id: number, contribution: Contribution): Observable<Contribution> {
-        return this.http.put<Contribution>(this.URL + `${id}`, contribution)
+        return this.http.put<Contribution>(this.URL + `/${id}`, contribution)
             .pipe(
                 catchError(
                     () => throwError(

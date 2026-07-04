@@ -1,1 +1,128 @@
-<p>contributions works!</p>
+<h2>contributions works!</h2>
+
+<p-table 
+    [value]="allContributions()"
+    selectionMode="single"
+    [(selection)]="selectedContribution" 
+    [paginator]="true" 
+    [rows]="10"
+    [tableStyle]="{'min-width': '50rem'}"
+    [totalRecords]="totalContributions()"
+    [lazy]="true"
+    (onLazyLoad)="loadContributions($event)"
+>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <span class="text-xl font-bold">Contributions</span>
+            <p-button label="Create New Contribution" (click)="handleCreateContribution()" />
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Notes</th>
+            <th>Contribution Category</th>
+            <th>Update</th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-contribution>
+        <tr>
+            <td>{{ contribution.amount }}</td>
+            <td>{{ contribution.date }}</td>
+            <td>{{ contribution.notes }}</td>
+            <td>{{ contribution.category | contributionCategoryLabel }}</td>
+            <td><p-tableradiobutton [value]="contribution" (click)="handleUpdate()" /></td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-dialog [modal]="true" [(visible)]="showUpdate" [style]="{width: '40rem', height: '40rem'}"> 
+    <div>
+        <button 
+            pButton 
+            icon="pi pi-pen-to-square" 
+            class="flex-auto whitespace-nowrap" 
+            (click)="handleUpdateContribution(selectedContribution()!)"
+        ></button>
+    </div>
+    <div>
+        <button 
+            pButton 
+            icon="pi pi-trash" 
+            outlined 
+            class="flex-auto whitespace-nowrap"
+            (click)="handleDeleteContribution(selectedContribution()!)"
+        ></button>
+    </div>
+</p-dialog>
+
+<p-dialog
+    [header]="dialogTitle()"
+    [modal]="true"
+    [(visible)]="showDialog"
+    [style]="{width: '40rem', height: '40rem'}"
+>
+    <form
+        [formGroup]="form"
+        (ngSubmit)="saveContribution()"
+    >
+        <div><input id="contribution-amount" formControlamount="amount" Category="text" /><label for="contribution-amount">Amount</label></div>
+        <div><input id="contribution-date" formControlamount="date" Category="text" /><label for="contribution-date">Date</label></div>
+        <div><input id="contribution-notes" formControlamount="notes" Category="text" /><label for="contribution-notes">Notes</label></div>
+        <div><p-select 
+                id="contribution-category" 
+                formControlamount="category" 
+                [options]="contributionCategoryOptions" 
+                optionLabel="label" 
+                optionValue="value"
+            ></p-select><label for="contribution-category">Contribution Category</label>
+        </div>
+
+        <p-button 
+            label="Cancel" 
+            type="button" 
+            severity="secondary" 
+            [outlined]="true"  
+            (onClick)="showDialog.set(false); selectedContribution.set(null)"
+            class="p-2 w-full"
+        />
+
+        <p-button 
+            label="Save" 
+            type="submit"   
+            [disabled]="form.invalid"   
+            class="p-2 w-full"
+        />
+    </form>
+</p-dialog>
+
+<p-dialog
+    header="Confirm Delete"
+    [modal]="true"
+    [(visible)]="showDeleteDialog"
+    [style]="{width: '40rem', height: '40rem'}"
+>
+    <p>
+        Are you sure you want to delete <strong>{{ selectedContribution()?.amount }}</strong>? This action cannot be undone.
+    </p>
+
+    <ng-template #footer>
+
+        <!-- fire off events when buttons are clicked -->
+        <p-button 
+            label="Cancel"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="showDeleteDialog.set(false); selectedContribution.set(null)"
+        />
+
+        <p-button 
+            label="Delete"
+            severity="danger"
+            [outlined]="true"
+            (onClick)="deleteContribution()"
+        />
+
+    </ng-template>
+</p-dialog>
