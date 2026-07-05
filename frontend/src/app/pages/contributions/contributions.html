@@ -1,4 +1,4 @@
-<h2>contributions works!</h2>
+<h2>Contribution Component</h2>
 
 <p-table 
     [value]="allContributions()"
@@ -67,17 +67,30 @@
         [formGroup]="form"
         (ngSubmit)="saveContribution()"
     >
-        <div><input id="contribution-amount" formControlamount="amount" Category="text" /><label for="contribution-amount">Amount</label></div>
-        <div><input id="contribution-date" formControlamount="date" Category="text" /><label for="contribution-date">Date</label></div>
-        <div><input id="contribution-notes" formControlamount="notes" Category="text" /><label for="contribution-notes">Notes</label></div>
+        <div><input id="contribution-amount" formControlName="amount" type="text" /><label for="contribution-amount">Amount</label></div>
+        <div><input id="contribution-date" formControlName="date" type="text" /><label for="contribution-date">Date</label></div>
+        <div><input id="contribution-notes" formControlName="notes" type="text" /><label for="contribution-notes">Notes</label></div>
         <div><p-select 
                 id="contribution-category" 
-                formControlamount="category" 
+                formControlName="category" 
                 [options]="contributionCategoryOptions" 
                 optionLabel="label" 
                 optionValue="value"
             ></p-select><label for="contribution-category">Contribution Category</label>
         </div>
+        @if (selectedContribution() === null) {
+        <div>
+            <p-select
+                id="contribution-source"
+                formControlName="sourceId"
+                [options]="sourceOptions()"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select a Funding Source"
+            ></p-select>
+            <label for="contribution-source">Funding Source</label>
+        </div>
+        }
 
         <p-button 
             label="Cancel" 
@@ -97,6 +110,21 @@
     </form>
 </p-dialog>
 
+<p-dialog header="Create Funding Source" [modal]="true" [(visible)]="showCreateSourceDialog" [style]="{width: '40rem', height: '40rem'}">
+    <form [formGroup]="sourceForm" (ngSubmit)="saveNewSource()">
+        <div><input id="new-source-name" formControlName="name" type="text" /><label for="new-source-name">Name</label></div>
+        <div><input id="new-source-institution" formControlName="institution" type="text" /><label for="new-source-institution">Institution</label></div>
+        <div><input id="new-source-notes" formControlName="notes" type="text" /><label for="new-source-notes">Notes</label></div>
+        <div>
+            <p-select id="new-source-type" formControlName="type" [options]="sourceTypeOptions" optionLabel="label" optionValue="value"></p-select>
+            <label for="new-source-type">Source Type</label>
+        </div>
+
+        <p-button label="Cancel" type="button" (onClick)="showCreateSourceDialog.set(false)" />
+        <p-button label="Save" type="submit" [disabled]="sourceForm.invalid" />
+    </form>
+</p-dialog>
+
 <p-dialog
     header="Confirm Delete"
     [modal]="true"
@@ -104,7 +132,9 @@
     [style]="{width: '40rem', height: '40rem'}"
 >
     <p>
-        Are you sure you want to delete <strong>{{ selectedContribution()?.amount }}</strong>? This action cannot be undone.
+        Are you sure you want to delete the contribution on
+        <strong>{{ selectedContribution()?.date }}</strong> with the contributed amount of
+        <strong>{{ selectedContribution()?.amount }}</strong>? This action cannot be undone.
     </p>
 
     <ng-template #footer>

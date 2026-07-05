@@ -149,7 +149,7 @@ public class ContributionService {
         Optional<Contribution> temp = this.repo.findByUserIdAndId(userId, id);
         if(temp.isPresent()) {
             Contribution current = temp.get();
-            if(current.getDate().isAfter(LocalDate.now())) {
+            if(!current.getDate().isBefore(LocalDate.now())) {
                 this.repo.deleteById(id);
                 return ResponseEntity.noContent().build();
             } else {

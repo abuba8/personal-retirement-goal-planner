@@ -37,8 +37,10 @@ export class ContributionService {
             )
     }
 
-    createContribution(contribution: Contribution): Observable<Contribution> {
-        return this.http.post<Contribution>(this.URL, contribution)
+    createContribution(contribution: Contribution, goalId: number, sourceId: number): Observable<Contribution> {
+        const params = new HttpParams().set("goalId", goalId).set("sourceId", sourceId);
+
+        return this.http.post<Contribution>(this.URL, contribution, { params })
             .pipe(
                 catchError(
                     () => throwError(
