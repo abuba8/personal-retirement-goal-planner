@@ -50,8 +50,12 @@ export class ContributionService {
             )
     }
 
-    updateContribution(id: number, contribution: Contribution): Observable<Contribution> {
-        return this.http.put<Contribution>(this.URL + `/${id}`, contribution)
+    updateContribution(id: number, contribution: Contribution, goalId: number, sourceId: number): Observable<Contribution> {
+        const params = new HttpParams()
+            .set("goalId", goalId ?? "")
+            .set("sourceId", sourceId ?? "");
+
+        return this.http.put<Contribution>(this.URL + `/${id}`, contribution, { params })
             .pipe(
                 catchError(
                     () => throwError(

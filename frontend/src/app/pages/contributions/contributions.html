@@ -19,6 +19,8 @@
     </ng-template>
     <ng-template #header>
         <tr>
+            <th>Funding Source</th>
+            <th>Goal</th>
             <th>Amount</th>
             <th>Date</th>
             <th>Notes</th>
@@ -28,6 +30,8 @@
     </ng-template>
     <ng-template #body let-contribution>
         <tr>
+            <td>{{ getSourceName(contribution.sourceId) }}</td>
+            <td></td>
             <td>{{ contribution.amount }}</td>
             <td>{{ contribution.date }}</td>
             <td>{{ contribution.notes }}</td>
@@ -78,7 +82,6 @@
                 optionValue="value"
             ></p-select><label for="contribution-category">Contribution Category</label>
         </div>
-        @if (selectedContribution() === null) {
         <div>
             <p-select
                 id="contribution-source"
@@ -90,7 +93,6 @@
             ></p-select>
             <label for="contribution-source">Funding Source</label>
         </div>
-        }
 
         <p-button 
             label="Cancel" 

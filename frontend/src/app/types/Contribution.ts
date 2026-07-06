@@ -6,4 +6,6 @@ export type Contribution = {
     date: Date;
     category: ContributionCategory;
     notes: string;
+    sourceId: number;
+    goalId: number;
 }

@@ -41,6 +41,10 @@ export class Contributions {
     ...this.allSources().map(s => ({ label: s.name, value: s.id })),
     { label: "+ Create New Funding Source", value: this.createNewSource}
   ])
+  getSourceName(sourceId?: number): string {
+    console.log("looking for, " + sourceId, typeof sourceId, this.allSources());
+    return this.allSources().find(s => s.id === sourceId)?.name ?? '';
+  }
   sourceTypeOptions = Object.values(SourceType).map(type => ({
       label: SourceTypeLabels[type],
       value: type
@@ -63,7 +67,8 @@ export class Contributions {
       date: [null, [Validators.required]],
       category: [null, [Validators.required]],
       notes: [""],
-      sourceId: [1, [Validators.required]]
+      sourceId: [1, [Validators.required]],
+      // goalId: [1, [Validators.required]]
     })
 
     this.sourceForm = this.formBuilder.group({
@@ -115,6 +120,8 @@ export class Contributions {
       date,
       category: categoryKey as ContributionCategory,
       notes,
+      sourceId,
+      goalId: 1 as number
     }
 
     if(this.selectedContribution() === null) {
@@ -130,7 +137,7 @@ export class Contributions {
       })
     } else {
       payload.id = this.selectedContribution()!.id;
-      this.service.updateContribution(payload!.id!, payload).subscribe({
+      this.service.updateContribution(payload!.id!, payload, 1, sourceId).subscribe({
         next: (data) => {
           this.allContributions.update((currentList) => currentList.map(contribution => contribution.id === data.id ? data : contribution))
           this.showDialog.set(false);
@@ -195,11 +202,13 @@ export class Contributions {
     this.dialogTitle.set("Update Contribution");
     this.selectedContribution.set(contribution);
 
-    this.form.patchValue({
+    this.form.setValue({
       amount: contribution.amount,
       date: contribution.date,
       category: contribution.category,
       notes: contribution.notes,
+      sourceId: contribution.sourceId,
+      // goalId: contribution.goalId
     })
 
     this.showUpdate.set(false);
