@@ -117,9 +117,11 @@ public class ContributionService {
      * @param id - used to identify what contribution is being modified
      * @param userId - used to make sure the current User has access to the given contribution
      * @param dto - updates the contribution's amount, date, category, and notes when provided
-     * @return - returns a Response Entity status code wrapped around a Contribution object, or a 404 if not found
+     * @param sourceId - when provided, reassigns the contribution to this Funding Source if it belongs to the current User
+     * @param goalId - when provided, reassigns the contribution to this Goal if it belongs to the current User
+     * @return - returns a Response Entity status code wrapped around a Contribution object, or a 404 if the contribution, source, or goal isn't found
      */
-    public ResponseEntity<ContributionResponse> updateOne(Long id, Long userId, ContributionRequest dto) {
+    public ResponseEntity<ContributionResponse> updateOne(Long id, Long userId, ContributionRequest dto, Long sourceId, Long goalId) {
 
         Optional<Contribution> current = this.repo.findByUserIdAndId(userId, id);
         if(current.isPresent()) {
@@ -129,6 +131,22 @@ public class ContributionService {
             if(dto.category() != null) temp.setCategory(dto.category());
             if(dto.date() != null) temp.setDate(dto.date());
             if(dto.notes() != null) temp.setNotes(dto.notes());
+
+            if(sourceId != null) {
+                Optional<FundingSource> source = fundingRepo.findByIdAndUserId(sourceId, userId);
+                if(source.isEmpty()) {
+                    return ResponseEntity.notFound().build();
+                }
+                temp.setFundingSource(source.get());
+            }
+
+            if(goalId != null) {
+                Optional<Goal> goal = goalRepo.findByIdAndUserId(goalId, userId);
+                if(goal.isEmpty()) {
+                    return ResponseEntity.notFound().build();
+                }
+                temp.setGoal(goal.get());
+            }
 
             Contribution updated = this.repo.save(temp);
 

@@ -285,12 +285,52 @@ public class ContributionServiceTest {
         void returnsNoContributionIfNotFound() {
             when(repo.findByUserIdAndId(1L, 2L)).thenReturn(Optional.empty());
 
-            ResponseEntity<ContributionResponse> results = contributionService.updateOne(2L, 1L, testDto);
+            ResponseEntity<ContributionResponse> results = contributionService.updateOne(2L, 1L, testDto, null, null);
 
             assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
             assertNull(results.getBody());
 
             verify(repo).findByUserIdAndId(1L, 2L);
+            verify(fundingRepo, never()).findByIdAndUserId(anyLong(), anyLong());
+            verify(goalRepo, never()).findByIdAndUserId(anyLong(), anyLong());
+            verify(repo, never()).save(any(Contribution.class));
+        }
+
+        @Test
+        @DisplayName("updateOneSourceNotFound")
+        void returnsNoContributionIfSourceNotFound() {
+            when(repo.findByUserIdAndId(1L, 1L)).thenReturn(Optional.of(testContribution));
+
+            when(fundingRepo.findByIdAndUserId(2L, 1L)).thenReturn(Optional.empty());
+
+            ResponseEntity<ContributionResponse> results = contributionService.updateOne(1L, 1L, testDto, 2L, null);
+
+            assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
+            assertNull(results.getBody());
+
+            verify(repo).findByUserIdAndId(1L, 1L);
+            verify(fundingRepo).findByIdAndUserId(2L, 1L);
+            verify(goalRepo, never()).findByIdAndUserId(anyLong(), anyLong());
+            verify(repo, never()).save(any(Contribution.class));
+        }
+
+        @Test
+        @DisplayName("updateOneGoalNotFound")
+        void returnsNoContributionIfGoalNotFound() {
+            when(repo.findByUserIdAndId(1L, 1L)).thenReturn(Optional.of(testContribution));
+
+            when(fundingRepo.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(new FundingSource()));
+
+            when(goalRepo.findByIdAndUserId(2L, 1L)).thenReturn(Optional.empty());
+
+            ResponseEntity<ContributionResponse> results = contributionService.updateOne(1L, 1L, testDto, 1L, 2L);
+
+            assertEquals(HttpStatus.NOT_FOUND, results.getStatusCode());
+            assertNull(results.getBody());
+
+            verify(repo).findByUserIdAndId(1L, 1L);
+            verify(fundingRepo).findByIdAndUserId(1L, 1L);
+            verify(goalRepo).findByIdAndUserId(2L, 1L);
             verify(repo, never()).save(any(Contribution.class));
         }
 
@@ -299,14 +339,20 @@ public class ContributionServiceTest {
         void returnsUpdatedContributionIfFound() {
             when(repo.findByUserIdAndId(1L, 1L)).thenReturn(Optional.of(testContribution));
 
+            when(fundingRepo.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(new FundingSource()));
+
+            when(goalRepo.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(new Goal()));
+
             when(repo.save(any(Contribution.class))).thenReturn(testContribution);
 
-            ResponseEntity<ContributionResponse> results = contributionService.updateOne(1L, 1L, testDto);
+            ResponseEntity<ContributionResponse> results = contributionService.updateOne(1L, 1L, testDto, 1L, 1L);
 
             assertEquals(HttpStatus.OK, results.getStatusCode());
             assertEquals(testResponse, results.getBody());
 
             verify(repo).findByUserIdAndId(1L, 1L);
+            verify(fundingRepo).findByIdAndUserId(1L, 1L);
+            verify(goalRepo).findByIdAndUserId(1L, 1L);
             verify(repo).save(any(Contribution.class));
         }
     }

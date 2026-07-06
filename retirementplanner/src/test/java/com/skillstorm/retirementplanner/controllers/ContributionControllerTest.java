@@ -74,7 +74,7 @@ public class ContributionControllerTest {
     void dataInit() {
         when(securityUtils.getCurrentUserId()).thenReturn(1L);
         testResponse = new ContributionResponse(1L, new BigDecimal("500.00"), LocalDate.now().plusDays(1), 
-            ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.");
+            ContributionCategory.EMPLOYEE_SALARY_DEFERRAL, "January paycheck contribution.", 1L, 1L);
 
         testPage = PageRequest.of(0, 6);
         contributions = List.of(testResponse, testResponse, testResponse, testResponse, testResponse, testResponse);
@@ -202,7 +202,7 @@ public class ContributionControllerTest {
         @Test
         @DisplayName("404 NOT FOUND if User doesn't have the given Contribution to Update")
         void returnsNoUpdatedContributionIfNotFound() throws Exception {
-            when(service.updateOne(2L, 1L, testDto)).thenReturn(ResponseEntity.notFound().build());
+            when(service.updateOne(2L, 1L, testDto, null, null)).thenReturn(ResponseEntity.notFound().build());
 
             mockMvc.perform(put("/contributions/2")
             .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
@@ -210,11 +210,31 @@ public class ContributionControllerTest {
         }
 
         @Test
+        @DisplayName("404 NOT FOUND if User doesn't have the given Source for Update")
+        void returnsNoUpdatedContributionIfSourceNotFound() throws Exception {
+            when(service.updateOne(2L, 1L, testDto, 2L, null)).thenReturn(ResponseEntity.notFound().build());
+
+            mockMvc.perform(put("/contributions/2?sourceId=2")
+            .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
+            .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("404 NOT FOUND if User doesn't have the given Goal for Update")
+        void returnsNoUpdatedContributionIfGoalNotFound() throws Exception {
+            when(service.updateOne(2L, 1L, testDto, 1L, 2L)).thenReturn(ResponseEntity.notFound().build());
+
+            mockMvc.perform(put("/contributions/2?sourceId=1&goalId=2")
+            .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
+            .andExpect(status().isNotFound());
+        }
+
+        @Test
         @DisplayName("200 OK if Contribution is Found for Updating")
         void returnsUpdatedContributionIfFound() throws Exception {
-            when(service.updateOne(1L, 1L, testDto)).thenReturn(ResponseEntity.ok(testResponse));
+            when(service.updateOne(1L, 1L, testDto, 1L, 1L)).thenReturn(ResponseEntity.ok(testResponse));
 
-            mockMvc.perform(put("/contributions/1")
+            mockMvc.perform(put("/contributions/1?sourceId=1&goalId=1")
             .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testDto)))
             .andExpect(status().isOk());
         }
