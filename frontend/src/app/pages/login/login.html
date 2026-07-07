@@ -1,0 +1,20 @@
+<h2>Log in</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div>
+    <label>Email or username</label>
+    <input type="text" formControlName="identifier" />
+  </div>
+  <div>
+    <label>Password</label>
+    <input type="password" formControlName="password" />
+  </div>
+
+  @if (error()) { <p>{{ error() }}</p> }
+
+  <button type="submit" [disabled]="loading()">
+    {{ loading() ? "Signing in..." : "Log in" }}
+  </button>
+</form>
+
+<p>No account? <a routerLink="/register">Register</a></p>

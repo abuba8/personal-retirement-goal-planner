@@ -1,0 +1,26 @@
+<h2>Your profile</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div>
+    <label>Username</label>
+    <input type="text" formControlName="username" />
+  </div>
+  <div>
+    <label>Email</label>
+    <input type="email" formControlName="email" />
+  </div>
+  <div>
+    <label>New password (leave blank to keep current)</label>
+    <input type="password" formControlName="password" />
+  </div>
+
+  @if (info())  { <p>{{ info() }}</p> }
+  @if (error()) { <p>{{ error() }}</p> }
+
+  <button type="submit" [disabled]="loading()">
+    {{ loading() ? "Saving..." : "Save changes" }}
+  </button>
+</form>
+
+<hr />
+<button type="button" (click)="deleteAccount()">Delete account</button>

@@ -1,0 +1,23 @@
+<h2>Verify your email</h2>
+<p>Enter the 6-digit code we emailed you.</p>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div>
+    <label>Email</label>
+    <input type="email" formControlName="email" />
+  </div>
+  <div>
+    <label>Verification code</label>
+    <input type="text" formControlName="verificationCode" maxlength="6" />
+  </div>
+
+  @if (error()) { <p>{{ error() }}</p> }
+  @if (info())  { <p>{{ info() }}</p> }
+
+  <button type="submit" [disabled]="loading()">
+    {{ loading() ? "Verifying..." : "Verify" }}
+  </button>
+  <button type="button" (click)="resend()">Resend code</button>
+</form>
+
+<p><a routerLink="/login">Back to login</a></p>

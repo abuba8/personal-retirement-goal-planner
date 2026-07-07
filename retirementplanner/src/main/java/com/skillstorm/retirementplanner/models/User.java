@@ -1,17 +1,22 @@
 package com.skillstorm.retirementplanner.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.skillstorm.retirementplanner.models.enums.AuthProvider;
 import com.skillstorm.retirementplanner.models.enums.Role;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -69,7 +74,9 @@ public class User {
     @Column(name="verification_code_expires_at")
     private LocalDateTime verificationCodeExpiresAt;
 
-    // constructor
+    @Column(name="verification_attempts", nullable=false)
+    private Integer verificationAttempts = 0;
+
     public User() {
     }
 
@@ -175,5 +182,13 @@ public class User {
 
     public void setVerificationCodeExpiresAt(LocalDateTime verificationCodeExpiresAt) {
         this.verificationCodeExpiresAt = verificationCodeExpiresAt;
+    }
+
+    public int getVerificationAttempts() {
+    return verificationAttempts == null ? 0 : verificationAttempts;
+    }
+
+    public void setVerificationAttempts(Integer verificationAttempts) {
+        this.verificationAttempts = verificationAttempts == null ? 0 : verificationAttempts;
     }
 }

@@ -4,11 +4,11 @@ INSERT INTO  (username, email, password_hash, provider, role) VALUES
     ('john', 'john@example.com', 'hashed_password_3', 'LOCAL', 'USER'),
     ('admin', 'admin@example.com','admin.n89','LOCAL', 'ADMIN');
 
-INSERT INTO app_user (username, email, password_hash, provider, role) VALUES
-    ('kevin', 'kevin@example.com', '$2y$10$kXQPfkg4vtbpYnnJqLUzh.mLt1C2/TU0FoedJeNLghzCVHYgcpb3a', 'LOCAL', 'USER'),
-    ('abdullah', 'abdullah@example.com', '$2y$10$m7MTsdYKpBnMN7V4.dZ/nefdEadRxAg3u2Rmo7eVhM/ZLGroOcG12', 'LOCAL', 'USER'),
-    ('john', 'john@example.com', '$2y$10$RSFagnGeDvKZcxb4v2WdT.uRd8DLTTXnvcMLlpTj8pI.rzNAcM3SC', 'LOCAL', 'USER'),
-    ('admin', 'admin@example.com','$2y$10$DAHbwDfZyrQEO7blm2zmDekVQlCpiitEO0eKyTSU3vV1xjsvSrnpO','LOCAL', 'ADMIN')
+INSERT INTO app_user (username, email, password_hash, provider, role, enabled) VALUES
+    ('kevin', 'kevin@example.com', '$2a$12$JOpClvcBhX95.ieZ7ByxxOGYXEaOGkXTdrt1TNucrlyo9XP6IOew2', 'LOCAL', 'USER', TRUE),
+    ('abdullah', 'abdullah@example.com', '$2a$12$5CEU1aHkK0eLic85frhyruAu00s5De5VV63HHpAC3tn.USP49XKzu', 'LOCAL', 'USER', TRUE),
+    ('john', 'john@example.com', '$2a$12$.C26qkaawaYWr.fgsnARGuFxUWI6NGlk2XpvPm6DMSHZRADClPgyi', 'LOCAL', 'USER', TRUE),
+    ('admin', 'admin@example.com','$2a$12$igYfYBlY/nGL7Qi817JHVOoTYo21EtFtFS/y0R9q36SjDi.vrSsmO','LOCAL', 'ADMIN', TRUE);
 
 
 INSERT INTO goal (user_id, name, target_retirement_age, target_amount, notes) VALUES

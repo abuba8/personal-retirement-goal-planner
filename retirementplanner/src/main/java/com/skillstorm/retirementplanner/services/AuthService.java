@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,7 @@ public class AuthService {
     // fields for email verification
     private final EmailService emailService;
     private static final int CODE_TTL_MINUTES = 15;
+    private static final int MAX_VERIFICATION_ATTEMPTS = 5;
     private static final SecureRandom RANDOM = new SecureRandom();
 
     // parameterized constructor
@@ -69,6 +71,11 @@ public class AuthService {
         User user = userRepository.findByEmailOrUsername(request.identifier(), request.identifier())
                     .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
+        try {
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), request.password()));
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Invalid credentials");
+        }
         // email verification
         if(!user.isEnabled()){
             throw new RuntimeException("Account not verified. Please check your email for the verification code");
@@ -101,6 +108,7 @@ public class AuthService {
         user.setEnabled(false);
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(CODE_TTL_MINUTES));
+        user.setVerificationAttempts(0);
         sendVerificationEmail(user);
         return userRepository.save(user);
     }
@@ -125,12 +133,21 @@ public class AuthService {
                 || user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Verification code has expired. Please request a new one.");
         }
+        if (user.getVerificationAttempts() >= MAX_VERIFICATION_ATTEMPTS) {
+            user.setVerificationCode(null);
+            user.setVerificationCodeExpiresAt(null);
+            userRepository.save(user);
+            throw new RuntimeException("Too many failed attempts. Please request a new verification code.");
+        }
         if (!user.getVerificationCode().equals(request.verificationCode())) {
+            user.setVerificationAttempts(user.getVerificationAttempts() + 1);
+            userRepository.save(user);
             throw new RuntimeException("Invalid verification code");
         }
         user.setEnabled(true);
         user.setVerificationCode(null);
         user.setVerificationCodeExpiresAt(null);
+        user.setVerificationAttempts(0);
         userRepository.save(user);
     }
 
@@ -152,6 +169,7 @@ public class AuthService {
         }
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(CODE_TTL_MINUTES));
+        user.setVerificationAttempts(0);
         sendVerificationEmail(user);
         userRepository.save(user);
     }

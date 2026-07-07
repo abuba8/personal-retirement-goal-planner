@@ -14,7 +14,8 @@ CREATE TABLE app_user (
     role VARCHAR(20) NOT NULL DEFAULT 'USER' CHECK (role IN ('USER', 'ADMIN')),
     enabled BOOLEAN NOT NULL DEFAULT FALSE,
     verification_code VARCHAR(6),
-    verification_code_expires_at TIMESTAMP
+    verification_code_expires_at TIMESTAMP,
+    verification_attempts INT NOT NULL DEFAULT 0,
 );
 
 CREATE TABLE goal (
