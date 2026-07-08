@@ -1,20 +1,76 @@
-<h2>Log in</h2>
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div
+    class="w-full max-w-md rounded-2xl border p-8 shadow-sm"
+    style="background: var(--card-surface); border-color: var(--p-border);"
+  >
+    <!-- Heading -->
+    <div class="mb-6 text-center">
+      <h1 class="text-2xl font-semibold" style="color: var(--overlay-ink);">
+        Welcome back
+      </h1>
+      <p class="mt-1 text-sm" style="color: var(--muted-text);">
+        Log in to your account
+      </p>
+    </div>
 
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <div>
-    <label>Email or username</label>
-    <input type="text" formControlName="identifier" />
+    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+      <!-- Identifier -->
+      <div class="flex flex-col gap-1.5">
+        <label for="identifier" class="text-sm font-medium" style="color: var(--primary-ink);">
+          Email or username
+        </label>
+        <input
+          pInputText
+          id="identifier"
+          formControlName="identifier"
+          autocomplete="username"
+          placeholder="you@example.com"
+          class="w-full"
+        />
+        @if (form.get('identifier')?.touched && form.get('identifier')?.invalid) {
+          <small style="color: var(--error-accent);">This field is required.</small>
+        }
+      </div>
+
+      <!-- Password -->
+      <div class="flex flex-col gap-1.5">
+        <label for="password" class="text-sm font-medium" style="color: var(--primary-ink);">
+          Password
+        </label>
+        <p-password
+          inputId="password"
+          formControlName="password"
+          [feedback]="false"
+          [toggleMask]="true"
+          placeholder="Your password"
+          styleClass="w-full"
+          [inputStyleClass]="'w-full'"
+        />
+        @if (form.get('password')?.touched && form.get('password')?.invalid) {
+          <small style="color: var(--error-accent);">Password is required.</small>
+        }
+      </div>
+
+      <!-- Server error -->
+      @if (error()) {
+        <p-message severity="error" [text]="error()!" styleClass="w-full" />
+      }
+
+      <!-- Submit -->
+      <p-button
+        type="submit"
+        [label]="loading() ? 'Signing in…' : 'Log in'"
+        [loading]="loading()"
+        [disabled]="loading()"
+        styleClass="w-full mt-2"
+      />
+    </form>
+
+    <p class="mt-6 text-center text-sm" style="color: var(--muted-text);">
+      No account?
+      <a routerLink="/register" class="font-medium underline" style="color: var(--primary);">
+        Register
+      </a>
+    </p>
   </div>
-  <div>
-    <label>Password</label>
-    <input type="password" formControlName="password" />
-  </div>
-
-  @if (error()) { <p>{{ error() }}</p> }
-
-  <button type="submit" [disabled]="loading()">
-    {{ loading() ? "Signing in..." : "Log in" }}
-  </button>
-</form>
-
-<p>No account? <a routerLink="/register">Register</a></p>
+</div>
