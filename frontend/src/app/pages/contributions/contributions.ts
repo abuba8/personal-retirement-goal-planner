@@ -42,7 +42,6 @@ export class Contributions {
     { label: "+ Create New Funding Source", value: this.createNewSource}
   ])
   getSourceName(sourceId?: number): string {
-    console.log("looking for, " + sourceId, typeof sourceId, this.allSources());
     return this.allSources().find(s => s.id === sourceId)?.name ?? '';
   }
   sourceTypeOptions = Object.values(SourceType).map(type => ({
@@ -216,8 +215,6 @@ export class Contributions {
   }
 
   handleDeleteContribution(contribution: Contribution) {
-    console.log(contribution);
-
     this.selectedContribution.set(contribution);
     this.showUpdate.set(false);
     this.showDeleteDialog.set(true);

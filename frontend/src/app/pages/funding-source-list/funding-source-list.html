@@ -1,0 +1,66 @@
+<h2>Funding Source Component</h2>
+
+<p-table 
+    [value]="allSources()"
+    selectionMode="single"
+    [(selection)]="selectedSource" 
+    [paginator]="true" 
+    [rows]="10"
+    [tableStyle]="{'min-width': '50rem'}"
+    [totalRecords]="totalSources()"
+    [lazy]="true"
+    (onLazyLoad)="loadSources($event)"
+>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <span class="text-xl font-bold">Funding Sources</span>
+            <p-button label="Create New Funding Source" (click)="handleCreateSource()" />
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th>Name</th>
+            <th>Institution</th>
+            <th>Notes</th>
+            <th>Source Type</th>
+            <th>Update</th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-source>
+        <tr (click)="goToSource(source)">
+            <td>{{ source.name }}</td>
+            <td>{{ source.institution }}</td>
+            <td>{{ source.notes }}</td>
+            <td>{{ source.type | sourceTypeLabel }}</td>
+            <td><p-tableradiobutton [value]="source" (click)="$event.stopPropagation(); handleUpdate()" /></td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-dialog [modal]="true" [(visible)]="showUpdate" [style]="{width: '40rem', height: '40rem'}"> 
+    <div>
+        <button 
+            pButton 
+            icon="pi pi-pen-to-square" 
+            class="flex-auto whitespace-nowrap" 
+            (click)="handleUpdateSource(selectedSource()!)"
+        ></button>
+    </div>
+    <div>
+        <button 
+            pButton 
+            icon="pi pi-trash" 
+            outlined 
+            class="flex-auto whitespace-nowrap"
+            (click)="handleDeleteSource(selectedSource()!)"
+        ></button>
+    </div>
+</p-dialog>
+
+<app-funding-source-form
+    [(visible)]="showDialog"
+    [source]="selectedSource()"
+    (save)="handleSaveSource($event)"
+/>
+
+<p-confirmdialog />
