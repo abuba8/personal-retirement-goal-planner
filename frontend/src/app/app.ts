@@ -2,10 +2,11 @@ import { Component, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
+import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MenubarModule],
+  imports: [RouterOutlet, MenubarModule, Toast],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

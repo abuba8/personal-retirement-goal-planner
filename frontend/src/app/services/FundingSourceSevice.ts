@@ -19,7 +19,7 @@ export class FundingSourceService {
 
         return this.http.get<SourcePage>(this.URL, {params})
             .pipe(
-                catchError(() => throwError(() => new Error("Failed to load Funding Sources"))
+                catchError((err) => throwError(() => err)
             )
         )
     }
@@ -28,8 +28,8 @@ export class FundingSourceService {
         return this.http.get<FundingSource>(this.URL + `/${id}`)
             .pipe(
                 catchError(
-                    () => throwError(
-                        () => new Error("Failed to load Funding Source.")
+                    (err) => throwError(
+                        () => err
                     )
                 )
             )
@@ -39,8 +39,8 @@ export class FundingSourceService {
         return this.http.post<FundingSource>(this.URL, source)
             .pipe(
                 catchError(
-                    () => throwError(
-                        () => new Error("Failed to create Funding source")
+                    (err) => throwError(
+                        () => err
                     )
                 )
             )
@@ -50,8 +50,8 @@ export class FundingSourceService {
         return this.http.put<FundingSource>(this.URL + `/${id}`, source)
             .pipe(
                 catchError(
-                    () => throwError(
-                        () => new Error("Failed to update Funding Source.")
+                    (err) => throwError(
+                        () => err
                     )
                 )
             )
@@ -61,8 +61,8 @@ export class FundingSourceService {
         return this.http.delete<void>(this.URL + `/${id}`)
             .pipe(
                 catchError(
-                    () => throwError(
-                        () => new Error("Failed to delete Funding Source.")
+                    (err) => throwError(
+                        () => err
                     )
                 )
             )

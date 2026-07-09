@@ -8,7 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Router, RouterModule } from '@angular/router';
 import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { UpdateDialog } from '../../components/update-dialog/update-dialog';
 
 
@@ -30,7 +30,8 @@ export class FundingSources {
   constructor(
     private service: FundingSourceService,
     private router: Router,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private toastService: MessageService
   ){}
 
   ngOnInit(): void {
@@ -112,6 +113,19 @@ export class FundingSources {
         this.loadSources()
       },
       error: (err) => {
+        if(err.status === 409) {
+          this.toastService.add({
+            severity: "warn",
+            summary: "Cannot Delete",
+            detail: "This source has contributions, delete the contributions then delete the source."
+          });
+        } else {
+          this.toastService.add({
+            severity: 'error',
+            summary: "Error",
+            detail: "Something went wrong. Try again later"
+          })
+        }
         console.error(err);
       }
     })

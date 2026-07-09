@@ -15,9 +15,21 @@
             currency="USD" 
             locale="en-US" 
             /><label for="contribution-amount">Amount</label>
+            @if (form.get("amount")?.invalid && form.get("amount")?.touched) {
+                <small class="p-error">Amount must be greater than 0</small>
+            }
         </div>
-        <div><input id="contribution-notes" formControlName="notes" type="text" /><label for="contribution-notes">Notes</label></div>
-        <div><input id="contribution-date" formControlName="date" type="date" /><label for="contribution-date">Date</label></div>
+        <div>
+            <input id="contribution-notes" formControlName="notes" type="text" />
+            <label for="contribution-notes">Notes</label>
+        </div>
+        <div>
+            <input id="contribution-date" formControlName="date" type="date" />
+            <label for="contribution-date">Date</label>
+            @if (form.get("date")?.invalid && form.get("date")?.touched) {
+                <small class="p-error">Date is required</small>
+            }
+        </div>
         <div><p-select 
                 id="contribution-category" 
                 formControlName="category" 
@@ -25,6 +37,9 @@
                 optionLabel="label" 
                 optionValue="value"
             ></p-select><label for="contribution-category">Contribution Category</label>
+            @if (form.get("category")?.invalid && form.get("category")?.touched) {
+                <small class="p-error">Must pick a valid Contribution Category</small>
+            }
         </div>
         @if (!lockedSourceId()) {
             <div style="display:flex; gap: 0.5rem; align-items:center;">
@@ -39,6 +54,9 @@
                 <p-button icon="pi pi-plus" [text]="true" (onClick)="showCreateSourceDialog.set(true)" />
             </div>
             <label for="contribution-source">Funding Source</label>
+            @if (form.get("sourceId")?.invalid && form.get("sourceId")?.touched) {
+                <small class="p-error">Must pick a valid Funding Source</small>
+            }
         }
 
         <p-button 

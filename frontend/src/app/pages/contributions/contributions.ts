@@ -6,7 +6,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ButtonModule } from 'primeng/button';
 import { FundingSource } from '../../types/FundingSource';
 import { FundingSourceService } from '../../services/FundingSourceSevice';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { currencyPipe } from '../../pipes/currency-pipe';
 import { UpdateDialog } from '../../components/update-dialog/update-dialog';
 import { ContributionForm } from '../../components/contribution-form/contribution-form';
@@ -35,7 +35,8 @@ export class Contributions {
   constructor(
     private service: ContributionService,
     private sourceService: FundingSourceService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private toastService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -119,6 +120,19 @@ export class Contributions {
         this.loadContributions()
       },
       error: (err) => {
+        if(err.status === 409) {
+          this.toastService.add({
+            severity: "warn",
+            summary: "Cannot Delete",
+            detail: "This contribution has already occurred and cannot be deleted."
+          });
+        } else {
+          this.toastService.add({
+            severity: 'error',
+            summary: "Error",
+            detail: "Something went wrong. Try again later"
+          })
+        }
         console.error(err);
       }
     })

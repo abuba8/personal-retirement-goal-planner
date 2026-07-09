@@ -9,7 +9,7 @@ import { FundingSource } from '../../types/FundingSource';
 import { Contribution } from '../../types/Contribution';
 import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { UpdateDialog } from '../../components/update-dialog/update-dialog';
 import { ContributionTable } from '../../components/contribution-table/contribution-table';
 import { currencyPipe } from '../../pipes/currency-pipe';
@@ -38,7 +38,8 @@ export class FundingSourcePage {
     private contributionService: ContributionService,
     private router: Router,
     private route: ActivatedRoute,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private toastService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -96,7 +97,20 @@ export class FundingSourcePage {
         this.router.navigate(['/sources'])
       },
       error: (err) => {
-        console.error(err)
+        if(err.status === 409) {
+          this.toastService.add({
+            severity: "warn",
+            summary: "Cannot Delete",
+            detail: "This source has contributions, delete the contributions then delete the source."
+          });
+        } else {
+          this.toastService.add({
+            severity: 'error',
+            summary: "Error",
+            detail: "Something went wrong. Try again later"
+          })
+        }
+        console.error(err);
       }
     });
   }
@@ -158,6 +172,19 @@ export class FundingSourcePage {
         this.loadContributions()
       },
       error: (err) => {
+        if(err.status === 409) {
+          this.toastService.add({
+            severity: "warn",
+            summary: "Cannot Delete",
+            detail: "This contribution has already occurred and cannot be deleted."
+          });
+        } else {
+          this.toastService.add({
+            severity: 'error',
+            summary: "Error",
+            detail: "Something went wrong. Try again later"
+          })
+        }
         console.error(err);
       }
     })

@@ -21,7 +21,7 @@ export class ContributionService {
 
         return this.http.get<ContributionPage>(this.URL, {params})
             .pipe(
-                catchError(() => throwError(() => new Error("Failed to laod Contributions"))
+                catchError((err) => throwError(() => err)
             )
         )
     }
@@ -30,8 +30,8 @@ export class ContributionService {
         return this.http.get<Contribution>(this.URL + `/${id}`)
             .pipe(
                 catchError(
-                    () => throwError(
-                        () => new Error("Failed to load Contribution")
+                    (err) => throwError(
+                        () => err
                     )
                 )
             )
@@ -43,8 +43,8 @@ export class ContributionService {
         return this.http.post<Contribution>(this.URL, contribution, { params })
             .pipe(
                 catchError(
-                    () => throwError(
-                        () => new Error("Failed to create Contribution")
+                    (err) => throwError(
+                        () => err
                     )
                 )
             )
@@ -58,8 +58,8 @@ export class ContributionService {
         return this.http.put<Contribution>(this.URL + `/${id}`, contribution, { params })
             .pipe(
                 catchError(
-                    () => throwError(
-                        () => new Error("Failed to update Contribution")
+                    (err) => throwError(
+                        () => err
                     )
                 )
             )
@@ -69,8 +69,8 @@ export class ContributionService {
         return this.http.delete<void>(this.URL + `/${id}`)
             .pipe(
                 catchError(
-                    () => throwError(
-                        () => new Error("Failed to delete Contribution")
+                    (err) => throwError(
+                        () => err
                     )
                 )
             )
