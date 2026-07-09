@@ -1,0 +1,66 @@
+<p-dialog
+    [header]="title()"
+    [modal]="true"
+    [(visible)]="visible"
+    [style]="{width: '40rem', height: '40rem'}"
+>
+    <form
+        [formGroup]="form"
+        (ngSubmit)="saveContribution()"
+    >
+        <div><p-inputNumber 
+            id="contribution-amount" 
+            formControlName="amount" 
+            mode="currency" 
+            currency="USD" 
+            locale="en-US" 
+            /><label for="contribution-amount">Amount</label>
+        </div>
+        <div><input id="contribution-notes" formControlName="notes" type="text" /><label for="contribution-notes">Notes</label></div>
+        <div><input id="contribution-date" formControlName="date" type="date" /><label for="contribution-date">Date</label></div>
+        <div><p-select 
+                id="contribution-category" 
+                formControlName="category" 
+                [options]="contributionCategoryOptions" 
+                optionLabel="label" 
+                optionValue="value"
+            ></p-select><label for="contribution-category">Contribution Category</label>
+        </div>
+        @if (!lockedSourceId()) {
+            <div style="display:flex; gap: 0.5rem; align-items:center;">
+                <p-select
+                    id="contribution-source"
+                    formControlName="sourceId"
+                    [options]="sourceOptions()"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select a Funding Source"
+                ></p-select>
+                <p-button icon="pi pi-plus" [text]="true" (onClick)="showCreateSourceDialog.set(true)" />
+            </div>
+            <label for="contribution-source">Funding Source</label>
+        }
+
+        <p-button 
+            label="Cancel" 
+            type="button" 
+            severity="secondary" 
+            [outlined]="true"  
+            (onClick)="cancel()"
+            class="p-2 w-full"
+        />
+
+        <p-button 
+            label="Save" 
+            type="submit"   
+            [disabled]="form.invalid"   
+            class="p-2 w-full"
+        />
+    </form>
+</p-dialog>
+
+<app-funding-source-form
+    [(visible)]="showCreateSourceDialog"
+    [source]="null"
+    (save)="onNewSourceSaved($event)"
+/>

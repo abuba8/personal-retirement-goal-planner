@@ -2,19 +2,20 @@ import { Component, signal } from '@angular/core';
 import { FundingSource } from '../../types/FundingSource';
 import { FundingSourceService } from '../../services/FundingSourceSevice';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
-import { SourceTypeLabelPipe } from '../../../pipes/source-type-label-pipe';
+import { SourceTypeLabelPipe } from '../../pipes/source-type-label-pipe';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Router, RouterModule } from '@angular/router';
 import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
 import { ConfirmationService } from 'primeng/api';
+import { UpdateDialog } from '../../components/update-dialog/update-dialog';
 
 
 @Component({
   selector: 'app-funding-sources',
   imports: [TableModule, SourceTypeLabelPipe, DialogModule, ConfirmDialog,
-    ButtonModule, RouterModule, FundingSourceForm],
+    ButtonModule, RouterModule, FundingSourceForm, UpdateDialog],
   templateUrl: './funding-source-list.html',
   styleUrl: './funding-source-list.css',
 })
@@ -74,8 +75,8 @@ export class FundingSources {
   handleSaveSource(source: FundingSource) {
     if(this.selectedSource() === null) {
       this.service.createSource(source).subscribe({
-        next: (data) => {
-          this.allSources.update(currentList => [...currentList, data])
+        next: () => {
+          this.loadSources()
         },
         error: (err) => {
           console.error(err)
@@ -85,7 +86,8 @@ export class FundingSources {
       this.service.updateSource(source.id!, source).subscribe({
         next: (data) => {
           this.allSources.update(
-            currentList => currentList.map(s => s.id === data.id ? data : s))
+            currentList => currentList.map(s => s.id === data.id ? data : s)
+          )
         },
         error: (err) => {
           console.error(err)
@@ -107,7 +109,7 @@ export class FundingSources {
   deleteSource(sourceId: number) {
     this.service.deleteSource(sourceId).subscribe({
       next: () => {
-        this.allSources.update((currentList) => currentList.filter(source => source.id !== sourceId))
+        this.loadSources()
       },
       error: (err) => {
         console.error(err);

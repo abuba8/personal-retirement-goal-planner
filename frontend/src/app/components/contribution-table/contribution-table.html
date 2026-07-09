@@ -1,0 +1,44 @@
+<p-table 
+    [value]="contributions()"
+    selectionMode="single"
+    [(selection)]="selection" 
+    [paginator]="true" 
+    [rows]="10"
+    [tableStyle]="{'min-width': '50rem'}"
+    [totalRecords]="totalContributions()"
+    [lazy]="true"
+    (onLazyLoad)="lazyLoad.emit($event)"
+>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <span class="text-xl font-bold">Contributions</span>
+            <p-button label="Log Contribution" (click)="create.emit()" />
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            @if (showSourceColumn()) {
+                <th>Funding Source</th>
+            }
+            <th>Goal</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Notes</th>
+            <th>Contribution Category</th>
+            <th>Update</th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-contribution>
+        <tr>
+            @if (showSourceColumn()) {
+                <td>{{ getSourceName(contribution.sourceId) }}</td>
+            }
+            <td></td>
+            <td>{{ contribution.amount | currency }}</td>
+            <td>{{ contribution.date | dateFormat }}</td>
+            <td>{{ contribution.notes }}</td>
+            <td>{{ contribution.category | contributionCategoryLabel }}</td>
+            <td><p-tableRadioButton [value]="contribution" (click)="select.emit()" /></td>
+        </tr>
+    </ng-template>
+</p-table>

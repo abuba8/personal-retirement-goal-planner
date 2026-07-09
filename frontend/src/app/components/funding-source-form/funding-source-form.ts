@@ -38,12 +38,11 @@ export class FundingSourceForm {
     }
 
     saveSource() {
-
     if(this.form.invalid) {
       return;
     }
 
-    const {name, institution, notes, type} = this.form.getRawValue();
+    const {name, institution, notes, type} = this.form.value;
 
     const typeKey = Object.entries(SourceType).find(([, val]) => val === type)?.[0];
 

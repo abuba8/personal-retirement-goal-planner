@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { ContributionCategory, ContributionCategoryLabel } from "../app/types/enums/ContributionCategory";
+import { ContributionCategory, ContributionCategoryLabel } from "../types/enums/ContributionCategory";
 
 
 @Pipe({ name: 'contributionCategoryLabel' })

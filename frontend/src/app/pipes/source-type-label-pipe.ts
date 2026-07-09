@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { SourceType, SourceTypeLabels } from "../app/types/enums/SourceType";
+import { SourceType, SourceTypeLabels } from "../types/enums/SourceType";
 
 
 @Pipe({ name: 'sourceTypeLabel' })

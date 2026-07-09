@@ -21,23 +21,25 @@
 <p-confirmdialog />
 
 <h3>Contributions</h3>
-<p-table
-  [value]="allContributions()"
-  [paginator]="true"
-  [rows]="10"
-  [totalRecords]="totalContributions()"
-  [lazy]="true"
-  (onLazyLoad)="loadContributions($event)"
->
-  <ng-template #header>
-    <tr><th>Amount</th><th>Date</th><th>Notes</th><th>Category</th></tr>
-  </ng-template>
-  <ng-template #body let-contribution>
-    <tr>
-      <td>{{ contribution.amount }}</td>
-      <td>{{ contribution.date }}</td>
-      <td>{{ contribution.notes }}</td>
-      <td>{{ contribution.category | contributionCategoryLabel }}</td>
-    </tr>
-  </ng-template>
-</p-table>
+<app-contribution-table
+    [contributions]="allContributions()"
+    [totalContributions]="totalContributions()"
+    [showSourceColumn]="false"
+    [(selection)]="contribution"
+    (lazyLoad)="loadContributions($event)"
+    (select)="handleUpdate()"
+    (create)="handleCreateContribution()"
+/>
+
+<app-update-dialog
+    [(visible)]="showUpdate"
+    (edit)="handleUpdateContribution(contribution()!)"
+    (delete)="handleDeleteContribution(contribution()!)"
+/>
+
+<app-contribution-form
+    [(visible)]="showDialog"
+    [contribution]="contribution()"
+    [lockedSourceId]="sourceId"
+    (save)="handleSaveContribution($event)"
+/>
