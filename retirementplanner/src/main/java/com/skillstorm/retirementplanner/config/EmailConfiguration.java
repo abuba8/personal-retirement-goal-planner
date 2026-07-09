@@ -1,0 +1,56 @@
+package com.skillstorm.retirementplanner.config;
+
+import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+@Configuration
+public class EmailConfiguration {
+    /**
+     * EmailConfiguration:
+     * Builds the JavaMailSender bean used to actually send the verification emails.
+     * Host/port/username/password come from application.yml (which reads them from .env),
+     * so no credentials are hard-coded here.
+     * Defaults target Gmail SMTP (smtp.gmail.com:587 with STARTTLS).
+     *
+     * Beans:
+     * - sendMail(): the configured JavaMailSender used by EmailService
+     */
+
+    // SMTP host, defaults to Gmail if not set in config
+    @Value("${spring.mail.host:smtp.gmail.com}")
+    private String host;
+    
+    // SMTP port, defaults to 587 if not set
+    @Value("${spring.mail.port:587}")
+    private int port;
+    
+    // sending account username from .env
+    @Value("${spring.mail.username}")
+    private String username;
+
+    // sending account password from .env
+    @Value("${spring.mail.password}")
+    private String password;
+
+    // builds and configures the mail sender from the injected values above
+    @Bean
+    public JavaMailSender sendMail(){
+        JavaMailSenderImpl send = new JavaMailSenderImpl();
+        send.setHost(host);
+        send.setPort(port);
+        send.setUsername(username);
+        send.setPassword(password);
+
+        Properties props = send.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "false");
+        return send;
+    }
+}

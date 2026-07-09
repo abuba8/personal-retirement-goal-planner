@@ -1,0 +1,96 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div
+    class="w-full max-w-md rounded-2xl border p-8 shadow-sm"
+    style="background: var(--card-surface); border-color: var(--p-border);"
+  >
+    <div class="mb-6 text-center">
+      <h1 class="text-2xl font-semibold" style="color: var(--primary-ink);">
+        Create your account
+      </h1>
+      <p class="mt-1 text-sm" style="color: var(--muted-text);">
+        Join us, in a few seconds
+      </p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+      <!-- Username -->
+      <div class="flex flex-col gap-1.5">
+        <label for="username" class="text-sm font-medium" style="color: var(--primary-ink);">
+          Username
+        </label>
+        <input
+          pInputText
+          id="username"
+          formControlName="username"
+          autocomplete="username"
+          placeholder="yourname"
+          class="w-full"
+        />
+        @if (form.get('username')?.touched && form.get('username')?.invalid) {
+          <small style="color: var(--error-accent);">
+            Username must be 3–100 characters.
+          </small>
+        }
+      </div>
+
+      <!-- Email -->
+      <div class="flex flex-col gap-1.5">
+        <label for="email" class="text-sm font-medium" style="color: var(--primary-ink);">
+          Email
+        </label>
+        <input
+          pInputText
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="you@example.com"
+          class="w-full"
+        />
+        @if (form.get('email')?.touched && form.get('email')?.invalid) {
+          <small style="color: var(--error-accent);">Enter a valid email address.</small>
+        }
+      </div>
+
+      <!-- Password -->
+      <div class="flex flex-col gap-1.5">
+        <label for="password" class="text-sm font-medium" style="color: var(--primary-ink);">
+          Password
+        </label>
+        <p-password
+          inputId="password"
+          formControlName="password"
+          [toggleMask]="true"
+          promptLabel="Choose a password"
+          placeholder="At least 8 characters"
+          styleClass="w-full"
+          [inputStyleClass]="'w-full'"
+        />
+        @if (form.get('password')?.touched && form.get('password')?.invalid) {
+          <small style="color: var(--error-accent);">
+            Password must be 8–100 characters.
+          </small>
+        }
+      </div>
+
+      @if (error()) {
+        <p-message severity="error" [text]="error()!" styleClass="w-full" />
+      }
+
+      <p-button
+        type="submit"
+        [label]="loading() ? 'Creating…' : 'Register'"
+        [loading]="loading()"
+        [disabled]="loading()"
+        styleClass="w-full mt-2"
+      />
+    </form>
+
+    <p class="mt-6 text-center text-sm" style="color: var(--muted-text);">
+      Already have an account?
+      <a routerLink="/login" class="font-medium underline" style="color: var(--primary);">
+        Log in
+      </a>
+    </p>
+  </div>
+</div>

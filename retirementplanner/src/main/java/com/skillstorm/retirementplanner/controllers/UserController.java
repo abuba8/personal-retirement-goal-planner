@@ -1,6 +1,9 @@
 package com.skillstorm.retirementplanner.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +44,12 @@ public class UserController {
     public UserController(UserService userService, SecurityUtils securityUtils) {
         this.userService = userService;
         this.securityUtils = securityUtils;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<List<UserDto>> getAllUsers(){
+        return this.userService.getAllUserProfile();
     }
 
     // GET Request: get current user profile
