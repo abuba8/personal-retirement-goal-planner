@@ -1,0 +1,50 @@
+<div>
+  <h2>Your goals</h2>
+  <button type="button" (click)="logout()">Log out</button>
+</div>
+
+<a routerLink="/goals/new"><button type="button">+ New goal</button></a>
+
+@if (loading()) { <p>Loading...</p> }
+@if (error())   { <p>{{ error() }}</p> }
+
+<table border="1" cellpadding="6">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Retirement age</th>
+      <th>Target amount</th>
+      <th>Notes</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (goal of allGoals(); track goal.id) {
+      <tr>
+        <td>{{ goal.name }}</td>
+        <td>{{ goal.targetRetirementAge }}</td>
+        <td>{{ goal.targetAmount }}</td>
+        <td>{{ goal.notes }}</td>
+        <td>
+          <a [routerLink]="['/goals', goal.id, 'edit']">Edit</a>
+          <button type="button" (click)="handleDeleteGoal(goal)">Delete</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr><td colspan="5">No goals yet.</td></tr>
+    }
+  </tbody>
+</table>
+
+<div>
+  <button type="button" (click)="prev()" [disabled]="page() === 0">Prev</button>
+  <span> Page {{ page() + 1 }} of {{ totalPages() }} </span>
+  <button type="button" (click)="next()" [disabled]="page() >= totalPages() - 1">Next</button>
+</div>
+
+<app-delete-confirmation-modal
+  [visible]="showDeleteDialog()"
+  [recordName]="selectedGoal()?.name ?? ''"
+  (confirmed)="deleteGoal()"
+  (cancelled)="showDeleteDialog.set(false)"
+/>

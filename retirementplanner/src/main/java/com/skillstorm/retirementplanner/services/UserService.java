@@ -35,9 +35,11 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // get all for testing 
-    public ResponseEntity<List<User>> getAllUserProfile(){
-        return ResponseEntity.ok(this.userRepository.findAll(Sort.by("id").ascending()));
+    // get all for admin 
+    public ResponseEntity<List<UserDto>> getAllUserProfile(){
+        List<UserDto> users = this.userRepository.findAll(Sort.by("id").ascending())
+                                .stream().map(this.userMapper::toDto).toList();
+        return ResponseEntity.ok(users);
     }
 
     /**

@@ -2,3 +2,25 @@
 
 @import 'tailwindcss';
 @import "primeicons/primeicons.css";
+
+:root {
+    bg: #FBF9F3;
+    card-surface: #FCFBF7;
+    p-border: #E7E1D3;
+    overlay-ink: #16302A;
+    muted-text: #6E7A72;
+    primary: #2E6B54;
+    primary-ink: #1B2420;
+    error-accent: #A24632;
+    error-accent-soft: #F5E3DD;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--overlay-ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+}

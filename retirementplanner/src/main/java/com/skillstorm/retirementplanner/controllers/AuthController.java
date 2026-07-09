@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.skillstorm.retirementplanner.dtos.LoginRequest;
 import com.skillstorm.retirementplanner.dtos.LoginResponse;
 import com.skillstorm.retirementplanner.dtos.RegisterRequest;
+import com.skillstorm.retirementplanner.dtos.ResendRequest;
+import com.skillstorm.retirementplanner.dtos.VerifyRequest;
 import com.skillstorm.retirementplanner.models.User;
 import com.skillstorm.retirementplanner.security.CustomUserDetails;
 import com.skillstorm.retirementplanner.security.JwtService;
@@ -45,6 +47,7 @@ public class AuthController {
     }
 
     /**
+     * signup:
      * POST request to create a new account.
      *
      * args:
@@ -65,6 +68,7 @@ public class AuthController {
     }
     
     /**
+     * authenticate:
      * POST request to log in and receive a JWT.
      *
      * args:
@@ -83,6 +87,61 @@ public class AuthController {
         }catch(RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    /**
+     * verify:
+     * POST request to verify the 6 digit code
+     *
+     * args:
+     * - VerifyRequest request
+     *
+     * returns:
+     * - 200: returns String message indicating successful msg
+     * - 400: if credentials are invalid
+     */
+    @PostMapping("/verify")
+    public ResponseEntity<?> verify(@Valid @RequestBody VerifyRequest request){
+        try{
+            authService.verifyUser(request);
+            return ResponseEntity.ok("Account verified successfully. You can now log in.");
+        }catch(RuntimeException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * resend:
+     * POST request to resend the verification code
+     * if failed earlier
+     *
+     * args:
+     * - Resend Request request
+     *
+     * returns:
+     * - 200: returns String message 
+     * - 400: if credentials are invalid
+     */
+    @PostMapping("/resend")
+    public ResponseEntity<?> resend(@Valid @RequestBody ResendRequest request){
+        try{
+            authService.resendVerificationCode(request);
+            return ResponseEntity.ok("A new verification code has been sent to your email.");
+        }catch(RuntimeException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * logout:
+     * POST request for logging out
+     *
+     * returns:
+     * - 200: returns successful response
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(){
+        return ResponseEntity.ok("Logged out!"); // discard the token on the client/fron-end side
     }
     
 }

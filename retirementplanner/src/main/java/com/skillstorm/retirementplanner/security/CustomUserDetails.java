@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.skillstorm.retirementplanner.models.User;
@@ -44,7 +45,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // No roles in this app yet; return an empty authority list.
-        return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
     // password spring security compares against during login, and returns the stored bcrypt password hash
@@ -81,6 +82,6 @@ public class CustomUserDetails implements UserDetails {
     // check if the account is active/enabled
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.isEnabled();
     }
 }
