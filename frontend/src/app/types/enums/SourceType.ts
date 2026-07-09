@@ -15,3 +15,12 @@ export const SourceTypeLabels: Record<SourceType, string> = {
     [SourceType.SEP_IRA]: 'SEP IRA',
     [SourceType.TAXABLE_BROKERAGE]: 'Taxable Brokerage'
 }
+
+export const SourceTypeLimit: Record<SourceType, number | null> = {
+    [SourceType.TRADITIONAL_401K]: 24500,
+    [SourceType.ROTH_401K]: 24500,
+    [SourceType.TRADITIONAL_IRA]: 7500,         // 8600 over the age of 50 but we don't track user age?
+    [SourceType.ROTH_IRA]: 7500,                // 8600 over the age of 50 but we don't track user age?
+    [SourceType.SEP_IRA]: 72000,                // or 25% of the employee's compensation it takes the lower of the two?
+    [SourceType.TAXABLE_BROKERAGE]: null        // no limit
+}

@@ -32,6 +32,8 @@ export class FundingSourcePage {
   totalContributions = signal<number>(0);
   showDialog = signal<boolean>(false);
   showUpdate = signal<boolean>(false);
+  totalContributed = signal<number>(0);
+  contributionCount = signal<number>(0);
 
   constructor(
     private sourceService: FundingSourceService,
@@ -47,6 +49,7 @@ export class FundingSourcePage {
       this.sourceId = Number(params.get('id'));
       this.loadSource(this.sourceId);
       this.loadContributions();
+      this.loadContributionSummary();
     })
   }
 
@@ -70,6 +73,33 @@ export class FundingSourcePage {
       },
       error: (err) => console.error(err)
     });
+  }
+
+  loadContributionSummary() {
+    this.contributionService.getContributions(0, undefined, this.sourceId).subscribe({
+      next: (firstPage) => {
+        this.contributionCount.set(firstPage.totalElements);
+        this.accumulateAmounts(firstPage.content, 1, firstPage.totalPages);
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    });
+  }
+
+  accumulateAmounts(soFar: Contribution[], nextPage: number, totalPages: number) {
+    if (nextPage >= totalPages) {
+      this.totalContributed.set(soFar.reduce((sum, c) => sum + c.amount, 0));
+      return;
+    }
+    this.contributionService.getContributions(nextPage, undefined, this.sourceId).subscribe({
+      next: (page) => {
+        this.accumulateAmounts([...soFar, ...page.content], nextPage + 1, totalPages)
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    })
   }
 
   handleSaveSource(source: FundingSource) {
@@ -129,7 +159,8 @@ export class FundingSourcePage {
     if(this.contribution() === null) {
       this.contributionService.createContribution(contribution, 1, contribution.sourceId).subscribe({
         next: () => {
-          this.loadContributions()
+          this.loadContributions();
+          this.loadContributionSummary();
         },
         error: (err) => {
           console.error(err)
@@ -169,7 +200,8 @@ export class FundingSourcePage {
   deleteContribution(contributionId: number) {
     this.contributionService.deleteContribution(contributionId).subscribe({
       next: () => {
-        this.loadContributions()
+        this.loadContributions();
+        this.loadContributionSummary();
       },
       error: (err) => {
         if(err.status === 409) {
