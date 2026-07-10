@@ -11,6 +11,8 @@ import { currencyPipe } from '../../pipes/currency-pipe';
 import { UpdateDialog } from '../../components/update-dialog/update-dialog';
 import { ContributionForm } from '../../components/contribution-form/contribution-form';
 import { ContributionTable } from '../../components/contribution-table/contribution-table';
+import { Goal } from '../../types/Goal';
+import { GoalService } from '../../services/GoalService';
 
 @Component({
   selector: 'app-contributions',
@@ -23,18 +25,22 @@ import { ContributionTable } from '../../components/contribution-table/contribut
 export class Contributions {
   allContributions = signal<Contribution[]>([]);
   allSources = signal<FundingSource[]>([]);
-  // allGoals = signal<Goal[]>([])
+  allGoals = signal<Goal[]>([])
   selectedContribution = signal<Contribution | null>(null);
   totalContributions = signal<number>(0);
   showUpdate = signal<boolean>(false);
   showDialog = signal<boolean>(false);
   getSourceName(sourceId?: number): string {
-    return this.allSources().find(s => s.id === sourceId)?.name ?? '';
+    return this.allSources().find(s => s.id === sourceId)?.name ?? "";
+  }
+  getGoalName(goalId?: number): string {
+    return this.allGoals().find(g => g.id === goalId)?.name ?? "";
   }
 
   constructor(
     private service: ContributionService,
     private sourceService: FundingSourceService,
+    private goalService: GoalService,
     private confirmationService: ConfirmationService,
     private toastService: MessageService
   ) {}
@@ -42,6 +48,7 @@ export class Contributions {
   ngOnInit(): void {
     this.loadContributions();
     this.loadSources();
+    this.loadGoals();
   }
 
   loadContributions(event? : TableLazyLoadEvent) {
@@ -63,6 +70,10 @@ export class Contributions {
     this.sourceService.getSources(0).subscribe(page => this.allSources.set(page.content));
   }
 
+  loadGoals() {
+    this.goalService.getGoalsPage(0).subscribe(page => this.allGoals.set(page.content));
+  }
+
   handleUpdate() {
     this.showUpdate.set(true);
   }
@@ -75,7 +86,7 @@ export class Contributions {
 
   handleSaveContribution(contribution: Contribution) {
     if(this.selectedContribution() === null) {
-      this.service.createContribution(contribution, 1, contribution.sourceId).subscribe({
+      this.service.createContribution(contribution, contribution.goalId, contribution.sourceId).subscribe({
         next: () => {
           this.loadContributions()
         },

@@ -20,7 +20,9 @@
             @if (showSourceColumn()) {
                 <th>Funding Source</th>
             }
-            <th>Goal</th>
+            @if (showGoalColumn()) {
+                <th>Goal</th>
+            }
             <th>Amount</th>
             <th>Date</th>
             <th>Notes</th>
@@ -33,7 +35,9 @@
             @if (showSourceColumn()) {
                 <td>{{ getSourceName(contribution.sourceId) }}</td>
             }
-            <td></td>
+            @if (showGoalColumn()) {
+                <td>{{ getGoalName(contribution.goalId) }}</td>
+            }
             <td>{{ contribution.amount | currency }}</td>
             <td>{{ contribution.date | dateFormat }}</td>
             <td>{{ contribution.notes }}</td>

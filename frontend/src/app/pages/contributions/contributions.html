@@ -4,7 +4,9 @@
     [contributions]="allContributions()"
     [totalContributions]="totalContributions()"
     [showSourceColumn]="true"
+    [showGoalColumn]="true"
     [allSources]="allSources()"
+    [allGoals]="allGoals()"
     [(selection)]="selectedContribution"
     (lazyLoad)="loadContributions($event)"
     (select)="handleUpdate()"
@@ -21,7 +23,9 @@
     [(visible)]="showDialog"
     [contribution]="selectedContribution()"
     [allSources]="allSources()"
+    [allGoals]="allGoals()"
     (createdSource)="allSources.update(currentList => [...currentList, $event])"
+    (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
     (save)="handleSaveContribution($event)"
 />
 

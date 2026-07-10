@@ -14,6 +14,8 @@ import { UpdateDialog } from '../../components/update-dialog/update-dialog';
 import { ContributionTable } from '../../components/contribution-table/contribution-table';
 import { currencyPipe } from '../../pipes/currency-pipe';
 import { ContributionForm } from '../../components/contribution-form/contribution-form';
+import { Goal } from '../../types/Goal';
+import { GoalService } from '../../services/GoalService';
 
 @Component({
   selector: 'app-funding-source',
@@ -27,16 +29,19 @@ import { ContributionForm } from '../../components/contribution-form/contributio
 export class FundingSourcePage {
   sourceId!: number;
   source = signal<FundingSource | null>(null);
+  allGoals = signal<Goal[]>([]);
   contribution = signal<Contribution | null>(null);
   allContributions = signal<Contribution[]>([]);
   totalContributions = signal<number>(0);
   showDialog = signal<boolean>(false);
+  showContributionDialog = signal<boolean>(false);
   showUpdate = signal<boolean>(false);
   totalContributed = signal<number>(0);
   contributionCount = signal<number>(0);
 
   constructor(
     private sourceService: FundingSourceService,
+    private goalService: GoalService,
     private contributionService: ContributionService,
     private router: Router,
     private route: ActivatedRoute,
@@ -48,6 +53,7 @@ export class FundingSourcePage {
     this.route.paramMap.subscribe(params => {
       this.sourceId = Number(params.get('id'));
       this.loadSource(this.sourceId);
+      this.loadGoals();
       this.loadContributions();
       this.loadContributionSummary();
     })
@@ -61,6 +67,10 @@ export class FundingSourcePage {
         this.router.navigate(['/sources']);
       }
     });
+  }
+
+  loadGoals() {
+    this.goalService.getGoalsPage(0).subscribe(page => this.allGoals.set(page.content));
   }
 
   loadContributions(event?: TableLazyLoadEvent): void {
@@ -152,12 +162,12 @@ export class FundingSourcePage {
   handleCreateContribution() {
     this.contribution.set(null);
     this.showUpdate.set(false);
-    this.showDialog.set(true);
+    this.showContributionDialog.set(true);
   }
 
   handleSaveContribution(contribution: Contribution) {
     if(this.contribution() === null) {
-      this.contributionService.createContribution(contribution, 1, contribution.sourceId).subscribe({
+      this.contributionService.createContribution(contribution, contribution.goalId, contribution.sourceId).subscribe({
         next: () => {
           this.loadContributions();
           this.loadContributionSummary();
@@ -183,7 +193,7 @@ export class FundingSourcePage {
   handleUpdateContribution(contribution: Contribution) {
     this.contribution.set(contribution);
     this.showUpdate.set(false);
-    this.showDialog.set(true);
+    this.showContributionDialog.set(true);
   }
 
   handleDeleteContribution(contribution: Contribution) {

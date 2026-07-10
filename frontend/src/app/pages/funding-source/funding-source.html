@@ -25,6 +25,8 @@
     [contributions]="allContributions()"
     [totalContributions]="totalContributions()"
     [showSourceColumn]="false"
+    [showGoalColumn]="true"
+    [allGoals]="allGoals()"
     [(selection)]="contribution"
     (lazyLoad)="loadContributions($event)"
     (select)="handleUpdate()"
@@ -38,8 +40,10 @@
 />
 
 <app-contribution-form
-    [(visible)]="showDialog"
+    [(visible)]="showContributionDialog"
     [contribution]="contribution()"
+    [allGoals]="allGoals()"
     [lockedSourceId]="sourceId"
+    (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
     (save)="handleSaveContribution($event)"
 />

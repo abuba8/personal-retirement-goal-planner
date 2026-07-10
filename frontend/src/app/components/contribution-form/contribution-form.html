@@ -58,6 +58,23 @@
                 <small class="p-error">Must pick a valid Funding Source</small>
             }
         }
+         @if (!lockedGoalId()) {
+            <div style="display:flex; gap: 0.5rem; align-items:center;">
+                <p-select
+                    id="contribution-goal"
+                    formControlName="goalId"
+                    [options]="goalOptions()"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select a Goal"
+                ></p-select>
+                <p-button icon="pi pi-plus" [text]="true" (onClick)="showCreateGoalDialog.set(true)" />
+            </div>
+            <label for="contribution-goal">Goal</label>
+            @if (form.get("goalId")?.invalid && form.get("goalId")?.touched) {
+                <small class="p-error">Must pick a valid Goal</small>
+            }
+        }
 
         <p-button 
             label="Cancel" 
@@ -81,4 +98,8 @@
     [(visible)]="showCreateSourceDialog"
     [source]="null"
     (save)="onNewSourceSaved($event)"
+/>
+
+<app-goal-form
+
 />

@@ -5,9 +5,16 @@ import { TokenService } from "../services/TokenService";
 
 // Functional interceptor: (request, next) => stream. Runs on EVERY request.
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  // public auth endpoints (signup/login/verify/resend) must never carry a
+  // stale token from a previous session, or the backend's JwtAuthenticationFilter
+  // will try (and fail) to validate it before the request reaches the controller
+  if (req.url.includes("/auth/")) {
+    return next(req);
+  }
+
   const token = inject(TokenService).getToken();
 
-  // no token (e.g. the login/signup calls) -> send unchanged
+  // no token -> send unchanged
   if (!token) {
     return next(req);
   }

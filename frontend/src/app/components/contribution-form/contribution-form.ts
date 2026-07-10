@@ -9,11 +9,14 @@ import { ButtonModule } from 'primeng/button';
 import { FundingSourceForm } from '../funding-source-form/funding-source-form';
 import { FundingSourceService } from '../../services/FundingSourceSevice';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { GoalService } from '../../services/GoalService';
+import { Goal } from '../../types/Goal';
+import { GoalForm } from '../goal-form/goal-form';
 
 @Component({
   selector: 'app-contribution-form',
   imports: [ReactiveFormsModule, SelectModule, DialogModule, FundingSourceForm,
-    ButtonModule, InputNumberModule
+    ButtonModule, InputNumberModule, GoalForm
   ],
   templateUrl: './contribution-form.html',
   styleUrl: './contribution-form.css',
@@ -21,12 +24,16 @@ import { InputNumberModule } from 'primeng/inputnumber';
 export class ContributionForm {
   contribution = input<Contribution | null>(null);
   allSources = input<FundingSource[]>([]);
+  allGoals = input<Goal[]>([]);
   createdSource = output<FundingSource>();
+  createdGoal = output<Goal>();
   lockedSourceId = input<number | null>(null);
+  lockedGoalId = input<number | null>(null);
   visible = model<boolean>(false);
   save = output<Contribution>();
   title = computed(() => this.contribution() ? "Update Contribution" : "Log Contribution");
   showCreateSourceDialog = signal(false);
+  showCreateGoalDialog = signal(false);
 
   private formBuilder = inject(FormBuilder);
   form!: FormGroup;
@@ -38,9 +45,13 @@ export class ContributionForm {
   sourceOptions = computed(() => [
     ...this.allSources().map(s => ({ label: s.name, value: s.id })),
   ])
+  goalOptions = computed(() => [
+    ...this.allGoals().map(g => ({ label: g.name, value: g.id })),
+  ])
 
   constructor(
-    private sourceService: FundingSourceService
+    private sourceService: FundingSourceService,
+    private goalService: GoalService
   ) {
     this.form = this.formBuilder.group({
       amount: [0, [Validators.required, Validators.min(0)]],
@@ -48,7 +59,7 @@ export class ContributionForm {
       category: [null, [Validators.required]],
       notes: [""],
       sourceId: [1, [Validators.required]],
-      // goalId: [1, [Validators.required]]
+      goalId: [1, [Validators.required]]
     });
 
     effect(() => this.resetForm());
@@ -66,12 +77,24 @@ export class ContributionForm {
     });
   }
 
+  onNewGoalSaved(goal: Goal) {
+    this.goalService.createGoal(goal).subscribe({
+      next: (data) => {
+        this.createdGoal.emit(data);
+        this.form.get('goalId')!.setValue(data.id);
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    });
+  }
+
   saveContribution() {
     if(this.form.invalid) {
       return;
     }
 
-    const {amount, date, category, notes, sourceId} = this.form.value;
+    const {amount, date, category, notes, sourceId, goalId} = this.form.value;
 
     const categoryKey = Object.entries(ContributionCategory).find(([, val]) => val === category)?.[0];
 
@@ -81,7 +104,7 @@ export class ContributionForm {
       category: categoryKey as ContributionCategory,
       notes,
       sourceId: this.lockedSourceId() ?? sourceId,
-      goalId: 1 as number
+      goalId: this.lockedGoalId() ?? goalId
     }
 
     if(this.contribution()) {
@@ -100,7 +123,7 @@ export class ContributionForm {
       category: currentContribution?.category ?? null,
       notes: currentContribution?.notes ?? "",
       sourceId: currentContribution?.sourceId ?? this.lockedSourceId() ?? 0,
-      // goalId: currentContribution?.goalId ?? 0
+      goalId: currentContribution?.goalId ?? this.lockedGoalId() ?? 0
     })
   }
 
