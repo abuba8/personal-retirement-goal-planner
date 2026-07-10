@@ -16,12 +16,15 @@ import { currencyPipe } from '../../pipes/currency-pipe';
 import { ContributionForm } from '../../components/contribution-form/contribution-form';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
+import { ContributionSummary } from '../../components/contribution-summary/contribution-summary';
+import { SourceTypeLimit } from '../../types/enums/SourceType';
+import { ContributionLimit } from '../../components/contribution-limit/contribution-limit';
 
 @Component({
   selector: 'app-funding-source',
-  imports: [RouterModule, TableModule, ButtonModule, 
-    SourceTypeLabelPipe, FundingSourceForm, ConfirmDialog, 
-    UpdateDialog, ContributionTable, ContributionForm
+  imports: [RouterModule, TableModule, ButtonModule, SourceTypeLabelPipe, FundingSourceForm, 
+    ConfirmDialog, UpdateDialog, ContributionTable, ContributionForm, ContributionSummary,
+    ContributionLimit
   ],
   templateUrl: './funding-source.html',
   styleUrl: './funding-source.css',
@@ -38,6 +41,8 @@ export class FundingSourcePage {
   showUpdate = signal<boolean>(false);
   totalContributed = signal<number>(0);
   contributionCount = signal<number>(0);
+  yearlyLimit = signal<number>(0);
+  yearlyContributed = signal<number>(0);
 
   constructor(
     private sourceService: FundingSourceService,
@@ -61,7 +66,10 @@ export class FundingSourcePage {
 
   loadSource(id: number): void {
     this.sourceService.getSourceById(id).subscribe({
-      next: (data) => this.source.set(data),
+      next: (data) => {
+        this.source.set(data);
+        this.yearlyLimit.set(SourceTypeLimit[data.type] ?? 0);
+      },
       error: (err) => {
         console.error(err);
         this.router.navigate(['/sources']);
@@ -100,6 +108,8 @@ export class FundingSourcePage {
   accumulateAmounts(soFar: Contribution[], nextPage: number, totalPages: number) {
     if (nextPage >= totalPages) {
       this.totalContributed.set(soFar.reduce((sum, c) => sum + c.amount, 0));
+      const thisYear = soFar.filter(c => new Date(c.date).getFullYear() === new Date().getFullYear());
+      this.yearlyContributed.set(thisYear.reduce((sum, c) => sum + c.amount, 0));
       return;
     }
     this.contributionService.getContributions(nextPage, undefined, this.sourceId).subscribe({
@@ -115,7 +125,8 @@ export class FundingSourcePage {
   handleSaveSource(source: FundingSource) {
     this.sourceService.updateSource(this.sourceId, source).subscribe({
       next: (data) => {
-        this.source.set(data)
+        this.source.set(data);
+        this.yearlyLimit.set(SourceTypeLimit[data.type] ?? 0);
       },
       error: (err) => {
         console.error(err)
@@ -178,10 +189,9 @@ export class FundingSourcePage {
       });
     } else {
       this.contributionService.updateContribution(contribution.id!, contribution, contribution.goalId, contribution.sourceId).subscribe({
-        next: (data) => {
-          this.allContributions.update(
-            currentList => currentList.map(c => c.id === data.id ? data : c)
-          )
+        next: () => {
+          this.loadContributions();
+          this.loadContributionSummary();
         },
         error: (err) => {
           console.error(err)

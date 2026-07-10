@@ -1,0 +1,12 @@
+<div>
+    <p>2026 IRS Limit</p>
+</div>
+<div class="limit-comparison" [class]="severity()">
+    <p>
+        {{ yearlyContributed() | currency }} / {{ yearlyLimit() | currency }} - {{ percentage() | number: "1.0-0" }}%
+    </p>
+    <progress [value]="yearlyContributed()" [max]="yearlyLimit() ?? 0"></progress>
+    @if (message()) {
+        <p class="limit-message">{{ message() }}</p>
+    }
+</div>
