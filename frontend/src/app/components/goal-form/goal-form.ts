@@ -1,30 +1,30 @@
 // src/app/pages/goal-form/goal-form.ts
-import { Component, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Goal } from '../../types/Goal';
-import { GoalService } from '../../services/GoalService';
+import { DialogModule } from 'primeng/dialog';
+import { SelectModule } from 'primeng/select';
+import { ButtonModule } from 'primeng/button';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-goal-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, DialogModule, SelectModule, ButtonModule, InputNumberModule],
   templateUrl: './goal-form.html',
 })
 export class GoalForm {
+  goal = input<Goal | null>(null);
+  visible = model<boolean>(false);
+  save = output<Goal>();
 
+  title = computed(() => this.goal() ? "Update Goal" : "Create Goal");
+
+  private formBuilder = inject(FormBuilder);
   form!: FormGroup;
-  editingId = signal<number | null>(null);   // null = create, number = edit
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private goalService: GoalService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
-
-  ngOnInit(): void {
+  constructor() {
     this.form = this.formBuilder.group({
       name: ["", [Validators.required, Validators.maxLength(150)]],
       targetRetirementAge: [null, [Validators.required, Validators.min(1)]],
@@ -32,37 +32,43 @@ export class GoalForm {
       notes: [""],
     });
 
-    // if the URL has an :id, we're editing -> load the goal and prefill
-    const idParam = this.route.snapshot.paramMap.get("id");
-    if (idParam) {
-      const id = Number(idParam);
-      this.editingId.set(id);
-      this.goalService.getGoalById(id).subscribe({
-        next: (goal) => this.form.patchValue(goal),   // fill matching controls
-        error: () => this.error.set("Could not load the goal."),
-      });
-    }
+    effect(() => this.resetForm());
   }
 
-  submit(): void {
-    if (this.form.invalid) { return; }
-    this.loading.set(true);
-    this.error.set(null);
+  saveGoal() {
+    if(this.form.invalid) {
+      return;
+    }
 
-    const payload: Goal = this.form.value;
-    const id = this.editingId();
+    const {name, targetRetirementAge, targetAmount, notes} = this.form.value;
 
-    // same create-vs-update branch as saveMovie()
-    const request = id
-      ? this.goalService.updateGoal(id, payload)
-      : this.goalService.createGoal(payload);
+    const payload: Goal = {
+      name,
+      targetRetirementAge,
+      targetAmount,
+      notes
+    }
 
-    request.subscribe({
-      next: () => this.router.navigate(["/goals"]),
-      error: (err) => {
-        this.loading.set(false);
-        this.error.set(typeof err.error === "string" ? err.error : "Save failed.");
-      },
+    if(this.goal()) {
+      payload.id = this.goal()!.id;
+    }
+
+    this.save.emit(payload);
+    this.visible.set(false);
+  }
+
+  resetForm() {
+    const currentGoal = this.goal();
+    this.form.setValue({
+      name: currentGoal?.name ?? "",
+      targetRetirementAge: currentGoal?.targetRetirementAge ?? null,
+      targetAmount: currentGoal?.targetAmount ?? null,
+      notes: currentGoal?.notes ?? "",
     });
+  }
+
+  cancel() {
+    this.visible.set(false);
+    this.resetForm();
   }
 }

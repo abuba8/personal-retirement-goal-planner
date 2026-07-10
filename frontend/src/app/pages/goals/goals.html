@@ -3,7 +3,7 @@
   <button type="button" (click)="logout()">Log out</button>
 </div>
 
-<a routerLink="/goals/new"><button type="button">+ New goal</button></a>
+<button type="button" (click)="handleCreateGoal()">+ New goal</button>
 
 @if (loading()) { <p>Loading...</p> }
 @if (error())   { <p>{{ error() }}</p> }
@@ -26,7 +26,7 @@
         <td>{{ goal.targetAmount }}</td>
         <td>{{ goal.notes }}</td>
         <td>
-          <a [routerLink]="['/goals', goal.id, 'edit']">Edit</a>
+          <button (click)="handleUpdateGoal(goal)">Edit</button>
           <button type="button" (click)="handleDeleteGoal(goal)">Delete</button>
         </td>
       </tr>
@@ -36,11 +36,11 @@
   </tbody>
 </table>
 
-<div>
-  <button type="button" (click)="prev()" [disabled]="page() === 0">Prev</button>
-  <span> Page {{ page() + 1 }} of {{ totalPages() }} </span>
-  <button type="button" (click)="next()" [disabled]="page() >= totalPages() - 1">Next</button>
-</div>
+<app-goal-form
+  [(visible)]="showGoalDialog"
+  [goal]="selectedGoal()"
+  (save)="handleSaveGoal($event)"
+/>
 
 <app-delete-confirmation-modal
   [visible]="showDeleteDialog()"

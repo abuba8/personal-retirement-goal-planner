@@ -1,27 +1,54 @@
-<h2>{{ editingId() ? "Edit goal" : "New goal" }}</h2>
+<p-dialog
+    [header]="title()"
+    [modal]="true"
+    [(visible)]="visible"
+    [style]="{width: '40rem', height: '40rem'}"
+>
+    <form [formGroup]="form" (ngSubmit)="saveGoal()">
+        <div>
+            <input id="goal-name" formControlName="name" type="text" />
+            <label for="goal-name">Name</label>
+            @if (form.get("name")?.invalid && form.get("name")?.touched) {
+                <small class="p-error">Name is required</small>
+            }
+        </div>
+        <div>
+            <input id="goal-age" formControlName="targetRetirementAge" type="number" />
+            <label for="goal-age">Goal Target Age</label>
+            @if (form.get("targetRetirementAge")?.invalid && form.get("targetRetirementAge")?.touched) {
+                <small class="p-error">Target Retirement Age must be above 0</small>
+            }
+        </div>
+        <div><p-inputNumber 
+            id="contribution-amount" 
+            formControlName="targetAmount" 
+            mode="currency" 
+            currency="USD" 
+            locale="en-US" 
+            /><label for="contribution-amount">Target Amount</label>
+            @if (form.get("targetAmount")?.invalid && form.get("targetAmount")?.touched) {
+                <small class="p-error">Target Amount must be greater than 0</small>
+            }
+        </div>
+        <div>
+            <input id="goal-notes" formControlName="notes" type="text" />
+            <label for="goal-notes">Notes</label>
+        </div>
 
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <div>
-    <label>Name</label>
-    <input type="text" formControlName="name" />
-  </div>
-  <div>
-    <label>Target retirement age</label>
-    <input type="number" formControlName="targetRetirementAge" />
-  </div>
-  <div>
-    <label>Target amount</label>
-    <input type="number" step="0.01" formControlName="targetAmount" />
-  </div>
-  <div>
-    <label>Notes</label>
-    <textarea formControlName="notes"></textarea>
-  </div>
+        <p-button
+            label="Cancel"
+            type="button"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="cancel()"
+            class="p-2 w-full"
+        />
 
-  @if (error()) { <p>{{ error() }}</p> }
-
-  <button type="submit" [disabled]="loading()">
-    {{ loading() ? "Saving..." : "Save" }}
-  </button>
-  <a routerLink="/goals"><button type="button">Cancel</button></a>
-</form>
+        <p-button
+            label="Save"
+            type="submit"
+            [disabled]="form.invalid"
+            class="p-2 w-full"
+        />
+    </form>
+</p-dialog>

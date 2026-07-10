@@ -101,5 +101,7 @@
 />
 
 <app-goal-form
-
+    [(visible)]="showCreateGoalDialog"
+    [goal]="null"
+    (save)="onNewGoalSaved($event)"
 />
