@@ -11,7 +11,7 @@ import { MessageModule } from 'primeng/message';
   selector: 'app-register',
   imports: [ReactiveFormsModule, RouterLink, InputTextModule, PasswordModule, ButtonModule, MessageModule],
   templateUrl: './register.html',
-  styleUrl: './register.css',
+  styleUrl: '../utils/css/auth/styles.css',
 })
 export class Register {
   form!: FormGroup;
@@ -27,7 +27,7 @@ export class Register {
   ngOnInit(): void{
     this.form = this.formBuilder.group({
       username: ["", [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      email: ["", Validators.required, Validators.email],
+      email: ["", [Validators.required, Validators.email]],
       password: ["", [Validators.required, Validators.minLength(8), Validators.maxLength(100)]],
     });
   }

@@ -1,5 +1,3 @@
-CREATE DATABASE retirement_goals;
-
 DROP TABLE IF EXISTS contribution_record;
 DROP TABLE IF EXISTS funding_source;
 DROP TABLE IF EXISTS goal;
@@ -15,7 +13,7 @@ CREATE TABLE app_user (
     enabled BOOLEAN NOT NULL DEFAULT FALSE,
     verification_code VARCHAR(6),
     verification_code_expires_at TIMESTAMP,
-    verification_attempts INT NOT NULL DEFAULT 0,
+    verification_attempts INT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE goal (

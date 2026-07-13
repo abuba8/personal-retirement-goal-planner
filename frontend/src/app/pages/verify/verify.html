@@ -1,3 +1,107 @@
+<div class="auth-shell">
+  <!-- LEFT: promo panel -->
+  <aside class="auth-brand">
+    <div class="auth-brand__name">Retirement Goal Planner</div>
+
+    <div class="auth-brand__body">
+      <h1 class="font-display auth-brand__headline">
+        Every dollar, working toward the retirement you picture.
+      </h1>
+      <p class="auth-brand__copy">
+        Define your goals, track every funding source, and watch each contribution move
+        you closer; in one private, beautifully clear workspace.
+      </p>
+    </div>
+
+    <div class="auth-brand__stats">
+    </div>
+  </aside>
+
+  <!-- RIGHT: the form -->
+  <main class="auth-panel">
+    <div class="auth-form">
+      <div class="mb-8">
+        <h1 class="font-display text-4xl font-semibold" style="color: var(--primary-ink);">
+          Verify your email
+        </h1>
+        <p class="mt-2 text-base" style="color: var(--muted-text);">
+          Enter the 6-digit code we emailed you.
+        </p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+      <!-- Email -->
+      <div class="flex flex-col gap-1.5">
+        <label for="email" class="text-sm font-medium" style="color: var(--primary-ink);">
+          Email
+        </label>
+        <input
+          pInputText
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          class="w-full"
+        />
+        @if (form.get('email')?.touched && form.get('email')?.invalid) {
+          <small style="color: var(--error-accent);">Enter a valid email address.</small>
+        }
+      </div>
+
+      <!-- Code -->
+      <div class="flex flex-col gap-1.5">
+        <label for="code" class="text-sm font-medium" style="color: var(--primary-ink);">
+          Verification code
+        </label>
+        <input
+          pInputText
+          id="code"
+          formControlName="verificationCode"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="123456"
+          class="w-full tracking-[0.4em] text-center"
+        />
+        @if (form.get('verificationCode')?.touched && form.get('verificationCode')?.invalid) {
+          <small style="color: var(--error-accent);">Enter the 6-digit code.</small>
+        }
+      </div>
+
+      @if (error()) {
+        <p-message severity="error" [text]="error()!" styleClass="w-full" />
+      }
+      @if (info()) {
+        <p-message severity="success" [text]="info()!" styleClass="w-full" />
+      }
+
+      <div class="flex flex-col gap-2 mt-2">
+        <p-button
+          type="submit"
+          [label]="loading() ? 'Verifying…' : 'Verify'"
+          [loading]="loading()"
+          [disabled]="loading()"
+          styleClass="w-full auth-submit mt-1"
+        />
+        <p-button
+          type="button"
+          label="Resend code"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="resend()"
+          styleClass="w-full auth-submit mt-1"
+        />
+      </div>
+    </form>
+
+    <p class="mt-6 text-center text-sm" style="color: var(--muted-text);">
+      <a routerLink="/login" class="font-semibold" style="color: var(--primary);">Back to sign in</a>
+    </p>
+    </div>
+  </main>
+</div>
+
+
+
 <div class="min-h-screen flex items-center justify-center p-4">
   <div
     class="w-full max-w-md rounded-2xl border p-8 shadow-sm"

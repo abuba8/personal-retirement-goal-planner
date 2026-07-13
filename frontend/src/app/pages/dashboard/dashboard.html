@@ -1,0 +1,106 @@
+<div class="dash">
+
+  <aside class="sidebar">
+    <div class="sidebar_logo">
+      <span class="sidebar_logo-name">Retirement Goal Planner</span>
+    </div>
+
+    <nav class="sidebar_nav">
+      <a routerLink="/dashboard" class="sidebar_link sidebar_link--active">Dashboard</a>
+      <a routerLink="/goals" class="sidebar_link">Goals</a>
+      <a routerLink="" class="sidebar_link">Funding Sources</a>
+      <a routerLink="" class="sidebar_link">Contributions</a>
+      <a routerLink="/profile" class="sidebar_link">Profile</a>
+    </nav>
+
+    <div class="sidebar_user">
+      <span class="sidebar_avatar">{{ userName() ? userName().charAt(0).toUpperCase() : 'U' }}</span>
+      <div>
+        <div class="sidebar_user-name">{{ userName() || 'User' }}</div>
+        <a class="sidebar_signout" (click)="logout()">Sign out</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- header -->
+    <div class="header">
+      <div>
+        <p class="header_welcome">Welcome back, {{ userName() || 'there' }}</p>
+        <h1 class="header_title font-display">Your retirement picture</h1>
+      </div>
+      <button type="button" class="header_cta">+ Log contribution</button>
+    </div>
+
+    <!-- top grid: hero + 4 stat cards -->
+    <div class="top-grid">
+
+      <!-- hero card -->
+      <div class="hero">
+        <div class="hero_ring" [style.--pct]="percentFunded()">
+          <div class="hero_ring-label">
+            <span class="hero_ring-pct">{{ percentFunded() }}%</span>
+            <span class="hero_ring-sub">funded</span>
+          </div>
+        </div>
+        <div class="hero_figures">
+          <p class="hero_label">TOTAL CONTRIBUTED</p>
+          <p class="hero_total">${{ totalContributed().toLocaleString() }}</p>
+          <p class="hero_of">of ${{ totalTarget().toLocaleString() }} across all goals</p>
+          <hr class="hero_rule" />
+          <p class="hero_togo">${{ stillToGo().toLocaleString() }} still to go</p>
+        </div>
+      </div>
+
+      <!-- 4 stat cards -->
+      <div class="stat">
+        <p class="stat_label">Goals</p>
+        <p class="stat_value">{{ goals().length }}</p>
+      </div>
+      <div class="stat">
+        <p class="stat_label">Funding sources</p>
+        <p class="stat_value">{{ fundingSourcesCount() }}</p>
+      </div>
+      <div class="stat">
+        <p class="stat_label">Contributions</p>
+        <p class="stat_value">{{ contributionCount() }}</p>
+      </div>
+      <div class="stat">
+        <p class="stat_label">Logged in {{ currentYear }}</p>
+        <p class="stat_value">${{ totalContributed().toLocaleString() }}</p>
+      </div>
+    </div>
+
+    <!-- goals at a glance -->
+    <div class="glance-head">
+      <h2 class="font-display glance-head_title">Goals at a glance</h2>
+      <a routerLink="/goals" class="glance-head_all">View all →</a>
+    </div>
+
+    <div class="glance">
+      @for (goal of topGoals(); track goal.id) {
+        <div class="goal-card">
+          <div class="goal-card_top">
+            <span class="goal-card_name">{{ goal.name }}</span>
+            <span class="goal-card_pill">{{ goalStatus(goalPercent(goal)) }}</span>
+          </div>
+          <p class="goal-card_amount">
+            ${{ (goal.targetAmount * 0.33).toLocaleString() }}
+            <span class="goal-card_target">/ ${{ goal.targetAmount.toLocaleString() }}</span>
+          </p>
+          <div class="goal-card_bar">
+            <div class="goal-card_bar-fill" [style.width.%]="goalPercent(goal)"></div>
+          </div>
+          <div class="goal-card_foot">
+            <span>{{ goalPercent(goal) }}% funded</span>
+            <span>age {{ goal.targetRetirementAge }}</span>
+          </div>
+        </div>
+      } @empty {
+        <p class="glance_empty">No goals yet. <a routerLink="/goals">Add one →</a></p>
+      }
+    </div>
+
+  </main>
+</div>
