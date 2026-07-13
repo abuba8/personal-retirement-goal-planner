@@ -20,19 +20,20 @@
   </thead>
   <tbody>
     @for (goal of allGoals(); track goal.id) {
-      <tr>
+      <tr (click)="goToGoal(goal)">
         <td>{{ goal.name }}</td>
         <td>{{ goal.targetRetirementAge }}</td>
         <td>{{ goal.targetAmount }}</td>
         <td>{{ goal.notes }}</td>
         <td>
-          <button (click)="handleUpdateGoal(goal)">Edit</button>
-          <button type="button" (click)="handleDeleteGoal(goal)">Delete</button>
+          <button (click)="$event.stopPropagation(); handleUpdateGoal(goal);">Edit</button>
+          <button type="button" (click)="$event.stopPropagation(); handleDeleteGoal(goal);">Delete</button>
         </td>
       </tr>
     } @empty {
       <tr><td colspan="5">No goals yet.</td></tr>
     }
+    
   </tbody>
 </table>
 

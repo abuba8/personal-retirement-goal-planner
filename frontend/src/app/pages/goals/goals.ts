@@ -1,6 +1,6 @@
 // src/app/pages/goals/goals.ts
 import { Component, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
 import { AuthService } from '../../services/AuthService';
@@ -10,7 +10,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 
 @Component({
   selector: 'app-goals',
-  imports: [DeleteConfirmationModal, GoalForm],
+  imports: [DeleteConfirmationModal, GoalForm, RouterModule],
   templateUrl: './goals.html',
 })
 export class Goals {
@@ -52,6 +52,10 @@ export class Goals {
         console.error(err);
       },
     });
+  }
+
+  goToGoal(goal: Goal) {
+    this.router.navigate(['/goal', goal.id]);
   }
 
   handleCreateGoal() {
