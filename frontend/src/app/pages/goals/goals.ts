@@ -1,17 +1,19 @@
 // src/app/pages/goals/goals.ts
 import { Component, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
 import { AuthService } from '../../services/AuthService';
 import { DeleteConfirmationModal } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
 import { GoalForm } from '../../components/goal-form/goal-form';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { UserService } from '../../services/UserService';
 
 @Component({
   selector: 'app-goals',
-  imports: [DeleteConfirmationModal, GoalForm],
+  imports: [DeleteConfirmationModal, GoalForm, RouterLink],
   templateUrl: './goals.html',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
 export class Goals {
 
@@ -23,14 +25,20 @@ export class Goals {
   totalPages = signal<number>(0);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
+  userName = signal<string>('');
 
   constructor(
     private goalService: GoalService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
+    this.userService.getCurrentUser().subscribe({
+      next: (user) => this.userName.set(user.username),
+      error: () => this.userName.set('') //fallback empty string
+    });
     this.loadGoals();
   }
 

@@ -9,7 +9,7 @@ import { UserService } from '../../services/UserService';
   selector: 'app-dashboard',
   imports: [RouterLink],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
 export class Dashboard {
   // data we load

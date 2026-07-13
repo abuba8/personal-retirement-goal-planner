@@ -5,9 +5,6 @@ import { FundingSourcePage } from './pages/funding-source/funding-source';
 import { authGuard } from './core/auth-guard';
 
 export const routes: Routes = [
-    {path: "sources", component: FundingSources},
-    {path: "source/:id", component: FundingSourcePage},
-    {path: "contributions", component: Contributions},
     {
         path: '', redirectTo: 'login', pathMatch: 'full'
     },
@@ -25,6 +22,18 @@ export const routes: Routes = [
     },
     {
         path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./pages/dashboard/dashboard').then((x) => x.Dashboard),
+    },
+    {
+        path: 'source/:id', canActivate: [authGuard], loadComponent: () => import('./pages/funding-source/funding-source').then((x) => x.FundingSourcePage),
+    },
+    {
+        path: 'sources', canActivate: [authGuard], loadComponent: () => import('./pages/funding-source-list/funding-source-list').then((x) => x.FundingSources),
+    },
+    {
+        path: 'contributions', canActivate: [authGuard], loadComponent: () => import('./pages/contributions/contributions').then((x) => x.Contributions),
+    },
+    {
+        path: 'profile', canActivate: [authGuard], loadComponent: () => import('./pages/profile/profile').then((x) => x.Profile),
     },
     {
         path: '**', redirectTo: 'login'

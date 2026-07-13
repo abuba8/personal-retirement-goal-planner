@@ -13,15 +13,19 @@ import { ContributionForm } from '../../components/contribution-form/contributio
 import { ContributionTable } from '../../components/contribution-table/contribution-table';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
+import { UserService } from '../../services/UserService';
+import { AuthService } from '../../services/AuthService';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-contributions',
   imports: [TableModule, ButtonModule, UpdateDialog, ContributionForm, 
-    ConfirmDialog, ContributionTable
+    ConfirmDialog, ContributionTable, RouterLink
   ],
   templateUrl: './contributions.html',
-  styleUrl: './contributions.css',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
+
 export class Contributions {
   allContributions = signal<Contribution[]>([]);
   allSources = signal<FundingSource[]>([]);
@@ -30,6 +34,7 @@ export class Contributions {
   totalContributions = signal<number>(0);
   showUpdate = signal<boolean>(false);
   showDialog = signal<boolean>(false);
+  userName = signal<string>('');
   getSourceName(sourceId?: number): string {
     return this.allSources().find(s => s.id === sourceId)?.name ?? "";
   }
@@ -42,10 +47,18 @@ export class Contributions {
     private sourceService: FundingSourceService,
     private goalService: GoalService,
     private confirmationService: ConfirmationService,
-    private toastService: MessageService
+    private toastService: MessageService,
+    private userService: UserService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.userService.getCurrentUser().subscribe({
+      next: (user) => this.userName.set(user.username),
+      error: () => this.userName.set('') //fallback empty string
+    });
+
     this.loadContributions();
     this.loadSources();
     this.loadGoals();
@@ -147,5 +160,9 @@ export class Contributions {
         console.error(err);
       }
     })
+  }
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

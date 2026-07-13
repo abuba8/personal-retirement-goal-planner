@@ -1,32 +1,63 @@
-<h2>Contribution Component</h2>
+<div class="dash">
 
-<app-contribution-table
-    [contributions]="allContributions()"
-    [totalContributions]="totalContributions()"
-    [showSourceColumn]="true"
-    [showGoalColumn]="true"
-    [allSources]="allSources()"
-    [allGoals]="allGoals()"
-    [(selection)]="selectedContribution"
-    (lazyLoad)="loadContributions($event)"
-    (select)="handleUpdate()"
-    (create)="handleCreateContribution()"
-/>
+  <aside class="sidebar">
+    <div class="sidebar_logo">
+      <span class="sidebar_logo-name">Retirement Goal Planner</span>
+    </div>
 
-<app-update-dialog
-    [(visible)]="showUpdate"
-    (edit)="handleUpdateContribution(selectedContribution()!)"
-    (delete)="handleDeleteContribution(selectedContribution()!)"
-/>
+    <nav class="sidebar_nav">
+      <a routerLink="/dashboard" class="sidebar_link">Dashboard</a>
+      <a routerLink="/goals" class="sidebar_link">Goals</a>
+      <a routerLink="/sources" class="sidebar_link">Funding Sources</a>
+      <a routerLink="/contributions" class="sidebar_link sidebar_link--active">Contributions</a>
+      <a routerLink="/profile" class="sidebar_link">Profile</a>
+    </nav>
 
-<app-contribution-form
-    [(visible)]="showDialog"
-    [contribution]="selectedContribution()"
-    [allSources]="allSources()"
-    [allGoals]="allGoals()"
-    (createdSource)="allSources.update(currentList => [...currentList, $event])"
-    (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
-    (save)="handleSaveContribution($event)"
-/>
+    <div class="sidebar_user">
+      <span class="sidebar_avatar">{{ userName() ? userName().charAt(0).toUpperCase() : 'U' }}</span>
+      <div>
+        <div class="sidebar_user-name">{{ userName() || 'User' }}</div>
+        <a class="sidebar_signout" (click)="logout()">Sign out</a>
+      </div>
+    </div>
+  </aside>
 
-<p-confirmdialog />
+  <main class="main">
+
+    <h2>Contribution Component</h2>
+
+    <app-contribution-table
+        [contributions]="allContributions()"
+        [totalContributions]="totalContributions()"
+        [showSourceColumn]="true"
+        [showGoalColumn]="true"
+        [allSources]="allSources()"
+        [allGoals]="allGoals()"
+        [(selection)]="selectedContribution"
+        (lazyLoad)="loadContributions($event)"
+        (select)="handleUpdate()"
+        (create)="handleCreateContribution()"
+    />
+
+    <app-update-dialog
+        [(visible)]="showUpdate"
+        (edit)="handleUpdateContribution(selectedContribution()!)"
+        (delete)="handleDeleteContribution(selectedContribution()!)"
+    />
+
+    <app-contribution-form
+        [(visible)]="showDialog"
+        [contribution]="selectedContribution()"
+        [allSources]="allSources()"
+        [allGoals]="allGoals()"
+        (createdSource)="allSources.update(currentList => [...currentList, $event])"
+        (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
+        (save)="handleSaveContribution($event)"
+    />
+
+    <p-confirmdialog />
+
+
+  </main>
+</div>
+

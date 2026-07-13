@@ -6,18 +6,20 @@ import { SourceTypeLabelPipe } from '../../pipes/source-type-label-pipe';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UpdateDialog } from '../../components/update-dialog/update-dialog';
+import { UserService } from '../../services/UserService';
+import { AuthService } from '../../services/AuthService';
 
 
 @Component({
   selector: 'app-funding-sources',
   imports: [TableModule, SourceTypeLabelPipe, DialogModule, ConfirmDialog,
-    ButtonModule, RouterModule, FundingSourceForm, UpdateDialog],
+    ButtonModule, RouterModule, FundingSourceForm, UpdateDialog, RouterLink],
   templateUrl: './funding-source-list.html',
-  styleUrl: './funding-source-list.css',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
 export class FundingSources {
 
@@ -26,15 +28,24 @@ export class FundingSources {
   totalSources = signal<number>(0);
   showUpdate = signal<boolean>(false);
   showDialog = signal<boolean>(false);
+  userName = signal<string>('');
 
   constructor(
     private service: FundingSourceService,
     private router: Router,
     private confirmationService: ConfirmationService,
-    private toastService: MessageService
+    private toastService: MessageService,
+    private userService: UserService,
+    private authService: AuthService
   ){}
 
   ngOnInit(): void {
+
+    this.userService.getCurrentUser().subscribe({
+      next: (user) => this.userName.set(user.username),
+      error: () => this.userName.set('') //fallback empty string
+    });
+
     this.loadSources();
   }
 
@@ -129,5 +140,9 @@ export class FundingSources {
         console.error(err);
       }
     })
+  }
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

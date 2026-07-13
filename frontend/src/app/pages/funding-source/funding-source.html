@@ -1,57 +1,87 @@
-<a routerLink="/sources">&larr; Back to Funding Sources</a>
+<div class="dash">
 
-@if (source(); as currentSource) {
-  <div>
-    <h2>{{ currentSource.name }}</h2>
-    <p>Institution: {{ currentSource.institution }}</p>
-    <p>Notes: {{ currentSource.notes }}</p>
-    <p>Type: {{ currentSource.type | sourceTypeLabel }}</p>
-    <app-contribution-summary 
-      [totalContributed]="totalContributed()"
-      [contributionCount]="contributionCount()"
+  <aside class="sidebar">
+    <div class="sidebar_logo">
+      <span class="sidebar_logo-name">Retirement Goal Planner</span>
+    </div>
+
+    <nav class="sidebar_nav">
+      <a routerLink="/dashboard" class="sidebar_link">Dashboard</a>
+      <a routerLink="/goals" class="sidebar_link">Goals</a>
+      <a routerLink="/sources" class="sidebar_link sidebar_link--active">Funding Sources</a>
+      <a routerLink="/contributions" class="sidebar_link">Contributions</a>
+      <a routerLink="/profile" class="sidebar_link">Profile</a>
+    </nav>
+
+    <div class="sidebar_user">
+      <span class="sidebar_avatar">{{ userName() ? userName().charAt(0).toUpperCase() : 'U' }}</span>
+      <div>
+        <div class="sidebar_user-name">{{ userName() || 'User' }}</div>
+        <a class="sidebar_signout" (click)="logout()">Sign out</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <a routerLink="/sources">&larr; Back to Funding Sources</a>
+
+    @if (source(); as currentSource) {
+      <div>
+        <h2>{{ currentSource.name }}</h2>
+        <p>Institution: {{ currentSource.institution }}</p>
+        <p>Notes: {{ currentSource.notes }}</p>
+        <p>Type: {{ currentSource.type | sourceTypeLabel }}</p>
+        <app-contribution-summary 
+          [totalContributed]="totalContributed()"
+          [contributionCount]="contributionCount()"
+        />
+        <app-contribution-limit
+          [yearlyContributed]="yearlyContributed()"
+          [yearlyLimit]="yearlyLimit()"
+        />
+
+        <p-button label="Edit" icon="pi pi-pen-to-square" (click)="showDialog.set(true)" />
+        <p-button label="Delete" icon="pi pi-trash" severity="danger" [outlined]="true" (click)="handleDeleteSource()" />
+      </div>
+    }
+
+    <app-funding-source-form
+      [(visible)]="showDialog"
+      [source]="source()"
+      (save)="handleSaveSource($event)"
     />
-    <app-contribution-limit
-      [yearlyContributed]="yearlyContributed()"
-      [yearlyLimit]="yearlyLimit()"
+
+    <p-confirmdialog />
+
+    <h3>Contributions</h3>
+    <app-contribution-table
+        [contributions]="allContributions()"
+        [totalContributions]="totalContributions()"
+        [showSourceColumn]="false"
+        [showGoalColumn]="true"
+        [allGoals]="allGoals()"
+        [(selection)]="contribution"
+        (lazyLoad)="loadContributions($event)"
+        (select)="handleUpdate()"
+        (create)="handleCreateContribution()"
     />
 
-    <p-button label="Edit" icon="pi pi-pen-to-square" (click)="showDialog.set(true)" />
-    <p-button label="Delete" icon="pi pi-trash" severity="danger" [outlined]="true" (click)="handleDeleteSource()" />
-  </div>
-}
+    <app-update-dialog
+        [(visible)]="showUpdate"
+        (edit)="handleUpdateContribution(contribution()!)"
+        (delete)="handleDeleteContribution(contribution()!)"
+    />
 
-<app-funding-source-form
-  [(visible)]="showDialog"
-  [source]="source()"
-  (save)="handleSaveSource($event)"
-/>
+    <app-contribution-form
+        [(visible)]="showContributionDialog"
+        [contribution]="contribution()"
+        [allGoals]="allGoals()"
+        [lockedSourceId]="sourceId"
+        (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
+        (save)="handleSaveContribution($event)"
+    />
 
-<p-confirmdialog />
+  </main>
+</div>
 
-<h3>Contributions</h3>
-<app-contribution-table
-    [contributions]="allContributions()"
-    [totalContributions]="totalContributions()"
-    [showSourceColumn]="false"
-    [showGoalColumn]="true"
-    [allGoals]="allGoals()"
-    [(selection)]="contribution"
-    (lazyLoad)="loadContributions($event)"
-    (select)="handleUpdate()"
-    (create)="handleCreateContribution()"
-/>
-
-<app-update-dialog
-    [(visible)]="showUpdate"
-    (edit)="handleUpdateContribution(contribution()!)"
-    (delete)="handleDeleteContribution(contribution()!)"
-/>
-
-<app-contribution-form
-    [(visible)]="showContributionDialog"
-    [contribution]="contribution()"
-    [allGoals]="allGoals()"
-    [lockedSourceId]="sourceId"
-    (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
-    (save)="handleSaveContribution($event)"
-/>
