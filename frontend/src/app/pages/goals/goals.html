@@ -1,50 +1,54 @@
-<div>
-  <h2>Your goals</h2>
-  <button type="button" (click)="logout()">Log out</button>
+<div class="dash">
+
+  <app-side-bar />
+
+  <main class="main">
+    <button type="button" (click)="handleCreateGoal()">+ New goal</button>
+
+    @if (loading()) { <p>Loading...</p> }
+    @if (error())   { <p>{{ error() }}</p> }
+
+    <table border="1" cellpadding="6">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Retirement age</th>
+          <th>Target amount</th>
+          <th>Notes</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (goal of allGoals(); track goal.id) {
+          <tr>
+            <td>{{ goal.name }}</td>
+            <td>{{ goal.targetRetirementAge }}</td>
+            <td>{{ goal.targetAmount }}</td>
+            <td>{{ goal.notes }}</td>
+            <td>
+              <button (click)="handleUpdateGoal(goal)">Edit</button>
+              <button type="button" (click)="handleDeleteGoal(goal)">Delete</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="5">No goals yet.</td></tr>
+        }
+      </tbody>
+    </table>
+
+    <app-goal-form
+      [(visible)]="showGoalDialog"
+      [goal]="selectedGoal()"
+      (save)="handleSaveGoal($event)"
+    />
+
+    <app-delete-confirmation-modal
+      [visible]="showDeleteDialog()"
+      [recordName]="selectedGoal()?.name ?? ''"
+      (confirmed)="deleteGoal()"
+      (cancelled)="showDeleteDialog.set(false)"
+    />
+
+  </main>
 </div>
 
-<button type="button" (click)="handleCreateGoal()">+ New goal</button>
-
-@if (loading()) { <p>Loading...</p> }
-@if (error())   { <p>{{ error() }}</p> }
-
-<table border="1" cellpadding="6">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Retirement age</th>
-      <th>Target amount</th>
-      <th>Notes</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (goal of allGoals(); track goal.id) {
-      <tr>
-        <td>{{ goal.name }}</td>
-        <td>{{ goal.targetRetirementAge }}</td>
-        <td>{{ goal.targetAmount }}</td>
-        <td>{{ goal.notes }}</td>
-        <td>
-          <button (click)="handleUpdateGoal(goal)">Edit</button>
-          <button type="button" (click)="handleDeleteGoal(goal)">Delete</button>
-        </td>
-      </tr>
-    } @empty {
-      <tr><td colspan="5">No goals yet.</td></tr>
-    }
-  </tbody>
-</table>
-
-<app-goal-form
-  [(visible)]="showGoalDialog"
-  [goal]="selectedGoal()"
-  (save)="handleSaveGoal($event)"
-/>
-
-<app-delete-confirmation-modal
-  [visible]="showDeleteDialog()"
-  [recordName]="selectedGoal()?.name ?? ''"
-  (confirmed)="deleteGoal()"
-  (cancelled)="showDeleteDialog.set(false)"
-/>

@@ -1,5 +1,3 @@
-CREATE DATABASE retirement_goals;
-
 DROP TABLE IF EXISTS contribution_record;
 DROP TABLE IF EXISTS funding_source;
 DROP TABLE IF EXISTS goal;

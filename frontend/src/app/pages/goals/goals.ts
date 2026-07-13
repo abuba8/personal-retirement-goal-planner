@@ -1,17 +1,18 @@
 // src/app/pages/goals/goals.ts
 import { Component, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
-import { AuthService } from '../../services/AuthService';
 import { DeleteConfirmationModal } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
 import { GoalForm } from '../../components/goal-form/goal-form';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-goals',
-  imports: [DeleteConfirmationModal, GoalForm],
+  imports: [DeleteConfirmationModal, GoalForm, RouterLink, SideBar],
   templateUrl: './goals.html',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
 export class Goals {
 
@@ -23,11 +24,10 @@ export class Goals {
   totalPages = signal<number>(0);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
+  userName = signal<string>('');
 
   constructor(
     private goalService: GoalService,
-    private authService: AuthService,
-    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -107,10 +107,5 @@ export class Goals {
         this.showDeleteDialog.set(false);
       },
     });
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(["/login"]);
   }
 }

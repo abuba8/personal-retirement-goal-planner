@@ -19,15 +19,16 @@ import { GoalService } from '../../services/GoalService';
 import { ContributionSummary } from '../../components/contribution-summary/contribution-summary';
 import { SourceTypeLimit } from '../../types/enums/SourceType';
 import { ContributionLimit } from '../../components/contribution-limit/contribution-limit';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-funding-source',
   imports: [RouterModule, TableModule, ButtonModule, SourceTypeLabelPipe, FundingSourceForm, 
     ConfirmDialog, UpdateDialog, ContributionTable, ContributionForm, ContributionSummary,
-    ContributionLimit
+    ContributionLimit, SideBar
   ],
   templateUrl: './funding-source.html',
-  styleUrl: './funding-source.css',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
 export class FundingSourcePage {
   sourceId!: number;
@@ -43,6 +44,7 @@ export class FundingSourcePage {
   contributionCount = signal<number>(0);
   yearlyLimit = signal<number>(0);
   yearlyContributed = signal<number>(0);
+  userName = signal<string>(''); 
 
   constructor(
     private sourceService: FundingSourceService,
@@ -51,7 +53,7 @@ export class FundingSourcePage {
     private router: Router,
     private route: ActivatedRoute,
     private confirmationService: ConfirmationService,
-    private toastService: MessageService
+    private toastService: MessageService,
   ) {}
 
   ngOnInit(): void {
