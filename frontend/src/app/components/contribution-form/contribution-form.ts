@@ -58,8 +58,8 @@ export class ContributionForm {
       date: [null, [Validators.required]],
       category: [null, [Validators.required]],
       notes: [""],
-      sourceId: [1, [Validators.required]],
-      goalId: [1, [Validators.required]]
+      sourceId: [null, [Validators.required]],
+      goalId: [null, [Validators.required]]
     });
 
     effect(() => this.resetForm());
@@ -122,8 +122,8 @@ export class ContributionForm {
       date: currentContribution?.date ?? "",
       category: currentContribution?.category ?? null,
       notes: currentContribution?.notes ?? "",
-      sourceId: currentContribution?.sourceId ?? this.lockedSourceId() ?? 0,
-      goalId: currentContribution?.goalId ?? this.lockedGoalId() ?? 0
+      sourceId: currentContribution?.sourceId ?? this.lockedSourceId() ?? null,
+      goalId: currentContribution?.goalId ?? this.lockedGoalId() ?? null
     })
   }
 
