@@ -1,0 +1,57 @@
+<a routerLink="/sources">&larr; Back to Funding Sources</a>
+
+@if (source(); as currentSource) {
+  <div>
+    <h2>{{ currentSource.name }}</h2>
+    <p>Institution: {{ currentSource.institution }}</p>
+    <p>Notes: {{ currentSource.notes }}</p>
+    <p>Type: {{ currentSource.type | sourceTypeLabel }}</p>
+    <app-contribution-summary 
+      [totalContributed]="totalContributed()"
+      [contributionCount]="contributionCount()"
+    />
+    <app-contribution-limit
+      [yearlyContributed]="yearlyContributed()"
+      [yearlyLimit]="yearlyLimit()"
+    />
+
+    <p-button label="Edit" icon="pi pi-pen-to-square" (click)="showDialog.set(true)" />
+    <p-button label="Delete" icon="pi pi-trash" severity="danger" [outlined]="true" (click)="handleDeleteSource()" />
+  </div>
+}
+
+<app-funding-source-form
+  [(visible)]="showDialog"
+  [source]="source()"
+  (save)="handleSaveSource($event)"
+/>
+
+<p-confirmdialog />
+
+<h3>Contributions</h3>
+<app-contribution-table
+    [contributions]="allContributions()"
+    [totalContributions]="totalContributions()"
+    [showSourceColumn]="false"
+    [showGoalColumn]="true"
+    [allGoals]="allGoals()"
+    [(selection)]="contribution"
+    (lazyLoad)="loadContributions($event)"
+    (select)="handleUpdate()"
+    (create)="handleCreateContribution()"
+/>
+
+<app-update-dialog
+    [(visible)]="showUpdate"
+    (edit)="handleUpdateContribution(contribution()!)"
+    (delete)="handleDeleteContribution(contribution()!)"
+/>
+
+<app-contribution-form
+    [(visible)]="showContributionDialog"
+    [contribution]="contribution()"
+    [allGoals]="allGoals()"
+    [lockedSourceId]="sourceId"
+    (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
+    (save)="handleSaveContribution($event)"
+/>

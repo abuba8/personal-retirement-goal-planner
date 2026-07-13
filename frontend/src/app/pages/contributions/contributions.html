@@ -1,0 +1,32 @@
+<h2>Contribution Component</h2>
+
+<app-contribution-table
+    [contributions]="allContributions()"
+    [totalContributions]="totalContributions()"
+    [showSourceColumn]="true"
+    [showGoalColumn]="true"
+    [allSources]="allSources()"
+    [allGoals]="allGoals()"
+    [(selection)]="selectedContribution"
+    (lazyLoad)="loadContributions($event)"
+    (select)="handleUpdate()"
+    (create)="handleCreateContribution()"
+/>
+
+<app-update-dialog
+    [(visible)]="showUpdate"
+    (edit)="handleUpdateContribution(selectedContribution()!)"
+    (delete)="handleDeleteContribution(selectedContribution()!)"
+/>
+
+<app-contribution-form
+    [(visible)]="showDialog"
+    [contribution]="selectedContribution()"
+    [allSources]="allSources()"
+    [allGoals]="allGoals()"
+    (createdSource)="allSources.update(currentList => [...currentList, $event])"
+    (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
+    (save)="handleSaveContribution($event)"
+/>
+
+<p-confirmdialog />

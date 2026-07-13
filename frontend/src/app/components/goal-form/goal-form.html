@@ -1,0 +1,54 @@
+<p-dialog
+    [header]="title()"
+    [modal]="true"
+    [(visible)]="visible"
+    [style]="{width: '40rem', height: '40rem'}"
+>
+    <form [formGroup]="form" (ngSubmit)="saveGoal()">
+        <div>
+            <input id="goal-name" formControlName="name" type="text" />
+            <label for="goal-name">Name</label>
+            @if (form.get("name")?.invalid && form.get("name")?.touched) {
+                <small class="p-error">Name is required</small>
+            }
+        </div>
+        <div>
+            <input id="goal-age" formControlName="targetRetirementAge" type="number" />
+            <label for="goal-age">Goal Target Age</label>
+            @if (form.get("targetRetirementAge")?.invalid && form.get("targetRetirementAge")?.touched) {
+                <small class="p-error">Target Retirement Age must be above 0</small>
+            }
+        </div>
+        <div><p-inputNumber 
+            id="contribution-amount" 
+            formControlName="targetAmount" 
+            mode="currency" 
+            currency="USD" 
+            locale="en-US" 
+            /><label for="contribution-amount">Target Amount</label>
+            @if (form.get("targetAmount")?.invalid && form.get("targetAmount")?.touched) {
+                <small class="p-error">Target Amount must be greater than 0</small>
+            }
+        </div>
+        <div>
+            <input id="goal-notes" formControlName="notes" type="text" />
+            <label for="goal-notes">Notes</label>
+        </div>
+
+        <p-button
+            label="Cancel"
+            type="button"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="cancel()"
+            class="p-2 w-full"
+        />
+
+        <p-button
+            label="Save"
+            type="submit"
+            [disabled]="form.invalid"
+            class="p-2 w-full"
+        />
+    </form>
+</p-dialog>

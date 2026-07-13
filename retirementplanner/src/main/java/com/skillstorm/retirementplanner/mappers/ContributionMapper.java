@@ -9,6 +9,7 @@ import com.skillstorm.retirementplanner.models.Contribution;
 public class ContributionMapper {
 
     public ContributionResponse toDto(Contribution contribution) {
-        return new ContributionResponse(contribution.getId(), contribution.getAmount(), contribution.getDate(), contribution.getCategory(), contribution.getNotes());
+        return new ContributionResponse(contribution.getId(), contribution.getAmount(), contribution.getDate(), contribution.getCategory(), 
+        contribution.getNotes(), contribution.getFundingSource().getId(), contribution.getGoal().getId());
     }
 }

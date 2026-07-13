@@ -1,7 +1,8 @@
+// test Auth just to pass token and do test
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
 import { routes } from './app.routes';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/auth-interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -11,7 +12,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])), //without this, every AuthService call fails at runtime with a "no provider for HttpClient" error, would carry authorization bearer <token> header
+    provideHttpClient(withInterceptors([authInterceptor])),
+    ConfirmationService,
+    MessageService,
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

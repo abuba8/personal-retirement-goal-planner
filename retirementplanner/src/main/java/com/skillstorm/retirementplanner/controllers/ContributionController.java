@@ -76,14 +76,16 @@ public class ContributionController {
     /**
      * Update One endpoint takes in a contribution id and a contribution dto
      * @param id - used to identify what contribution is being updated
+     * @param goalId - optional; when provided, reassigns the contribution to this Goal
+     * @param sourceId - optional; when provided, reassigns the contribution to this Funding Source
      * @param dto - populates a contribution entity with an amount, date, category, and notes
      * @return - returns a Response Entity status wrapped around the updated contribution
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ContributionResponse> updateOne(@PathVariable Long id,
-                                                @Valid @RequestBody ContributionRequest dto) {
+    public ResponseEntity<ContributionResponse> updateOne(@PathVariable Long id, @RequestParam(required = false) Long goalId,
+                            @RequestParam(required = false) Long sourceId, @Valid @RequestBody ContributionRequest dto) {
 
-        return service.updateOne(id, this.securityUtils.getCurrentUserId(), dto);
+        return service.updateOne(id, this.securityUtils.getCurrentUserId(), dto, sourceId, goalId);
     }
 
     /**

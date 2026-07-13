@@ -1,14 +1,16 @@
 // src/app/pages/goals/goals.ts
 import { Component, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
 import { AuthService } from '../../services/AuthService';
 import { DeleteConfirmationModal } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
+import { GoalForm } from '../../components/goal-form/goal-form';
+import { TableLazyLoadEvent } from 'primeng/table';
 
 @Component({
   selector: 'app-goals',
-  imports: [RouterLink, DeleteConfirmationModal],
+  imports: [DeleteConfirmationModal, GoalForm],
   templateUrl: './goals.html',
 })
 export class Goals {
@@ -16,6 +18,7 @@ export class Goals {
   allGoals = signal<Goal[]>([]);                 // goals on the current page
   selectedGoal = signal<Goal | null>(null);      // goal targeted for delete
   showDeleteDialog = signal<boolean>(false);     // toggle the delete modal
+  showGoalDialog = signal<boolean>(false);
   page = signal<number>(0);
   totalPages = signal<number>(0);
   loading = signal<boolean>(false);
@@ -28,13 +31,15 @@ export class Goals {
   ) {}
 
   ngOnInit(): void {
-    this.loadGoals(0);
+    this.loadGoals();
   }
 
-  loadGoals(page: number): void {
+  loadGoals(event? : TableLazyLoadEvent): void {
+    const goalPage = event ? event?.first! / event?.rows! : 0;
+
     this.loading.set(true);
     this.error.set(null);
-    this.goalService.getGoalsPage(page).subscribe({
+    this.goalService.getGoalsPage(goalPage).subscribe({
       next: (data) => {
         this.allGoals.set(data.content);         // the array is inside .content
         this.page.set(data.number);
@@ -49,8 +54,39 @@ export class Goals {
     });
   }
 
-  prev(): void { if (this.page() > 0) this.loadGoals(this.page() - 1); }
-  next(): void { if (this.page() < this.totalPages() - 1) this.loadGoals(this.page() + 1); }
+  handleCreateGoal() {
+    this.selectedGoal.set(null);
+    this.showGoalDialog.set(true);
+  }
+
+  handleUpdateGoal(goal: Goal) {
+    this.selectedGoal.set(goal);
+    this.showGoalDialog.set(true);
+  }
+
+  handleSaveGoal(goal: Goal) {
+    if(this.selectedGoal() === null) {
+      this.goalService.createGoal(goal).subscribe({
+        next: () => {
+          this.loadGoals()
+        },
+        error: (err) => {
+          console.error(err)
+        }
+      });
+    } else {
+      this.goalService.updateGoal(goal.id!, goal).subscribe({
+        next: (data) => {
+          this.allGoals.update(
+            currentList => currentList.map(g => g.id === data.id ? data : g)
+          )
+        },
+        error: (err) => {
+          console.error(err)
+        }
+      });
+    }
+  }
 
   // open the delete modal for a goal (same flow as handleDeleteMovie)
   handleDeleteGoal(goal: Goal): void {
