@@ -1,0 +1,16 @@
+.content {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+}
+.funding-source-list_title {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--overlay-ink);
+    margin: 0;
+}
+
+.source-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+    gap: 1rem;
+}

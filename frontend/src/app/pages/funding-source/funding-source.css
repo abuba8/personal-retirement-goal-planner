@@ -1,0 +1,10 @@
+.content {
+  margin-Left: 1.25rem;
+  margin-Top: 0.5rem;
+}
+.funding-source-detail {
+  display: grid;
+  grid-template-columns: 20rem 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}

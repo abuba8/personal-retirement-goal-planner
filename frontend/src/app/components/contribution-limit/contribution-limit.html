@@ -1,12 +1,20 @@
-<div>
-    <p>2026 IRS Limit</p>
-</div>
-<div class="limit-comparison" [class]="severity()">
-    <p>
+<div class="limit-header" [class]="severity()">
+    <p class="limit-label">2026 IRS Limit</p>
+    <p class="limit-percentage">
         {{ yearlyContributed() | currency }} / {{ yearlyLimit() | currency }} - {{ percentage() | number: "1.0-0" }}%
     </p>
-    <progress [value]="yearlyContributed()" [max]="yearlyLimit() ?? 0"></progress>
-    @if (message()) {
-        <p class="limit-message">{{ message() }}</p>
-    }
 </div>
+<div class="limit-comparison" [class]="severity()">
+    <div
+        class="limit-bar"
+        role="progressbar"
+        [attr.aria-valuenow]="yearlyContributed()"
+        [attr.aria-valuemin]="0"
+        [attr.aria-valuemax]="yearlyLimit() ?? 0"
+    >
+        <div class="limit-bar-fill" [style.width.%]="percentage()"></div>
+    </div>
+</div>
+@if (message()) {
+    <p class="limit-message" [class]="severity()">{{ message() }}</p>
+}

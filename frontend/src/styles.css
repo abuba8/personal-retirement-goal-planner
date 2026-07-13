@@ -4,15 +4,16 @@
 @import "primeicons/primeicons.css";
 
 :root {
-    bg: #FBF9F3;
-    card-surface: #FCFBF7;
-    p-border: #E7E1D3;
-    overlay-ink: #16302A;
-    muted-text: #6E7A72;
-    primary: #2E6B54;
-    primary-ink: #1B2420;
-    error-accent: #A24632;
-    error-accent-soft: #F5E3DD;
+    --bg: #FBF9F3;
+    --card-surface: #FCFBF7;
+    --p-border: #E7E1D3;
+    --overlay-ink: #16302A;
+    --muted-text: #6E7A72;
+    --primary: #2E6B54;
+    --primary-ink: #1B2420;
+    --error-accent: #A24632;
+    --error-accent-soft: #F5E3DD;
+    --warning-accent: #8F6511;
 }
 
 html,

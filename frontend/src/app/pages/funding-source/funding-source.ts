@@ -4,7 +4,6 @@ import { FundingSourceService } from '../../services/FundingSourceSevice';
 import { ContributionService } from '../../services/ContributionService';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { SourceTypeLabelPipe } from '../../pipes/source-type-label-pipe';
 import { FundingSource } from '../../types/FundingSource';
 import { Contribution } from '../../types/Contribution';
 import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
@@ -16,15 +15,12 @@ import { currencyPipe } from '../../pipes/currency-pipe';
 import { ContributionForm } from '../../components/contribution-form/contribution-form';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
-import { ContributionSummary } from '../../components/contribution-summary/contribution-summary';
-import { SourceTypeLimit } from '../../types/enums/SourceType';
-import { ContributionLimit } from '../../components/contribution-limit/contribution-limit';
+import { SourceCard } from '../../components/source-card/source-card';
 
 @Component({
   selector: 'app-funding-source',
-  imports: [RouterModule, TableModule, ButtonModule, SourceTypeLabelPipe, FundingSourceForm, 
-    ConfirmDialog, UpdateDialog, ContributionTable, ContributionForm, ContributionSummary,
-    ContributionLimit
+  imports: [RouterModule, TableModule, ButtonModule, FundingSourceForm,
+    ConfirmDialog, UpdateDialog, ContributionTable, ContributionForm, SourceCard
   ],
   templateUrl: './funding-source.html',
   styleUrl: './funding-source.css',
@@ -39,10 +35,6 @@ export class FundingSourcePage {
   showDialog = signal<boolean>(false);
   showContributionDialog = signal<boolean>(false);
   showUpdate = signal<boolean>(false);
-  totalContributed = signal<number>(0);
-  contributionCount = signal<number>(0);
-  yearlyLimit = signal<number>(0);
-  yearlyContributed = signal<number>(0);
 
   constructor(
     private sourceService: FundingSourceService,
@@ -60,7 +52,6 @@ export class FundingSourcePage {
       this.loadSource(this.sourceId);
       this.loadGoals();
       this.loadContributions();
-      this.loadContributionSummary();
     })
   }
 
@@ -68,7 +59,6 @@ export class FundingSourcePage {
     this.sourceService.getSourceById(id).subscribe({
       next: (data) => {
         this.source.set(data);
-        this.yearlyLimit.set(SourceTypeLimit[data.type] ?? 0);
       },
       error: (err) => {
         console.error(err);
@@ -93,40 +83,10 @@ export class FundingSourcePage {
     });
   }
 
-  loadContributionSummary() {
-    this.contributionService.getContributions(0, undefined, this.sourceId).subscribe({
-      next: (firstPage) => {
-        this.contributionCount.set(firstPage.totalElements);
-        this.accumulateAmounts(firstPage.content, 1, firstPage.totalPages);
-      },
-      error: (err) => {
-        console.error(err)
-      }
-    });
-  }
-
-  accumulateAmounts(soFar: Contribution[], nextPage: number, totalPages: number) {
-    if (nextPage >= totalPages) {
-      this.totalContributed.set(soFar.reduce((sum, c) => sum + c.amount, 0));
-      const thisYear = soFar.filter(c => new Date(c.date).getFullYear() === new Date().getFullYear());
-      this.yearlyContributed.set(thisYear.reduce((sum, c) => sum + c.amount, 0));
-      return;
-    }
-    this.contributionService.getContributions(nextPage, undefined, this.sourceId).subscribe({
-      next: (page) => {
-        this.accumulateAmounts([...soFar, ...page.content], nextPage + 1, totalPages)
-      },
-      error: (err) => {
-        console.error(err)
-      }
-    })
-  }
-
   handleSaveSource(source: FundingSource) {
     this.sourceService.updateSource(this.sourceId, source).subscribe({
       next: (data) => {
         this.source.set(data);
-        this.yearlyLimit.set(SourceTypeLimit[data.type] ?? 0);
       },
       error: (err) => {
         console.error(err)
@@ -181,7 +141,7 @@ export class FundingSourcePage {
       this.contributionService.createContribution(contribution, contribution.goalId, contribution.sourceId).subscribe({
         next: () => {
           this.loadContributions();
-          this.loadContributionSummary();
+          this.loadSource(this.sourceId);
         },
         error: (err) => {
           console.error(err)
@@ -191,7 +151,7 @@ export class FundingSourcePage {
       this.contributionService.updateContribution(contribution.id!, contribution, contribution.goalId, contribution.sourceId).subscribe({
         next: () => {
           this.loadContributions();
-          this.loadContributionSummary();
+          this.loadSource(this.sourceId);
         },
         error: (err) => {
           console.error(err)
@@ -221,7 +181,7 @@ export class FundingSourcePage {
     this.contributionService.deleteContribution(contributionId).subscribe({
       next: () => {
         this.loadContributions();
-        this.loadContributionSummary();
+        this.loadSource(this.sourceId);
       },
       error: (err) => {
         if(err.status === 409) {
