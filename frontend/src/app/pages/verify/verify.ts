@@ -10,7 +10,7 @@ import { MessageModule } from 'primeng/message';
   selector: 'app-verify',
   imports: [ReactiveFormsModule, RouterLink, InputTextModule, ButtonModule, MessageModule],
   templateUrl: './verify.html',
-  styleUrl: './verify.css',
+  styleUrl: '../utils/css/auth/styles.css',
 })
 export class Verify {
 

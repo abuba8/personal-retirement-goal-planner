@@ -1,9 +1,3 @@
-INSERT INTO  (username, email, password_hash, provider, role) VALUES
-    ('kevin', 'kevin@example.com', 'hashed_password_1', 'LOCAL', 'USER'),
-    ('abdullah', 'abdullah@example.com', 'hashed_password_2', 'LOCAL', 'USER'),
-    ('john', 'john@example.com', 'hashed_password_3', 'LOCAL', 'USER'),
-    ('admin', 'admin@example.com','admin.n89','LOCAL', 'ADMIN');
-
 INSERT INTO app_user (username, email, password_hash, provider, role, enabled) VALUES
     ('kevin', 'kevin@example.com', '$2a$12$JOpClvcBhX95.ieZ7ByxxOGYXEaOGkXTdrt1TNucrlyo9XP6IOew2', 'LOCAL', 'USER', TRUE),
     ('abdullah', 'abdullah@example.com', '$2a$12$5CEU1aHkK0eLic85frhyruAu00s5De5VV63HHpAC3tn.USP49XKzu', 'LOCAL', 'USER', TRUE),

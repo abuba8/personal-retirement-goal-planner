@@ -11,7 +11,7 @@ import { MessageModule } from 'primeng/message';
   selector: 'app-register',
   imports: [ReactiveFormsModule, RouterLink, InputTextModule, PasswordModule, ButtonModule, MessageModule],
   templateUrl: './register.html',
-  styleUrl: './register.css',
+  styleUrl: '../utils/css/auth/styles.css',
 })
 export class Register {
   form!: FormGroup;

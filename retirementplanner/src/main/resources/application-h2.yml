@@ -25,7 +25,7 @@ spring:
             enable: true
 security:
   jwt:
-    secret-key: ${JWT_SECRET_KEY}
+    secret-key: ${JWT_SECRET_KEY:}
     expiration-time: 3600000
 server:
   port: ${PORT:5000}

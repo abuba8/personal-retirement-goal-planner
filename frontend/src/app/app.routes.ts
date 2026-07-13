@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { FundingSources } from "./pages/funding-source-list/funding-source-list"
 import { Contributions } from './pages/contributions/contributions';
 import { FundingSourcePage } from './pages/funding-source/funding-source';
+import { authGuard } from './core/auth-guard';
 
 export const routes: Routes = [
     {path: "sources", component: FundingSources},
@@ -20,7 +21,10 @@ export const routes: Routes = [
         path: 'verify', loadComponent: () => import('./pages/verify/verify').then((x) => x.Verify),
     },
     {
-        path: 'goals', loadComponent: () => import('./pages/goals/goals').then((x) => x.Goals),
+        path: 'goals', canActivate: [authGuard], loadComponent: () => import('./pages/goals/goals').then((x) => x.Goals),
+    },
+    {
+        path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./pages/dashboard/dashboard').then((x) => x.Dashboard),
     },
     {
         path: '**', redirectTo: 'login'
