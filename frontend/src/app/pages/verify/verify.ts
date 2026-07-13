@@ -5,10 +5,11 @@ import { AuthService } from '../../services/AuthService';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
+import { HomePage } from '../../components/home-page/home-page';
 
 @Component({
   selector: 'app-verify',
-  imports: [ReactiveFormsModule, RouterLink, InputTextModule, ButtonModule, MessageModule],
+  imports: [ReactiveFormsModule, RouterLink, InputTextModule, ButtonModule, MessageModule, HomePage],
   templateUrl: './verify.html',
   styleUrl: '../utils/css/auth/styles.css',
 })

@@ -1,7 +1,4 @@
 import { Routes } from '@angular/router';
-import { FundingSources } from "./pages/funding-source-list/funding-source-list"
-import { Contributions } from './pages/contributions/contributions';
-import { FundingSourcePage } from './pages/funding-source/funding-source';
 import { authGuard } from './core/auth-guard';
 
 export const routes: Routes = [

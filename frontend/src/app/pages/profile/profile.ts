@@ -4,10 +4,11 @@ import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../services/UserService';
 import { UpdateProfile } from '../../types/UserProfile';
 import { AuthService } from '../../services/AuthService';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-profile',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, SideBar],
   templateUrl: './profile.html',
   styleUrl: '../utils/css/dashboard/styles.css',
 })

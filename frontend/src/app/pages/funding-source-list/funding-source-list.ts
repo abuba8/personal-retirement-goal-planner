@@ -10,14 +10,12 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
 import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UpdateDialog } from '../../components/update-dialog/update-dialog';
-import { UserService } from '../../services/UserService';
-import { AuthService } from '../../services/AuthService';
-
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-funding-sources',
   imports: [TableModule, SourceTypeLabelPipe, DialogModule, ConfirmDialog,
-    ButtonModule, RouterModule, FundingSourceForm, UpdateDialog, RouterLink],
+    ButtonModule, RouterModule, FundingSourceForm, UpdateDialog, RouterLink, SideBar],
   templateUrl: './funding-source-list.html',
   styleUrl: '../utils/css/dashboard/styles.css',
 })
@@ -35,17 +33,9 @@ export class FundingSources {
     private router: Router,
     private confirmationService: ConfirmationService,
     private toastService: MessageService,
-    private userService: UserService,
-    private authService: AuthService
   ){}
 
   ngOnInit(): void {
-
-    this.userService.getCurrentUser().subscribe({
-      next: (user) => this.userName.set(user.username),
-      error: () => this.userName.set('') //fallback empty string
-    });
-
     this.loadSources();
   }
 
@@ -140,9 +130,5 @@ export class FundingSources {
         console.error(err);
       }
     })
-  }
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }

@@ -13,14 +13,13 @@ import { ContributionForm } from '../../components/contribution-form/contributio
 import { ContributionTable } from '../../components/contribution-table/contribution-table';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
-import { UserService } from '../../services/UserService';
-import { AuthService } from '../../services/AuthService';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-contributions',
   imports: [TableModule, ButtonModule, UpdateDialog, ContributionForm, 
-    ConfirmDialog, ContributionTable, RouterLink
+    ConfirmDialog, ContributionTable, RouterLink, SideBar
   ],
   templateUrl: './contributions.html',
   styleUrl: '../utils/css/dashboard/styles.css',
@@ -34,7 +33,6 @@ export class Contributions {
   totalContributions = signal<number>(0);
   showUpdate = signal<boolean>(false);
   showDialog = signal<boolean>(false);
-  userName = signal<string>('');
   getSourceName(sourceId?: number): string {
     return this.allSources().find(s => s.id === sourceId)?.name ?? "";
   }
@@ -48,17 +46,9 @@ export class Contributions {
     private goalService: GoalService,
     private confirmationService: ConfirmationService,
     private toastService: MessageService,
-    private userService: UserService,
-    private authService: AuthService,
-    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.userService.getCurrentUser().subscribe({
-      next: (user) => this.userName.set(user.username),
-      error: () => this.userName.set('') //fallback empty string
-    });
-
     this.loadContributions();
     this.loadSources();
     this.loadGoals();
@@ -160,9 +150,5 @@ export class Contributions {
         console.error(err);
       }
     })
-  }
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }

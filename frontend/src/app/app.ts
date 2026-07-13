@@ -1,9 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
-import { MenuItem } from 'primeng/api';
-import { MenubarModule } from 'primeng/menubar';
-import { Toast } from 'primeng/toast';
-import { AuthService } from './services/AuthService';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',

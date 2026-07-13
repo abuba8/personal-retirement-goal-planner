@@ -1,13 +1,13 @@
 import { Component, computed, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Goal } from '../../types/Goal';
-import { AuthService } from '../../services/AuthService';
 import { GoalService } from '../../services/GoalService';
 import { UserService } from '../../services/UserService';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink],
+  imports: [RouterLink, SideBar],
   templateUrl: './dashboard.html',
   styleUrl: '../utils/css/dashboard/styles.css',
 })
@@ -43,8 +43,6 @@ export class Dashboard {
   constructor(
     private goalService: GoalService,
     private userService: UserService,
-    private authService: AuthService,
-    private router: Router
   ){}
 
   ngOnInit(): void {
@@ -80,10 +78,5 @@ export class Dashboard {
     if (percent >= 100) return 'Achieved';
     if (percent >= 40) return 'On Track';
     return 'At Risk';
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }

@@ -19,14 +19,13 @@ import { GoalService } from '../../services/GoalService';
 import { ContributionSummary } from '../../components/contribution-summary/contribution-summary';
 import { SourceTypeLimit } from '../../types/enums/SourceType';
 import { ContributionLimit } from '../../components/contribution-limit/contribution-limit';
-import { UserService } from '../../services/UserService';
-import { AuthService } from '../../services/AuthService';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-funding-source',
   imports: [RouterModule, TableModule, ButtonModule, SourceTypeLabelPipe, FundingSourceForm, 
     ConfirmDialog, UpdateDialog, ContributionTable, ContributionForm, ContributionSummary,
-    ContributionLimit
+    ContributionLimit, SideBar
   ],
   templateUrl: './funding-source.html',
   styleUrl: '../utils/css/dashboard/styles.css',
@@ -55,18 +54,9 @@ export class FundingSourcePage {
     private route: ActivatedRoute,
     private confirmationService: ConfirmationService,
     private toastService: MessageService,
-    private userService: UserService,
-    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    // load username
-    this.userService.getCurrentUser().subscribe({
-      next: (user) => this.userName.set(user.username),
-      error: () => this.userName.set('') //fallback empty string
-    });
-
-
     this.route.paramMap.subscribe(params => {
       this.sourceId = Number(params.get('id'));
       this.loadSource(this.sourceId);
@@ -252,9 +242,5 @@ export class FundingSourcePage {
         console.error(err);
       }
     })
-  }
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }
