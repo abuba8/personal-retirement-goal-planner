@@ -23,7 +23,7 @@ export class Dashboard {
   contributions = signal<Contribution[]>([]);
   fundingSourcesCount = signal<number>(0);
 
-  contributionCount = computed(() => this.contributions.length);
+  contributionCount = computed(() => this.contributions().length);
 
   // total target across all goals
   totalTarget = computed(() => this.goals().reduce((sum, g) => sum + Number(g.targetAmount), 0));
