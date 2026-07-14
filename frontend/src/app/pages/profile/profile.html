@@ -3,34 +3,53 @@
 
 
   <main class="main">
-    <h2>Your profile</h2>
+    <h1 class="font-display page_title">Profile</h1>
 
-    <form [formGroup]="form" (ngSubmit)="save()">
-      <div>
-        <label>Username</label>
-        <input type="text" formControlName="username" />
-      </div>
-      <div>
-        <label>Email</label>
-        <input type="email" formControlName="email" />
-      </div>
-      <div>
-        <label>New password (leave blank to keep current)</label>
-        <input type="password" formControlName="password" />
+    <div class="card">
+
+      <!-- card header: avatar + name + email -->
+      <div class="card_head">
+        <span class="card_avatar">{{ initials() }}</span>
+        <div>
+          <div class="card_name">{{ userName() || 'User' }}</div>
+          <div class="card_email">{{ userEmail() }}</div>
+        </div>
       </div>
 
-      @if (info())  { <p>{{ info() }}</p> }
-      @if (error()) { <p>{{ error() }}</p> }
+      <form [formGroup]="form" (ngSubmit)="save()" class="form">
 
-      <button type="submit" [disabled]="loading()">
-        {{ loading() ? "Saving..." : "Save changes" }}
-      </button>
-    </form>
+        <!-- full name (= username) -->
+        <div class="field">
+          <label for="username" class="field_label">Full name</label>
+          <input id="username" type="text" formControlName="username" class="field_input" />
+        </div>
 
-    <hr />
-    <button type="button" (click)="deleteAccount()">Delete account</button>
+        <!-- email -->
+        <div class="field">
+          <label for="email" class="field_label">Email address</label>
+          <input id="email" type="email" formControlName="email" class="field_input" />
+        </div>
 
-    
+        <!-- new password (delete this block if you want to match the mockup exactly) -->
+        <div class="field">
+          <label for="password" class="field_label">New password</label>
+          <input id="password" type="password" formControlName="password" class="field_input"
+                 placeholder="Leave blank to keep current" />
+        </div>
+
+        <!-- messages -->
+        @if (info())  { <p class="msg msg--ok">{{ info() }}</p> }
+        @if (error()) { <p class="msg msg--bad">{{ error() }}</p> }
+
+        <!-- buttons -->
+        <div class="actions">
+          <button type="submit" class="btn btn--primary" [disabled]="loading()">
+            {{ loading() ? 'Saving…' : 'Save changes' }}
+          </button>
+          <button type="button" class="btn btn--danger" (click)="logout()">Sign out</button>
+        </div>
+      </form>
+    </div>
   </main>
 </div>
 
