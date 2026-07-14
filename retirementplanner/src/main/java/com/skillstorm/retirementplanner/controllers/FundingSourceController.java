@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/sources")
-@CrossOrigin({"http://127.0.0.1:5500", "http://localhost:4200"})
+@CrossOrigin({"http://127.0.0.1:5500", "http://localhost:4200",
+"https://d2o5fqe44l9o0n.cloudfront.net", "https://d2oodvx207bj1j.cloudfront.net"
+})
 public class FundingSourceController {
     
     private final FundingSourceService service;

@@ -1,6 +1,6 @@
 // src/app/pages/goals/goals.ts
 import { Component, signal } from '@angular/core';
-import { Router, RouterModule, RouterLink } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
 import { DeleteConfirmationModal } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
@@ -10,7 +10,7 @@ import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-goals',
-  imports: [DeleteConfirmationModal, GoalForm, RouterModule, RouterLink, SideBar],
+  imports: [DeleteConfirmationModal, GoalForm, RouterModule, SideBar],
   templateUrl: './goals.html',
   styleUrl: '../utils/css/dashboard/styles.css',
 })

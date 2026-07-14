@@ -16,14 +16,15 @@ import { ContributionForm } from '../../components/contribution-form/contributio
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
 import { SourceCard } from '../../components/source-card/source-card';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-funding-source',
-  imports: [RouterModule, TableModule, ButtonModule, FundingSourceForm,
+  imports: [RouterModule, TableModule, ButtonModule, FundingSourceForm, SideBar,
     ConfirmDialog, UpdateDialog, ContributionTable, ContributionForm, SourceCard
   ],
   templateUrl: './funding-source.html',
-  styleUrl: '../utils/css/dashboard/styles.css',
+  styleUrl: './funding-source.css',
 })
 export class FundingSourcePage {
   sourceId!: number;

@@ -1,52 +1,57 @@
-<div class="content">
-  <a routerLink="/sources">&larr; Back to Funding Sources</a>
+<div class="dash">
+  <app-side-bar />
 
-  @if (source(); as currentSource) {
-    <div class="funding-source-detail">
-      <app-source-card
-          class="funding-source-detail_card"
-          [source]="currentSource"
-          variant="vertical"
-          (edit)="showDialog.set(true)"
-          (delete)="handleDeleteSource()"
-      />
+  <div class="content">
 
-      <app-contribution-table
-          class="funding-source-detail_table"
-          variant="compact"
-          [contributions]="allContributions()"
-          [totalContributions]="totalContributions()"
-          [showSourceColumn]="false"
-          [showGoalColumn]="true"
-          [allGoals]="allGoals()"
-          [(selection)]="contribution"
-          (lazyLoad)="loadContributions($event)"
-          (select)="handleUpdate()"
-          (create)="handleCreateContribution()"
-      />
-    </div>
-  }
+    <a routerLink="/sources">&larr; Back to Funding Sources</a>
 
-  <app-funding-source-form
-    [(visible)]="showDialog"
-    [source]="source()"
-    (save)="handleSaveSource($event)"
-  />
+    @if (source(); as currentSource) {
+      <div class="funding-source-detail">
+        <app-source-card
+            class="funding-source-detail_card"
+            [source]="currentSource"
+            variant="vertical"
+            (edit)="showDialog.set(true)"
+            (delete)="handleDeleteSource()"
+        />
 
-  <p-confirmdialog />
+        <app-contribution-table
+            class="funding-source-detail_table"
+            variant="compact"
+            [contributions]="allContributions()"
+            [totalContributions]="totalContributions()"
+            [showSourceColumn]="false"
+            [showGoalColumn]="true"
+            [allGoals]="allGoals()"
+            [(selection)]="contribution"
+            (lazyLoad)="loadContributions($event)"
+            (select)="handleUpdate()"
+            (create)="handleCreateContribution()"
+        />
+      </div>
+    }
 
-  <app-update-dialog
-      [(visible)]="showUpdate"
-      (edit)="handleUpdateContribution(contribution()!)"
-      (delete)="handleDeleteContribution(contribution()!)"
-  />
+    <app-funding-source-form
+      [(visible)]="showDialog"
+      [source]="source()"
+      (save)="handleSaveSource($event)"
+    />
 
-  <app-contribution-form
-      [(visible)]="showContributionDialog"
-      [contribution]="contribution()"
-      [allGoals]="allGoals()"
-      [lockedSourceId]="sourceId"
-      (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
-      (save)="handleSaveContribution($event)"
-  />
+    <p-confirmdialog />
+
+    <app-update-dialog
+        [(visible)]="showUpdate"
+        (edit)="handleUpdateContribution(contribution()!)"
+        (delete)="handleDeleteContribution(contribution()!)"
+    />
+
+    <app-contribution-form
+        [(visible)]="showContributionDialog"
+        [contribution]="contribution()"
+        [allGoals]="allGoals()"
+        [lockedSourceId]="sourceId"
+        (createdGoal)="allGoals.update(currentList => [...currentList, $event])"
+        (save)="handleSaveContribution($event)"
+    />
+  </div>
 </div>

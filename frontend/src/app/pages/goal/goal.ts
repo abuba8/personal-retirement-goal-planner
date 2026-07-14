@@ -16,11 +16,13 @@ import { ContributionForm } from '../../components/contribution-form/contributio
 import { currencyPipe } from '../../pipes/currency-pipe';
 import { GoalForm } from '../../components/goal-form/goal-form';
 import { ContributionSummary } from '../../components/contribution-summary/contribution-summary';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-goal',
   imports: [RouterModule, TableModule, ButtonModule, ConfirmDialog, UpdateDialog, 
-    ContributionTable, ContributionForm, GoalForm, ContributionSummary, currencyPipe
+    ContributionTable, ContributionForm, GoalForm, ContributionSummary, currencyPipe,
+    SideBar
   ],
   templateUrl: './goal.html',
   styleUrl: './goal.css',
