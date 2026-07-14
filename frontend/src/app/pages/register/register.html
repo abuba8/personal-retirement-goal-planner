@@ -1,18 +1,20 @@
-<div class="min-h-screen flex items-center justify-center p-4">
-  <div
-    class="w-full max-w-md rounded-2xl border p-8 shadow-sm"
-    style="background: var(--card-surface); border-color: var(--p-border);"
-  >
-    <div class="mb-6 text-center">
-      <h1 class="text-2xl font-semibold" style="color: var(--primary-ink);">
-        Create your account
-      </h1>
-      <p class="mt-1 text-sm" style="color: var(--muted-text);">
-        Join us, in a few seconds
-      </p>
-    </div>
+<div class="auth-shell">
+  <!-- LEFT: promo panel -->
+  <app-home-page />
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+  <!-- RIGHT: the form -->
+  <main class="auth-panel">
+    <div class="auth-form">
+      <div class="mb-8">
+        <h1 class="font-display text-4xl font-semibold" style="color: var(--primary-ink);">
+          Create your account
+        </h1>
+        <p class="mt-2 text-base" style="color: var(--muted-text);">
+          Join us, it only takes a few seconds.
+        </p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
       <!-- Username -->
       <div class="flex flex-col gap-1.5">
         <label for="username" class="text-sm font-medium" style="color: var(--primary-ink);">
@@ -82,15 +84,14 @@
         [label]="loading() ? 'Creating…' : 'Register'"
         [loading]="loading()"
         [disabled]="loading()"
-        styleClass="w-full mt-2"
+        styleClass="w-full auth-submit mt-1"
       />
     </form>
 
     <p class="mt-6 text-center text-sm" style="color: var(--muted-text);">
       Already have an account?
-      <a routerLink="/login" class="font-medium underline" style="color: var(--primary);">
-        Log in
-      </a>
+      <a routerLink="/login" class="font-semibold" style="color: var(--primary);">Sign in</a>
     </p>
-  </div>
+    </div>
+  </main>
 </div>

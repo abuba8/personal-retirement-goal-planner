@@ -13,15 +13,18 @@ import { ContributionForm } from '../../components/contribution-form/contributio
 import { ContributionTable } from '../../components/contribution-table/contribution-table';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
+import { RouterLink } from '@angular/router';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-contributions',
   imports: [TableModule, ButtonModule, UpdateDialog, ContributionForm, 
-    ConfirmDialog, ContributionTable
+    ConfirmDialog, ContributionTable, RouterLink, SideBar
   ],
   templateUrl: './contributions.html',
-  styleUrl: './contributions.css',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
+
 export class Contributions {
   allContributions = signal<Contribution[]>([]);
   allSources = signal<FundingSource[]>([]);
@@ -42,7 +45,7 @@ export class Contributions {
     private sourceService: FundingSourceService,
     private goalService: GoalService,
     private confirmationService: ConfirmationService,
-    private toastService: MessageService
+    private toastService: MessageService,
   ) {}
 
   ngOnInit(): void {

@@ -1,0 +1,23 @@
+.auth-shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.auth-panel {
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  min-width: 0;        /* ← key: stops the panel overflowing its column */
+}
+
+.auth-form {
+  width: 100%;
+  max-width: 26rem;
+}
+
+@media (max-width: 900px) {
+  .auth-shell { grid-template-columns: 1fr; }
+}

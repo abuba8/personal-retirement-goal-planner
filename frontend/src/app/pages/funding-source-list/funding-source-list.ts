@@ -5,7 +5,7 @@ import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UpdateDialog } from '../../components/update-dialog/update-dialog';
@@ -17,7 +17,7 @@ import { SourceCard } from '../../components/source-card/source-card';
   imports: [TableModule, DialogModule, ConfirmDialog,
     ButtonModule, RouterModule, FundingSourceForm, SourceCard],
   templateUrl: './funding-source-list.html',
-  styleUrl: './funding-source-list.css',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
 export class FundingSources {
 
@@ -25,12 +25,13 @@ export class FundingSources {
   selectedSource = signal<FundingSource | null>(null);
   totalSources = signal<number>(0);
   showDialog = signal<boolean>(false);
+  userName = signal<string>('');
 
   constructor(
     private service: FundingSourceService,
     private router: Router,
     private confirmationService: ConfirmationService,
-    private toastService: MessageService
+    private toastService: MessageService,
   ){}
 
   ngOnInit(): void {

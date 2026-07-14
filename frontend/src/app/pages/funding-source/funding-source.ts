@@ -23,7 +23,7 @@ import { SourceCard } from '../../components/source-card/source-card';
     ConfirmDialog, UpdateDialog, ContributionTable, ContributionForm, SourceCard
   ],
   templateUrl: './funding-source.html',
-  styleUrl: './funding-source.css',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
 export class FundingSourcePage {
   sourceId!: number;
@@ -43,7 +43,7 @@ export class FundingSourcePage {
     private router: Router,
     private route: ActivatedRoute,
     private confirmationService: ConfirmationService,
-    private toastService: MessageService
+    private toastService: MessageService,
   ) {}
 
   ngOnInit(): void {

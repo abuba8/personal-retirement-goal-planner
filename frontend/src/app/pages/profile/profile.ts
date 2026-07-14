@@ -1,14 +1,16 @@
 import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../services/UserService';
 import { UpdateProfile } from '../../types/UserProfile';
 import { AuthService } from '../../services/AuthService';
+import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-profile',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, SideBar],
   templateUrl: './profile.html',
+  styleUrl: '../utils/css/dashboard/styles.css',
 })
 export class Profile {
 
@@ -16,6 +18,8 @@ export class Profile {
   loading = signal<boolean>(false);
   info = signal<string | null>(null);
   error = signal<string | null>(null);
+  userName = signal<string>(''); // Welcome back {username}
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -25,6 +29,11 @@ export class Profile {
   ) {}
 
   ngOnInit(): void {
+    this.userService.getCurrentUser().subscribe({
+      next: (user) => this.userName.set(user.username),
+      error: () => this.userName.set('') //fallback empty string
+    });
+
     this.form = this.formBuilder.group({
       username: ["", [Validators.minLength(3), Validators.maxLength(100)]],
       email: ["", [Validators.email]],
@@ -63,5 +72,10 @@ export class Profile {
       next: () => { this.authService.logout(); this.router.navigate(["/register"]); },
       error: () => this.error.set("Delete failed."),
     });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
