@@ -14,14 +14,13 @@ import { ContributionTable } from '../../components/contribution-table/contribut
 import { ContributionForm } from '../../components/contribution-form/contribution-form';
 import { currencyPipe } from '../../pipes/currency-pipe';
 import { GoalForm } from '../../components/goal-form/goal-form';
-import { ContributionSummary } from '../../components/contribution-summary/contribution-summary';
 import { SideBar } from '../../components/side-bar/side-bar';
+import { GoalCard } from '../../components/goal-card/goal-card';
 
 @Component({
   selector: 'app-goal',
   imports: [RouterModule, TableModule, ButtonModule, ConfirmDialog,
-    ContributionTable, ContributionForm, GoalForm, ContributionSummary, currencyPipe,
-    SideBar
+    ContributionTable, ContributionForm, GoalForm, SideBar, GoalCard
   ],
   templateUrl: './goal.html',
   styleUrl: './goal.css',
@@ -35,8 +34,6 @@ export class GoalPage {
   totalContributions = signal<number>(0);
   showDialog = signal<boolean>(false);
   showContributionDialog = signal<boolean>(false);
-  totalContributed = signal<number>(0);
-  contributionCount = signal<number>(0);
   getSourceName(sourceId?: number): string {
     return this.allSources().find(s => s.id === sourceId)?.name ?? "";
   }
@@ -57,7 +54,6 @@ export class GoalPage {
       this.loadGoal(this.goalId);
       this.loadSources();
       this.loadContributions();
-      this.loadContributionSummary();
     })
   }
 
@@ -89,33 +85,6 @@ export class GoalPage {
     });
   }
 
-  loadContributionSummary() {
-    this.contributionService.getContributions(0, this.goalId, undefined).subscribe({
-      next: (firstPage) => {
-        this.contributionCount.set(firstPage.totalElements);
-        this.accumulateAmounts(firstPage.content, 1, firstPage.totalPages);
-      },
-      error: (err) => {
-        console.error(err)
-      }
-    });
-  }
-
-  accumulateAmounts(soFar: Contribution[], nextPage: number, totalPages: number) {
-    if (nextPage >= totalPages) {
-      this.totalContributed.set(soFar.reduce((sum, c) => sum + c.amount, 0));
-      return;
-    }
-    this.contributionService.getContributions(nextPage, this.goalId, undefined).subscribe({
-      next: (page) => {
-        this.accumulateAmounts([...soFar, ...page.content], nextPage + 1, totalPages)
-      },
-      error: (err) => {
-        console.error(err)
-      }
-    })
-  }
-
   handleSaveGoal(goal: Goal) {
     this.goalService.updateGoal(this.goalId, goal).subscribe({
       next: (data) => {
@@ -137,11 +106,15 @@ export class GoalPage {
 
   deleteGoal() {
     this.goalService.deleteGoal(this.goalId).subscribe({
-      next: (data) => {
+      next: () => {
         this.router.navigate(["/goals"])
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
+        this.toastService.add({
+          severity: "warn",
+          summary: "Cannot Delete",
+          detail: "Something went wrong."
+        })
       }
     });
   }
@@ -156,7 +129,7 @@ export class GoalPage {
       this.contributionService.createContribution(contribution, contribution.goalId, contribution.sourceId).subscribe({
         next: () => {
           this.loadContributions();
-          this.loadContributionSummary();
+          this.loadGoal(this.goalId);
         },
         error: (err) => {
           console.error(err)
@@ -166,7 +139,7 @@ export class GoalPage {
       this.contributionService.updateContribution(contribution.id!, contribution, contribution.goalId, contribution.sourceId).subscribe({
         next: () => {
           this.loadContributions();
-          this.loadContributionSummary();
+          this.loadGoal(this.goalId);
         },
         error: (err) => {
           console.error(err)
@@ -194,7 +167,7 @@ export class GoalPage {
     this.contributionService.deleteContribution(contributionId).subscribe({
       next: () => {
         this.loadContributions();
-        this.loadContributionSummary();
+        this.loadGoal(this.goalId);
       },
       error: (err) => {
         if(err.status === 409) {

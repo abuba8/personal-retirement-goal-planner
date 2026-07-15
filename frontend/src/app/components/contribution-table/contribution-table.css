@@ -40,11 +40,32 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--overlay-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .contribution-table_secondary {
   margin: 0;
   font-size: 0.75rem;
   color: var(--muted-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.contribution-table_primary--wrap {
+  display: block;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+  line-height: 1.15rem;
+  max-height: 2.3rem;
+  word-break: break-word;
+}
+.contribution-table_compact-category .contribution-table_primary,
+.contribution-table_compact-notes .contribution-table_secondary {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 .contribution-table_col-source {
   width: 15%;
@@ -71,7 +92,8 @@ th.contribution-table_col-source {
   white-space: nowrap;
 }
 td.contribution-table_col-notes,
-td.contribution-table_col-goal {
+td.contribution-table_col-goal,
+td.contribution-table_col-source {
   white-space: normal;
 }
 .contribution-table_clamp {
@@ -99,10 +121,10 @@ td.contribution-table_col-goal {
   border-color: var(--overlay-ink);
 }
 :host ::ng-deep .contribution-table_delete-btn.p-button {
-  color: var(--primary);
-  border-color: var(--primary);
+  color: var(--color-red-600);
+  border-color: var(--color-red-600);
 }
 :host ::ng-deep .contribution-table_delete-btn.p-button:hover {
-  background: var(--primary);
+  background: var(--color-red-600);
   color: var(--on-dark);
 }

@@ -9,29 +9,20 @@ import { DecimalPipe } from '@angular/common';
   styleUrl: './contribution-limit.css',
 })
 export class ContributionLimit {
-  yearlyContributed = input<number>(0);
-  yearlyLimit = input<number>(0);
+  label = input<string>('');
+  shape = input<'bar' | 'circle'>('bar');
+  showHeader = input<boolean>(true);
+  showSummary = input<boolean>(false);
+  count = input<number>(0);
+  current = input<number>(0);
+  target = input<number>(0);
+  severity = input<"ok" | "warning" | "danger">("ok");
+  message = input<string>('');
+  footLeft = input<string>('');
+  footRight = input<string>('');
 
   percentage(): number {
-    if(!this.yearlyLimit()) return 0;
-    return (this.yearlyContributed() / this.yearlyLimit()) * 100;
+    if(!this.target()) return 0;
+    return (this.current() / this.target()) * 100;
   }
-
-  severity(): "ok" | "warning" | "danger" {
-    if(this.percentage() >= 100) {
-      return "danger";
-    } else if (this.percentage() >= 75) {
-      return "warning";
-    }
-    return "ok";
-  }
-
-  message(): string {
-    switch (this.severity()) {
-      case "danger": return "Over the 2026 IRS limit for this source type."
-      case "warning": return "Approaching the 2026 IRS contribution limit."
-      default: return "";
-    }
-  }
-  
 }

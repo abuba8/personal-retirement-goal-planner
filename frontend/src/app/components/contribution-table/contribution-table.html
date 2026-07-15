@@ -2,7 +2,7 @@
     [value]="contributions()"
     [paginator]="true"
     [rows]="10"
-    [tableStyle]="variant() === 'compact' ? {} : {'min-width': '50rem', 'table-layout': 'fixed'}"
+    [tableStyle]="variant() === 'compact' ? {'table-layout': 'fixed', 'width': '100%'} : {'min-width': '50rem', 'table-layout': 'fixed'}"
     [totalRecords]="totalContributions()"
     [lazy]="true"
     (onLazyLoad)="lazyLoad.emit($event)"
@@ -40,8 +40,8 @@
     @if (variant() === 'compact') {
         <ng-template #body let-contribution>
             <tr>
-                <td>
-                    <p class="contribution-table_primary">
+                <td class="contribution-table_compact-name">
+                    <p class="contribution-table_primary" [class.contribution-table_primary--wrap]="showGoalColumn()">
                         @if (showGoalColumn()) {
                             {{ getGoalName(contribution.goalId) }}
                         }
@@ -51,14 +51,14 @@
                     </p>
                     <p class="contribution-table_secondary">{{ contribution.date | dateFormat }}</p>
                 </td>
-                <td>
+                <td class="contribution-table_compact-category">
                     <p class="contribution-table_primary">{{ contribution.category | contributionCategoryLabel }}</p>
                 </td>
-                <td>
+                <td class="contribution-table_compact-notes">
                     <p class="contribution-table_secondary">{{ contribution.notes }}</p>
                 </td>
-                <td>{{ contribution.amount | currency }}</td>
-                <td>
+                <td class="contribution-table_compact-amount">{{ contribution.amount | currency }}</td>
+                <td class="contribution-table_compact-actions">
                     <div class="contribution-table_actions">
                         <button
                             pButton
