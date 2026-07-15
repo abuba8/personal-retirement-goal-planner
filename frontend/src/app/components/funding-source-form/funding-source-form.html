@@ -2,52 +2,55 @@
     [header]="title()"
     [modal]="true"
     [(visible)]="visible"
-    [style]="{width: '40rem', height: '40rem'}"
+    [style]="{width: '26rem'}"
 >
-    <form [formGroup]="form" (ngSubmit)="saveSource()">
-        <div>
-            <input id="source-name" formControlName="name" type="text" />
+    <form [formGroup]="form" (ngSubmit)="saveSource()" class="source-form">
+        <div class="source-form_field">
             <label for="source-name">Name</label>
+            <input id="source-name" formControlName="name" type="text" placeholder="Chase Checking" />
             @if (form.get("name")?.invalid && form.get("name")?.touched) {
                 <small class="p-error">Name is required</small>
             }
         </div>
-        <div>
-            <input id="source-institution" formControlName="institution" type="text" />
+        <div class="source-form_field">
             <label for="source-institution">Institution</label>
+            <input id="source-institution" formControlName="institution" type="text" placeholder="Chase Bank" />
         </div>
-        <div>
-            <input id="source-notes" formControlName="notes" type="text" />
-            <label for="source-notes">Notes</label>
-        </div>
-        <div>
+        <div class="source-form_field">
+            <label for="source-type">Source Type</label>
             <p-select
                 id="source-type"
                 formControlName="type"
                 [options]="sourceTypeOptions"
                 optionLabel="label"
                 optionValue="value"
+                placeholder="Select a source type"
             ></p-select>
-            <label for="source-type">Source Type</label>
             @if (form.get("type")?.invalid && form.get("type")?.touched) {
                 <small class="p-error">Must pick a valid Source Type</small>
             }
         </div>
+        <div class="source-form_field">
+            <label for="source-notes">Notes</label>
+            <input id="source-notes" formControlName="notes" type="text" placeholder="Optional notes" />
+        </div>
 
-        <p-button
-            label="Cancel"
-            type="button"
-            severity="secondary"
-            [outlined]="true"
-            (onClick)="cancel()"
-            class="p-2 w-full"
-        />
+        <div class="source-form_actions">
+            <p-button
+                label="Cancel"
+                type="button"
+                styleClass="source-form_cancel-btn"
+                severity="secondary"
+                [outlined]="true"
+                (onClick)="cancel()"
+            />
 
-        <p-button
-            label="Save"
-            type="submit"
-            [disabled]="form.invalid"
-            class="p-2 w-full"
-        />
+            <p-button
+                label="Save"
+                type="submit"
+                styleClass="source-form_save-btn"
+                [disabled]="form.invalid"
+            />
+        </div>
     </form>
 </p-dialog>

@@ -40,6 +40,17 @@
   margin-top: auto;
 }
 
+:host ::ng-deep .source-card-action-btn.p-button {
+  color: var(--overlay-ink);
+}
+
+:host ::ng-deep .source-card-action-btn.p-button:hover {
+  background: #0F241F;
+  border-color: #0F241F;
+  color: var(--color-white);
+}
+
+
 .source-card:not(.source-card--vertical) .source-card_actions {
   display: grid;
   grid-template-columns: 1fr auto;
