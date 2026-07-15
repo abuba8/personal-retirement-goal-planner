@@ -23,13 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
-<<<<<<< HEAD
-@CrossOrigin({"http://127.0.0.1:5500", "http://localhost:4200", "https://d2o5fqe44l9o0n.cloudfront.net", "https://d2oodvx207bj1j.cloudfront.net"})
-=======
 @CrossOrigin({"http://127.0.0.1:5500", "http://localhost:4200",
 "https://d2o5fqe44l9o0n.cloudfront.net", "https://d2oodvx207bj1j.cloudfront.net"
 })
->>>>>>> origin/main
 public class UserController {
     /**
      * Controller Class:

@@ -33,10 +33,10 @@
 
     <div class="source-card_actions">
         @if (variant() !== 'vertical') {
-            <p-button label="Open" [text]="true" (click)="open.emit(source())" />
+            <p-button label="Open" styleClass="source-card-action-btn" [text]="true" (click)="open.emit(source())" />
         }
         <div class="source-card_edit-delete">
-            <p-button label="Edit" icon="pi pi-pen-to-square" [text]="true" (click)="edit.emit(source())" />
+            <p-button label="Edit" icon="pi pi-pen-to-square" styleClass="source-card-action-btn" [text]="true" (click)="edit.emit(source())" />
             <p-button label="Delete" icon="pi pi-trash" severity="danger" [text]="true" (click)="delete.emit(source())" />
         </div>
     </div>

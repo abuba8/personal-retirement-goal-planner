@@ -4,14 +4,24 @@
 }
 
 .content {
-    margin-left: 1rem;
-    margin-right: 1rem;
+    flex: 1;
+    padding: 1.75rem 3rem;
 }
 .funding-source-list_title {
     font-size: 1.875rem;
     font-weight: 600;
     color: var(--overlay-ink);
     margin: 0;
+}
+
+:host ::ng-deep .funding-source-list_create-btn.p-button {
+  background: var(--overlay-ink);
+  border-color: var(--overlay-ink);
+  color: var(--on-dark);
+}
+:host ::ng-deep .funding-source-list_create-btn.p-button:hover {
+  background: #0F241F;
+  border-color: #0F241F;
 }
 
 .source-card-grid {

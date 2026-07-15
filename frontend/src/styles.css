@@ -71,3 +71,27 @@ body {
   width: 100%; border-radius: 12px; border-color: var(--p-border);
   color: var(--primary-ink); justify-content: center;
 }
+
+.p-confirmdialog-accept-button.p-button {
+  background: var(--color-red-400);
+  border-color: var(--color-red-400);
+  color: var(--on-dark);
+}
+.p-confirmdialog-accept-button.p-button:hover {
+  background: var(--color-red-600);
+  border-color: var(--color-red-600);
+}
+.p-confirmdialog-reject-button.p-button {
+  background: var(--muted-text);
+  border-color: var(--muted-text);
+  color: var(--on-dark);
+}
+.p-confirmdialog-reject-button.p-button:hover {
+  background: #565F5A;
+  border-color: #565F5A;
+}
+
+.p-dialog-mask {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}

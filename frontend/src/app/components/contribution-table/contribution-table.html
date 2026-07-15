@@ -11,17 +11,12 @@
 >
     <ng-template #caption>
         <div class="flex items-center justify-between">
-<<<<<<< HEAD
-            <span class="text-xl font-bold">Contributions</span>
-            <button class="header_cta" label="Log Contribution" (click)="create.emit()">+ Log contribution</button>
-=======
             @if (variant() !== 'compact') {
                 <span class="text-xl font-bold">Contributions</span>
             } @else {
                 <span class="text-xl font-bold">Contributions from this source</span>
             }
             <p-button label="Log Contribution" (click)="create.emit()" />
->>>>>>> origin/main
         </div>
     </ng-template>
     @if (variant() !== 'compact') {
