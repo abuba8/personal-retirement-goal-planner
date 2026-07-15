@@ -35,16 +35,10 @@
       [showSourceColumn]="true"
       [showGoalColumn]="false"
       [allSources]="allSources()"
-      [(selection)]="contribution"
       (lazyLoad)="loadContributions($event)"
-      (select)="handleUpdate()"
       (create)="handleCreateContribution()"
-  />
-
-  <app-update-dialog
-      [(visible)]="showUpdate"
-      (edit)="handleUpdateContribution(contribution()!)"
-      (delete)="handleDeleteContribution(contribution()!)"
+      (edit)="handleUpdateContribution($event)"
+      (delete)="handleDeleteContribution($event)"
   />
 
   <app-contribution-form

@@ -1,38 +1,39 @@
-<p-table 
+<p-table
     [value]="contributions()"
-    selectionMode="single"
-    [(selection)]="selection" 
-    [paginator]="true" 
+    [paginator]="true"
     [rows]="10"
-    [tableStyle]="variant() === 'compact' ? {} : {'min-width': '50rem'}"
+    [tableStyle]="variant() === 'compact' ? {} : {'min-width': '50rem', 'table-layout': 'fixed'}"
     [totalRecords]="totalContributions()"
     [lazy]="true"
     (onLazyLoad)="lazyLoad.emit($event)"
 >
     <ng-template #caption>
         <div class="flex items-center justify-between">
-            @if (variant() !== 'compact') {
-                <span class="text-xl font-bold">Contributions</span>
-            } @else {
-                <span class="text-xl font-bold">Contributions from this source</span>
-            }
-            <p-button label="Log Contribution" (click)="create.emit()" />
+            <div>
+                @if (variant() !== 'compact') {
+                    <p class="contribution-table_heading">Contribution History</p>
+                    <p class="contribution-table_subheading">Every deposit, linking a source to a goal.</p>
+                } @else {
+                    <p class="contribution-table_heading">Contributions from this source</p>
+                }
+            </div>
+            <p-button label="Log Contribution" styleClass="contribution-table_create-btn" (click)="create.emit()" />
         </div>
     </ng-template>
     @if (variant() !== 'compact') {
         <ng-template #header>
             <tr>
-                @if (showSourceColumn()) {
-                    <th>Funding Source</th>
-                }
+                <th class="contribution-table_col-date">Date</th>
                 @if (showGoalColumn()) {
-                    <th>Goal</th>
+                    <th class="contribution-table_col-goal">Goal</th>
                 }
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Notes</th>
-                <th>Contribution Category</th>
-                <th>Update</th>
+                @if (showSourceColumn()) {
+                    <th class="contribution-table_col-source">Funding Source</th>
+                }
+                <th class="contribution-table_col-amount">Amount</th>
+                <th class="contribution-table_col-category">Contribution Category</th>
+                <th class="contribution-table_col-notes">Notes</th>
+                <th class="contribution-table_col-update">Update</th>
             </tr>
         </ng-template>
     }
@@ -41,39 +42,71 @@
             <tr>
                 <td>
                     <p class="contribution-table_primary">
-                        @if (showSourceColumn()) {
-                            {{ getSourceName(contribution.sourceId) }}
-                        }
                         @if (showGoalColumn()) {
                             {{ getGoalName(contribution.goalId) }}
+                        }
+                        @if (showSourceColumn()) {
+                            {{ getSourceName(contribution.sourceId) }}
                         }
                     </p>
                     <p class="contribution-table_secondary">{{ contribution.date | dateFormat }}</p>
                 </td>
-                <td>{{ contribution.amount | currency }}</td>
                 <td>
                     <p class="contribution-table_primary">{{ contribution.category | contributionCategoryLabel }}</p>
                 </td>
                 <td>
                     <p class="contribution-table_secondary">{{ contribution.notes }}</p>
                 </td>
-                <td><p-tableRadioButton [value]="contribution" (click)="select.emit()" /></td>
+                <td>{{ contribution.amount | currency }}</td>
+                <td>
+                    <div class="contribution-table_actions">
+                        <button
+                            pButton
+                            icon="pi pi-pen-to-square"
+                            class="contribution-table_edit-btn"
+                            (click)="edit.emit(contribution)"
+                        ></button>
+                        <button
+                            pButton
+                            icon="pi pi-trash"
+                            outlined
+                            class="contribution-table_delete-btn"
+                            (click)="delete.emit(contribution)"
+                        ></button>
+                    </div>
+                </td>
             </tr>
         </ng-template>
     } @else {
         <ng-template #body let-contribution>
             <tr>
-                @if (showSourceColumn()) {
-                    <td>{{ getSourceName(contribution.sourceId) }}</td>
-                }
+                <td class="contribution-table_col-date">{{ contribution.date | dateFormat }}</td>
                 @if (showGoalColumn()) {
-                    <td>{{ getGoalName(contribution.goalId) }}</td>
+                    <td class="contribution-table_col-goal"><span class="contribution-table_clamp">{{ getGoalName(contribution.goalId) }}</span></td>
                 }
-                <td>{{ contribution.amount | currency }}</td>
-                <td>{{ contribution.date | dateFormat }}</td>
-                <td>{{ contribution.notes }}</td>
-                <td>{{ contribution.category | contributionCategoryLabel }}</td>
-                <td><p-tableRadioButton [value]="contribution" (click)="select.emit()" /></td>
+                @if (showSourceColumn()) {
+                    <td class="contribution-table_col-source">{{ getSourceName(contribution.sourceId) }}</td>
+                }
+                <td class="contribution-table_col-amount">{{ contribution.amount | currency }}</td>
+                <td class="contribution-table_col-category">{{ contribution.category | contributionCategoryLabel }}</td>
+                <td class="contribution-table_col-notes"><span class="contribution-table_clamp">{{ contribution.notes }}</span></td>
+                <td class="contribution-table_col-update">
+                    <div class="contribution-table_actions">
+                        <button
+                            pButton
+                            icon="pi pi-pen-to-square"
+                            class="contribution-table_edit-btn"
+                            (click)="edit.emit(contribution)"
+                        ></button>
+                        <button
+                            pButton
+                            icon="pi pi-trash"
+                            outlined
+                            class="contribution-table_delete-btn"
+                            (click)="delete.emit(contribution)"
+                        ></button>
+                    </div>
+                </td>
             </tr>
         </ng-template>
     }

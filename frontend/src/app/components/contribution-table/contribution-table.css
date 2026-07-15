@@ -1,12 +1,108 @@
+:host {
+  display: block;
+  padding: 1.25rem;
+  border: 1px solid var(--p-border);
+  border-radius: 0.75rem;
+  background: var(--card-surface);
+  box-shadow: 0 2px 5px var(--color-gray-400);
+}
+:host ::ng-deep .p-datatable-header,
+:host ::ng-deep .p-datatable-thead > tr > th,
+:host ::ng-deep .p-datatable-tbody > tr,
+:host ::ng-deep .p-datatable-tbody > tr > td,
+:host ::ng-deep .p-datatable-footer,
+:host ::ng-deep .p-datatable-footer-cell,
+:host ::ng-deep .p-paginator {
+  background: transparent;
+}
+:host ::ng-deep .contribution-table_create-btn.p-button {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-dark);
+}
+:host ::ng-deep .contribution-table_create-btn.p-button:hover {
+  background: var(--overlay-ink);
+  border-color: var(--overlay-ink);
+}
+.contribution-table_heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--overlay-ink);
+}
+.contribution-table_subheading {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted-text);
+}
 .contribution-table_primary {
   margin: 0;
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--overlay-ink);
 }
-
 .contribution-table_secondary {
   margin: 0;
   font-size: 0.75rem;
   color: var(--muted-text);
+}
+.contribution-table_col-source {
+  width: 15%;
+}
+.contribution-table_col-goal {
+  width: 12%;
+}
+.contribution-table_col-amount {
+  width: 10%;
+  text-align: left;
+}
+.contribution-table_col-date {
+  width: 12%;
+  white-space: nowrap;
+}
+.contribution-table_col-notes {
+  width: 12%;
+}
+.contribution-table_col-category {
+  width: 22%;
+}
+th.contribution-table_col-category,
+th.contribution-table_col-source {
+  white-space: nowrap;
+}
+td.contribution-table_col-notes,
+td.contribution-table_col-goal {
+  white-space: normal;
+}
+.contribution-table_clamp {
+  display: block;
+  max-height: 2.5rem;
+  line-height: 1.25rem;
+  overflow: hidden;
+  word-break: break-word;
+}
+.contribution-table_col-update {
+  width: 12%;
+}
+.contribution-table_actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+:host ::ng-deep .contribution-table_edit-btn.p-button {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-dark);
+}
+:host ::ng-deep .contribution-table_edit-btn.p-button:hover {
+  background: var(--overlay-ink);
+  border-color: var(--overlay-ink);
+}
+:host ::ng-deep .contribution-table_delete-btn.p-button {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+:host ::ng-deep .contribution-table_delete-btn.p-button:hover {
+  background: var(--primary);
+  color: var(--on-dark);
 }

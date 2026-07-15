@@ -41,12 +41,12 @@
 }
 
 :host ::ng-deep .source-card-action-btn.p-button {
-  color: var(--overlay-ink);
+  color: var(--primary);
 }
 
 :host ::ng-deep .source-card-action-btn.p-button:hover {
-  background: #0F241F;
-  border-color: #0F241F;
+  background: var(--primary);
+  border-color: var(--primary);
   color: var(--color-white);
 }
 

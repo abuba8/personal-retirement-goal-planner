@@ -9,7 +9,6 @@ import { Contribution } from '../../types/Contribution';
 import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { UpdateDialog } from '../../components/update-dialog/update-dialog';
 import { ContributionTable } from '../../components/contribution-table/contribution-table';
 import { currencyPipe } from '../../pipes/currency-pipe';
 import { ContributionForm } from '../../components/contribution-form/contribution-form';
@@ -21,7 +20,7 @@ import { SideBar } from '../../components/side-bar/side-bar';
 @Component({
   selector: 'app-funding-source',
   imports: [RouterModule, TableModule, ButtonModule, FundingSourceForm, SideBar,
-    ConfirmDialog, UpdateDialog, ContributionTable, ContributionForm, SourceCard
+    ConfirmDialog, ContributionTable, ContributionForm, SourceCard
   ],
   templateUrl: './funding-source.html',
   styleUrl: './funding-source.css',
@@ -35,7 +34,9 @@ export class FundingSourcePage {
   totalContributions = signal<number>(0);
   showDialog = signal<boolean>(false);
   showContributionDialog = signal<boolean>(false);
-  showUpdate = signal<boolean>(false);
+  getGoalName(goalId?: number): string {
+    return this.allGoals().find(g => g.id === goalId)?.name ?? "";
+  }
 
   constructor(
     private sourceService: FundingSourceService,
@@ -127,13 +128,8 @@ export class FundingSourcePage {
     });
   }
 
-  handleUpdate() {
-    this.showUpdate.set(true);
-  }
-
   handleCreateContribution() {
     this.contribution.set(null);
-    this.showUpdate.set(false);
     this.showContributionDialog.set(true);
   }
 
@@ -163,16 +159,14 @@ export class FundingSourcePage {
 
   handleUpdateContribution(contribution: Contribution) {
     this.contribution.set(contribution);
-    this.showUpdate.set(false);
     this.showContributionDialog.set(true);
   }
 
   handleDeleteContribution(contribution: Contribution) {
     this.contribution.set(contribution);
-    this.showUpdate.set(false);
     this.confirmationService.confirm({
       header: "Confirm Delete",
-      message: `Are you sure you want to delete the contribution of ${new currencyPipe().transform(contribution.amount)} to ${contribution.goalId} from
+      message: `Are you sure you want to delete the contribution of ${new currencyPipe().transform(contribution.amount)} to ${this.getGoalName(contribution.goalId)} from
       ${this.source()?.name}?`,
       accept: () => this.deleteContribution(contribution.id!)
     })

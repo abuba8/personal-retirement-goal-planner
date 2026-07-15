@@ -1,4 +1,4 @@
-import { Component, input, model, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { Contribution } from '../../types/Contribution';
 import { FundingSource } from '../../types/FundingSource';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
@@ -24,10 +24,10 @@ export class ContributionTable {
   showGoalColumn = input<boolean>(true);
   allSources = input<FundingSource[]>([]);
   allGoals = input<Goal[]>([]);
-  selection = model<Contribution | null>(null);
   lazyLoad = output<TableLazyLoadEvent>();
-  select = output<void>();
   create = output<void>();
+  edit = output<Contribution>();
+  delete = output<Contribution>();
   getSourceName(sourceId?: number): string {
     return this.allSources().find(s => s.id === sourceId)?.name ?? "";
   }
