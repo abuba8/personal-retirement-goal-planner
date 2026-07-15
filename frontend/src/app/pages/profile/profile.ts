@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserService } from '../../services/UserService';
 import { UpdateProfile } from '../../types/UserProfile';
 import { AuthService } from '../../services/AuthService';
@@ -8,7 +8,7 @@ import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-profile',
-  imports: [ReactiveFormsModule, RouterLink, SideBar],
+  imports: [ReactiveFormsModule, SideBar],
   templateUrl: './profile.html',
   styleUrls: [
     '../utils/css/dashboard/styles.css',

@@ -5,7 +5,11 @@
 }
 
 /* ---------------- MAIN ---------------- */
-.main { flex: 1; padding: 2.5rem 3rem; background: var(--bg); }
+.main { 
+  flex: 1; 
+  padding: 2.5rem 3rem; 
+  background: var(--bg); 
+}
 
 .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
 .header_welcome { color: var(--muted-text); margin: 0 0 0.25rem; }
@@ -32,6 +36,7 @@
   display: flex;
   align-items: center;
   gap: 2rem;
+  box-shadow: 0 4px 16px rgba(22, 48, 42, 0.20);
 }
 
 /* the funded ring: a conic-gradient circle with a hole in the middle */
@@ -64,6 +69,7 @@
   border: 1px solid var(--p-border);
   border-radius: 16px;
   padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(22, 48, 42, 0.15);
 }
 .stat_label { color: var(--muted-text); margin: 0 0 0.75rem; }
 .stat_value { font-size: 2rem; font-weight: 700; color: var(--primary-ink); margin: 0; }
@@ -79,6 +85,7 @@
   border: 1px solid var(--p-border);
   border-radius: 16px;
   padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(22, 48, 42, 0.15);
 }
 .goal-card_top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .goal-card_name { font-weight: 600; color: var(--primary-ink); }

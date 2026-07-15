@@ -6,7 +6,7 @@ import { SourceTypeLabelPipe } from '../../pipes/source-type-label-pipe';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Router, RouterLink, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { UpdateDialog } from '../../components/update-dialog/update-dialog';
@@ -15,7 +15,7 @@ import { SideBar } from '../../components/side-bar/side-bar';
 @Component({
   selector: 'app-funding-sources',
   imports: [TableModule, SourceTypeLabelPipe, DialogModule, ConfirmDialog,
-    ButtonModule, RouterModule, FundingSourceForm, UpdateDialog, RouterLink, SideBar],
+    ButtonModule, RouterModule, FundingSourceForm, UpdateDialog, SideBar],
   templateUrl: './funding-source-list.html',
   styleUrl: '../utils/css/dashboard/styles.css',
 })
