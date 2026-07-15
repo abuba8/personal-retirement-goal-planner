@@ -1,0 +1,12 @@
+.contribution-table_primary {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--overlay-ink);
+}
+
+.contribution-table_secondary {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted-text);
+}

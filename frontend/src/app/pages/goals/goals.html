@@ -20,7 +20,7 @@
       </thead>
       <tbody>
         @for (goal of allGoals(); track goal.id) {
-          <tr>
+          <tr (click)="goToGoal(goal)">
             <td>{{ goal.name }}</td>
             <td>{{ goal.targetRetirementAge }}</td>
             <td>{{ goal.targetAmount }}</td>

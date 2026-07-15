@@ -1,0 +1,43 @@
+<div class="source-card" [class.source-card--vertical]="variant() === 'vertical'">
+    <div class="source-card_header">
+        <div>
+            <h2 class="source-card_name">{{ source().name }}</h2>
+            <p class="source-card_institution">{{ source().institution }}</p>
+        </div>
+        <p class="source-card_type">{{ source().type | sourceTypeLabel }}</p>
+    </div>
+
+    <div class="source-card_totals">
+        @if (variant() !== 'vertical') {
+            <span class="source-card_name">{{ totalContributed() | currency }}</span>
+            <span class="source-card_institution">contributed {{ contributionCount() }} records</span>
+        } @else {
+            <span class="source-card_totals-label">Total Contributed</span>
+            <p class="source-card_name">{{ totalContributed() | currency }}</p>
+            <p class="source-card_institution">across {{ contributionCount() }} records</p>
+        }
+    </div>
+
+    @if (yearlyLimit() > 0) {
+        <app-contribution-limit
+            [yearlyContributed]="yearlyContributed()"
+            [yearlyLimit]="yearlyLimit()"
+        />
+    } @else {
+        <p class="source-card_no-limit">No IRS limit for this account type.</p>
+    }
+
+    @if (variant() === 'vertical') {
+        <p class="source-card_institution">{{ source()?.notes }}</p>
+    }
+
+    <div class="source-card_actions">
+        @if (variant() !== 'vertical') {
+            <p-button label="Open" [text]="true" (click)="open.emit(source())" />
+        }
+        <div class="source-card_edit-delete">
+            <p-button label="Edit" icon="pi pi-pen-to-square" [text]="true" (click)="edit.emit(source())" />
+            <p-button label="Delete" icon="pi pi-trash" severity="danger" [text]="true" (click)="delete.emit(source())" />
+        </div>
+    </div>
+</div>

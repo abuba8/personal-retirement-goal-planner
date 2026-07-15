@@ -1,0 +1,21 @@
+.dash {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+.funding-source-list_title {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--overlay-ink);
+    margin: 0;
+}
+
+.source-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(320px, 4fr));
+    gap: 1rem;
+}

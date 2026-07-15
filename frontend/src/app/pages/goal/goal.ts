@@ -1,81 +1,85 @@
 import { Component, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { FundingSourceService } from '../../services/FundingSourceSevice';
-import { ContributionService } from '../../services/ContributionService';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
+import { Goal } from '../../types/Goal';
 import { FundingSource } from '../../types/FundingSource';
 import { Contribution } from '../../types/Contribution';
-import { FundingSourceForm } from '../../components/funding-source-form/funding-source-form';
-import { ConfirmDialog } from 'primeng/confirmdialog';
+import { GoalService } from '../../services/GoalService';
+import { FundingSourceService } from '../../services/FundingSourceSevice';
+import { ContributionService } from '../../services/ContributionService';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 import { UpdateDialog } from '../../components/update-dialog/update-dialog';
 import { ContributionTable } from '../../components/contribution-table/contribution-table';
-import { currencyPipe } from '../../pipes/currency-pipe';
 import { ContributionForm } from '../../components/contribution-form/contribution-form';
-import { Goal } from '../../types/Goal';
-import { GoalService } from '../../services/GoalService';
-import { SourceCard } from '../../components/source-card/source-card';
+import { currencyPipe } from '../../pipes/currency-pipe';
+import { GoalForm } from '../../components/goal-form/goal-form';
+import { ContributionSummary } from '../../components/contribution-summary/contribution-summary';
 import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
-  selector: 'app-funding-source',
-  imports: [RouterModule, TableModule, ButtonModule, FundingSourceForm, SideBar,
-    ConfirmDialog, UpdateDialog, ContributionTable, ContributionForm, SourceCard
+  selector: 'app-goal',
+  imports: [RouterModule, TableModule, ButtonModule, ConfirmDialog, UpdateDialog, 
+    ContributionTable, ContributionForm, GoalForm, ContributionSummary, currencyPipe,
+    SideBar
   ],
-  templateUrl: './funding-source.html',
-  styleUrl: './funding-source.css',
+  templateUrl: './goal.html',
+  styleUrl: './goal.css',
 })
-export class FundingSourcePage {
-  sourceId!: number;
-  source = signal<FundingSource | null>(null);
-  allGoals = signal<Goal[]>([]);
+export class GoalPage {
+  goalId!: number;
+  goal = signal<Goal | null>(null);
+  allSources = signal<FundingSource[]>([]);
   contribution = signal<Contribution | null>(null);
   allContributions = signal<Contribution[]>([]);
   totalContributions = signal<number>(0);
   showDialog = signal<boolean>(false);
-  showContributionDialog = signal<boolean>(false);
   showUpdate = signal<boolean>(false);
+  showContributionDialog = signal<boolean>(false);
+  totalContributed = signal<number>(0);
+  contributionCount = signal<number>(0);
 
   constructor(
-    private sourceService: FundingSourceService,
     private goalService: GoalService,
+    private sourceService: FundingSourceService,
     private contributionService: ContributionService,
     private router: Router,
     private route: ActivatedRoute,
     private confirmationService: ConfirmationService,
-    private toastService: MessageService,
+    private toastService: MessageService
   ) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.sourceId = Number(params.get('id'));
-      this.loadSource(this.sourceId);
-      this.loadGoals();
+      this.goalId = Number(params.get("id"));
+      this.loadGoal(this.goalId);
+      this.loadSources();
       this.loadContributions();
+      this.loadContributionSummary();
     })
   }
 
-  loadSource(id: number): void {
-    this.sourceService.getSourceById(id).subscribe({
+  loadGoal(id: number): void {
+    this.goalService.getGoalById(id).subscribe({
       next: (data) => {
-        this.source.set(data);
+        this.goal.set(data);
       },
       error: (err) => {
         console.error(err);
-        this.router.navigate(['/sources']);
+        this.router.navigate(['/goals']);
       }
     });
   }
 
-  loadGoals() {
-    this.goalService.getGoalsPage(0).subscribe(page => this.allGoals.set(page.content));
+  loadSources() {
+    this.sourceService.getSources(0).subscribe(page => this.allSources.set(page.content));
   }
 
   loadContributions(event?: TableLazyLoadEvent): void {
     const page = event ? event.first! / event.rows! : 0;
 
-    this.contributionService.getContributions(page, undefined, this.sourceId).subscribe({
+    this.contributionService.getContributions(page, this.goalId, undefined).subscribe({
       next: (data) => {
         this.allContributions.set(data.content);
         this.totalContributions.set(data.totalElements);
@@ -84,10 +88,11 @@ export class FundingSourcePage {
     });
   }
 
-  handleSaveSource(source: FundingSource) {
-    this.sourceService.updateSource(this.sourceId, source).subscribe({
-      next: (data) => {
-        this.source.set(data);
+  loadContributionSummary() {
+    this.contributionService.getContributions(0, this.goalId, undefined).subscribe({
+      next: (firstPage) => {
+        this.contributionCount.set(firstPage.totalElements);
+        this.accumulateAmounts(firstPage.content, 1, firstPage.totalPages);
       },
       error: (err) => {
         console.error(err)
@@ -95,33 +100,46 @@ export class FundingSourcePage {
     });
   }
 
-  handleDeleteSource() {
-    this.confirmationService.confirm({
-      header: "Confirm Delete",
-      message: `Are you sure you want to delete ${this.source()!.name}? This action cannot be undone.`,
-      accept: () => this.deleteSource()
+  accumulateAmounts(soFar: Contribution[], nextPage: number, totalPages: number) {
+    if (nextPage >= totalPages) {
+      this.totalContributed.set(soFar.reduce((sum, c) => sum + c.amount, 0));
+      return;
+    }
+    this.contributionService.getContributions(nextPage, this.goalId, undefined).subscribe({
+      next: (page) => {
+        this.accumulateAmounts([...soFar, ...page.content], nextPage + 1, totalPages)
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    })
+  }
+
+  handleSaveGoal(goal: Goal) {
+    this.goalService.updateGoal(this.goalId, goal).subscribe({
+      next: (data) => {
+        this.goal.set(data);
+      },
+      error: (err) => {
+        console.error(err);
+      }
     });
   }
 
-  deleteSource() {
-    this.sourceService.deleteSource(this.sourceId).subscribe({
-      next: () => {
-        this.router.navigate(['/sources'])
+  handleDeleteGoal() {
+    this.confirmationService.confirm({
+      header: "Confirm Delete",
+      message: `Are you sure you want to delete ${this.goal()!.name}? This action cannot be undone.`,
+      accept: () => this.deleteGoal()
+    });
+  }
+
+  deleteGoal() {
+    this.goalService.deleteGoal(this.goalId).subscribe({
+      next: (data) => {
+        this.router.navigate(["/goals"])
       },
       error: (err) => {
-        if(err.status === 409) {
-          this.toastService.add({
-            severity: "warn",
-            summary: "Cannot Delete",
-            detail: "This source has contributions, delete the contributions then delete the source."
-          });
-        } else {
-          this.toastService.add({
-            severity: 'error',
-            summary: "Error",
-            detail: "Something went wrong. Try again later"
-          })
-        }
         console.error(err);
       }
     });
@@ -132,17 +150,17 @@ export class FundingSourcePage {
   }
 
   handleCreateContribution() {
-    this.contribution.set(null);
-    this.showUpdate.set(false);
-    this.showContributionDialog.set(true);
-  }
-
+      this.contribution.set(null);
+      this.showUpdate.set(false);
+      this.showContributionDialog.set(true);
+    }
+  
   handleSaveContribution(contribution: Contribution) {
     if(this.contribution() === null) {
       this.contributionService.createContribution(contribution, contribution.goalId, contribution.sourceId).subscribe({
         next: () => {
           this.loadContributions();
-          this.loadSource(this.sourceId);
+          this.loadContributionSummary();
         },
         error: (err) => {
           console.error(err)
@@ -152,7 +170,7 @@ export class FundingSourcePage {
       this.contributionService.updateContribution(contribution.id!, contribution, contribution.goalId, contribution.sourceId).subscribe({
         next: () => {
           this.loadContributions();
-          this.loadSource(this.sourceId);
+          this.loadContributionSummary();
         },
         error: (err) => {
           console.error(err)
@@ -172,8 +190,8 @@ export class FundingSourcePage {
     this.showUpdate.set(false);
     this.confirmationService.confirm({
       header: "Confirm Delete",
-      message: `Are you sure you want to delete the contribution of ${new currencyPipe().transform(contribution.amount)} to ${contribution.goalId} from
-      ${this.source()?.name}?`,
+      message: `Are you sure you want to delete the contribution of ${new currencyPipe().transform(contribution.amount)} to ${this.goal()!.name} from
+      ${this.contribution()!.sourceId}?`,
       accept: () => this.deleteContribution(contribution.id!)
     })
   }
@@ -182,7 +200,7 @@ export class FundingSourcePage {
     this.contributionService.deleteContribution(contributionId).subscribe({
       next: () => {
         this.loadContributions();
-        this.loadSource(this.sourceId);
+        this.loadContributionSummary();
       },
       error: (err) => {
         if(err.status === 409) {

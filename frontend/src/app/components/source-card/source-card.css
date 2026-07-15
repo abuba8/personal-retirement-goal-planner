@@ -1,0 +1,112 @@
+.source-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 16rem;
+  padding: 1.25rem;
+  border: 1px solid var(--p-border);
+  border-radius: 0.75rem;
+  background: var(--card-surface);
+  box-shadow: 0 2px 5px var(--color-gray-400);
+  margin-Top: 1rem;
+  margin-Left: 0.5rem;
+}
+
+.source-card--vertical {
+  height: auto;
+}
+
+.source-card_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.source-card--vertical .source-card_header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.source-card--vertical .source-card_type {
+  order: -1;
+}
+
+.source-card_actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.source-card:not(.source-card--vertical) .source-card_actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+.source-card:not(.source-card--vertical) .source-card_actions > p-button:first-child {
+  justify-self: center;
+}
+
+.source-card_name {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--overlay-ink);
+}
+
+.source-card_institution,
+.source-card_type {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted-text);
+}
+
+.source-card_totals {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.source-card--vertical .source-card_totals {
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.source-card_totals-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-text);
+}
+
+.source-card--vertical .source-card_totals-label {
+  font-size: 1rem;
+}
+
+.source-card--vertical .source-card_totals .source-card_name {
+  font-size: 2.25rem;
+}
+
+.source-card--vertical .source-card_totals .source-card_institution {
+  font-size: 1.125rem;
+}
+
+.source-card_edit-delete {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.source-card_no-limit {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted-text);
+  font-style: italic;
+}
