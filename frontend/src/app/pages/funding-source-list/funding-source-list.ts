@@ -14,13 +14,8 @@ import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-funding-sources',
-<<<<<<< HEAD
-  imports: [TableModule, SourceTypeLabelPipe, DialogModule, ConfirmDialog,
-    ButtonModule, RouterModule, FundingSourceForm, UpdateDialog, SideBar],
-=======
   imports: [TableModule, DialogModule, ConfirmDialog, SideBar,
     ButtonModule, RouterModule, FundingSourceForm, SourceCard],
->>>>>>> origin/main
   templateUrl: './funding-source-list.html',
   styleUrl: './funding-source-list.css',
 })
