@@ -10,10 +10,7 @@ import { SideBar } from '../../components/side-bar/side-bar';
   selector: 'app-profile',
   imports: [ReactiveFormsModule, SideBar],
   templateUrl: './profile.html',
-  styleUrls: [
-    '../utils/css/dashboard/styles.css',
-    './profile.css'
-  ]
+  styleUrl: './profile.css',
 })
 export class Profile {
 

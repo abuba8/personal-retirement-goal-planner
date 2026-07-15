@@ -2,7 +2,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { catchError, Observable, tap, throwError } from "rxjs";
-import { environment } from "../../environments/environments";
+import { environment } from "../../environment/environments";
 import { TokenService } from "./TokenService";
 import { RegisterRequest, LoginRequest, LoginResponse, VerifyRequest } from "../types/Auth";
 

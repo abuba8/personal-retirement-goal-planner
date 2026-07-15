@@ -9,6 +9,6 @@ export class currencyPipe implements PipeTransform {
         if (value === null || value === undefined || value === "") {
             return null
         }
-        return this.currencyPipe.transform(value, "USD", "symbol", "1.2-2");
+        return this.currencyPipe.transform(value, "USD", "symbol", "1.0-0");
     }
 }

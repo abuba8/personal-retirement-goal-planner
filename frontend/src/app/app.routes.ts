@@ -18,6 +18,9 @@ export const routes: Routes = [
         path: 'goals', canActivate: [authGuard], loadComponent: () => import('./pages/goals/goals').then((x) => x.Goals),
     },
     {
+        path: 'goal/:id', canActivate: [authGuard], loadComponent: () => import('./pages/goal/goal').then((x) => x.GoalPage),
+    },
+    {
         path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./pages/dashboard/dashboard').then((x) => x.Dashboard),
     },
     {

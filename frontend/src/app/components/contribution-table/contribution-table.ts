@@ -19,6 +19,7 @@ import { Goal } from '../../types/Goal';
 export class ContributionTable {
   contributions = input<Contribution[]>([]);
   totalContributions = input<number>(0);
+  variant = input<'table' | 'compact'>('table');
   showSourceColumn = input<boolean>(true);
   showGoalColumn = input<boolean>(true);
   allSources = input<FundingSource[]>([]);

@@ -1,9 +1,16 @@
 <div class="dash">
-
   <app-side-bar />
 
-  <main class="main">
+  <div class="content">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="funding-source-list_title">Funding Sources</h1>
+        <p>The accounts your contributions come from.</p>
+      </div>
+      <p-button label="Create New Funding Source" (click)="handleCreateSource()" />
+    </div>
 
+<<<<<<< HEAD
     <h2>Funding Source Component</h2>
 
     <p-table 
@@ -48,6 +55,20 @@
         (edit)="handleUpdateSource(selectedSource()!)"
         (delete)="handleDeleteSource(selectedSource()!)"
     />
+=======
+    <div class="source-card-grid">
+      @for (source of allSources(); track source.id) {
+        <app-source-card
+          [source]="source"
+          (open)="goToSource($event)"
+          (edit)="handleUpdateSource($event)"
+          (delete)="handleDeleteSource($event)"
+        />
+      } @empty {
+        <p>No funding sources yet.</p>
+      }
+    </div>
+>>>>>>> origin/main
 
     <app-funding-source-form
         [(visible)]="showDialog"
@@ -56,6 +77,5 @@
     />
 
     <p-confirmdialog />
-
-  </main>
+  </div>
 </div>

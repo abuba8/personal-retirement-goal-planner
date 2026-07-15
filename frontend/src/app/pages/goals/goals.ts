@@ -1,5 +1,9 @@
 // src/app/pages/goals/goals.ts
 import { Component, signal } from '@angular/core';
+<<<<<<< HEAD
+=======
+import { Router, RouterModule } from '@angular/router';
+>>>>>>> origin/main
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
 import { DeleteConfirmationModal } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
@@ -9,7 +13,11 @@ import { SideBar } from '../../components/side-bar/side-bar';
 
 @Component({
   selector: 'app-goals',
+<<<<<<< HEAD
   imports: [DeleteConfirmationModal, GoalForm, SideBar],
+=======
+  imports: [DeleteConfirmationModal, GoalForm, RouterModule, SideBar],
+>>>>>>> origin/main
   templateUrl: './goals.html',
   styleUrl: '../utils/css/dashboard/styles.css',
 })
@@ -27,6 +35,7 @@ export class Goals {
 
   constructor(
     private goalService: GoalService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -51,6 +60,10 @@ export class Goals {
         console.error(err);
       },
     });
+  }
+
+  goToGoal(goal: Goal) {
+    this.router.navigate(['/goal', goal.id]);
   }
 
   handleCreateGoal() {

@@ -1,3 +1,7 @@
+.dash {
+  display: flex;
+  min-height: 100vh;
+}
 /* ---------------- MAIN ---------------- */
 .main {
   flex: 1;

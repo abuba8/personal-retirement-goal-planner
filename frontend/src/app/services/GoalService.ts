@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { environment } from "../../environments/environments";
+import { environment } from "../../environment/environments";
 import { catchError, Observable, throwError } from "rxjs";
 import { GoalPage } from "../types/GoalPage";
 import { HttpClient, HttpParams } from "@angular/common/http";
