@@ -1,6 +1,5 @@
 <div class="dash">
   <app-side-bar />
-  
 
   <main class="main">
 
@@ -10,7 +9,9 @@
         <p class="header_welcome">Welcome back, {{ userName() || 'there' }}</p>
         <h1 class="header_title font-display">Your retirement picture</h1>
       </div>
-      <button type="button" class="header_cta">+ Log contribution</button>
+      <a routerLink="/contributions">
+        <button type="button" class="header_cta">+ Log contribution</button>
+      </a>
     </div>
 
     <!-- top grid: hero + 4 stat cards -->
@@ -18,7 +19,7 @@
 
       <!-- hero card -->
       <div class="hero">
-        <div class="hero_ring" [style.--pct]="percentFunded()">
+        <div class="hero_ring" [style.--pct]="barWidth(percentFunded())">
           <div class="hero_ring-label">
             <span class="hero_ring-pct">{{ percentFunded() }}%</span>
             <span class="hero_ring-sub">funded</span>
@@ -26,10 +27,10 @@
         </div>
         <div class="hero_figures">
           <p class="hero_label">TOTAL CONTRIBUTED</p>
-          <p class="hero_total">${{ totalContributed().toLocaleString() }}</p>
-          <p class="hero_of">of ${{ totalTarget().toLocaleString() }} across all goals</p>
+          <p class="hero_total">{{ totalContributed() | currency }}</p>
+          <p class="hero_of">of {{ totalTarget() | currency }} across all goals</p>
           <hr class="hero_rule" />
-          <p class="hero_togo">${{ stillToGo().toLocaleString() }} still to go</p>
+          <p class="hero_togo">{{ stillToGo() | currency }} still to go</p>
         </div>
       </div>
 
@@ -48,7 +49,7 @@
       </div>
       <div class="stat">
         <p class="stat_label">Logged in {{ currentYear }}</p>
-        <p class="stat_value">${{ totalContributed().toLocaleString() }}</p>
+        <p class="stat_value">{{ contributedThisYear() | currency }}</p>
       </div>
     </div>
 
@@ -66,11 +67,11 @@
             <span class="goal-card_pill">{{ goalStatus(goalPercent(goal)) }}</span>
           </div>
           <p class="goal-card_amount">
-            ${{ (goal.targetAmount * 0.33).toLocaleString() }}
-            <span class="goal-card_target">/ ${{ goal.targetAmount.toLocaleString() }}</span>
+            {{ goalContributed(goal) | currency }}
+            <span class="goal-card_target">/ {{ goal.targetAmount | currency }}</span>
           </p>
           <div class="goal-card_bar">
-            <div class="goal-card_bar-fill" [style.width.%]="goalPercent(goal)"></div>
+            <div class="goal-card_bar-fill" [style.width.%]="barWidth(goalPercent(goal))"></div>
           </div>
           <div class="goal-card_foot">
             <span>{{ goalPercent(goal) }}% funded</span>

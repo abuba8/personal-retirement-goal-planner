@@ -10,7 +10,10 @@ import { SideBar } from '../../components/side-bar/side-bar';
   selector: 'app-profile',
   imports: [ReactiveFormsModule, SideBar],
   templateUrl: './profile.html',
-  styleUrl: '../utils/css/dashboard/styles.css',
+  styleUrls: [
+    '../utils/css/dashboard/styles.css',
+    './profile.css'
+  ]
 })
 export class Profile {
 
@@ -19,7 +22,7 @@ export class Profile {
   info = signal<string | null>(null);
   error = signal<string | null>(null);
   userName = signal<string>(''); // Welcome back {username}
-
+  userEmail = signal<string>('');
 
   constructor(
     private formBuilder: FormBuilder,
@@ -30,8 +33,12 @@ export class Profile {
 
   ngOnInit(): void {
     this.userService.getCurrentUser().subscribe({
-      next: (user) => this.userName.set(user.username),
-      error: () => this.userName.set('') //fallback empty string
+      next: (user) => {
+        this.form.patchValue({username: user.username, email: user.email});
+        this.userName.set(user.username);
+        this.userEmail.set(user.email);
+      },
+      error: () => this.error.set("Could not load profile"),
     });
 
     this.form = this.formBuilder.group({
@@ -65,6 +72,11 @@ export class Profile {
         this.error.set(typeof err.error === "string" ? err.error : "Update failed.");
       },
     });
+  }
+
+  initials(): string{
+    const name = this.userName();
+    return name ? name.charAt(0).toUpperCase() : 'U';
   }
 
   deleteAccount(): void {

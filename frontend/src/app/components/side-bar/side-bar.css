@@ -1,4 +1,6 @@
-/* src/app/components/side-bar/side-bar.css */
+@import 'tailwindcss';
+@import 'primeicons/primeicons.css';
+
 :host {
   display: flex;          /* so the inner <aside> can stretch */
   flex-shrink: 0;         /* don't let the sidebar get squeezed */
@@ -24,9 +26,20 @@
 
 .sidebar_nav { display: flex; flex-direction: column; gap: 0.25rem; }
 .sidebar_link {
-  padding: 0.6rem 0.75rem; border-radius: 8px;
-  color: var(--on-dark-muted, #A9B6AC); text-decoration: none; cursor: pointer;
+  display: flex;              /* icon and text side by side */
+  align-items: center;
+  gap: 0.75rem;               /* space between icon and label */
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  color: var(--on-dark-muted, #A9B6AC);
+  text-decoration: none;
+  cursor: pointer;
 }
+
+.sidebar_link i {
+  font-size: 1.1rem;          /* icons inherit color automatically */
+}
+
 .sidebar_link:hover { color: var(--on-dark, #F3F0E7); }
 .sidebar_link--active { background: rgba(255,255,255,0.08); color: var(--on-dark, #F3F0E7); }
 
