@@ -20,8 +20,11 @@
 
     @if (yearlyLimit() > 0) {
         <app-contribution-limit
-            [yearlyContributed]="yearlyContributed()"
-            [yearlyLimit]="yearlyLimit()"
+            label="2026 IRS Limit"
+            [current]="yearlyContributed()"
+            [target]="yearlyLimit()"
+            [severity]="limitSeverity()"
+            [message]="limitMessage()"
         />
     } @else {
         <p class="source-card_no-limit">No IRS limit for this account type.</p>

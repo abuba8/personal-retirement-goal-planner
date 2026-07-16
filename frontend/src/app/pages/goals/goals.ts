@@ -6,19 +6,23 @@ import { GoalService } from '../../services/GoalService';
 import { DeleteConfirmationModal } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
 import { GoalForm } from '../../components/goal-form/goal-form';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 import { SideBar } from '../../components/side-bar/side-bar';
+import { GoalCard } from '../../components/goal-card/goal-card';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-goals',
-  imports: [DeleteConfirmationModal, GoalForm, RouterModule, SideBar],
+  imports: [DeleteConfirmationModal, GoalForm, RouterModule, SideBar, 
+    ButtonModule, GoalCard, ConfirmDialog],
   templateUrl: './goals.html',
-  styleUrl: '../utils/css/dashboard/styles.css',
+  styleUrl: './goals.css',
 })
 export class Goals {
 
   allGoals = signal<Goal[]>([]);                 // goals on the current page
   selectedGoal = signal<Goal | null>(null);      // goal targeted for delete
-  showDeleteDialog = signal<boolean>(false);     // toggle the delete modal
   showGoalDialog = signal<boolean>(false);
   page = signal<number>(0);
   totalPages = signal<number>(0);
@@ -28,7 +32,9 @@ export class Goals {
 
   constructor(
     private goalService: GoalService,
-    private router: Router
+    private router: Router,
+    private toastService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
@@ -96,20 +102,25 @@ export class Goals {
   // open the delete modal for a goal (same flow as handleDeleteMovie)
   handleDeleteGoal(goal: Goal): void {
     this.selectedGoal.set(goal);
-    this.showDeleteDialog.set(true);
+    this.confirmationService.confirm({
+      header: "Confirm Delete",
+      message: `Are you sure you want to delete ${goal.name}? This action cannot be undone.`,
+      accept: () => this.deleteGoal(goal.id!)
+    })
   }
 
   // modal confirmed -> actually delete
-  deleteGoal(): void {
-    const id = this.selectedGoal()!.id!;
-    this.goalService.deleteGoal(id).subscribe({
+  deleteGoal(goalId: number): void {
+    this.goalService.deleteGoal(goalId).subscribe({
       next: () => {
-        this.allGoals.update((list) => list.filter((g) => g.id !== id));
-        this.showDeleteDialog.set(false);
+        this.allGoals.update((list) => list.filter((g) => g.id !== goalId));
       },
       error: (err) => {
-        console.error(err);
-        this.showDeleteDialog.set(false);
+        this.toastService.add({
+          severity: "warn",
+          summary: "Cannot Delete",
+          detail: "Goals cannot be deleted if there are contributions attached to them."
+        })
       },
     });
   }

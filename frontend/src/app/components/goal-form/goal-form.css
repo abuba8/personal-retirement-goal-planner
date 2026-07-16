@@ -1,0 +1,45 @@
+.goal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.goal-form_field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+.goal-form_field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--overlay-ink);
+}
+.goal-form_field input {
+    border: 1px solid var(--p-border);
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.95rem;
+}
+.goal-form_actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+:host ::ng-deep .goal-form_save-btn.p-button {
+    background: var(--overlay-ink);
+    border-color: var(--overlay-ink);
+    color: var(--on-dark);
+}
+:host ::ng-deep .goal-form_save-btn.p-button:hover {
+    background: #0F241F;
+    border-color: #0F241F;
+}
+:host ::ng-deep .goal-form_cancel-btn.p-button:hover {
+    background: var(--color-gray-600);
+    border-color: #0F241F;
+    color: var(--color-white);
+}
+:host ::ng-deep .p-dialog-mask {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}

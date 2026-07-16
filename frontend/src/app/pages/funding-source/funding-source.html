@@ -23,10 +23,10 @@
             [showSourceColumn]="false"
             [showGoalColumn]="true"
             [allGoals]="allGoals()"
-            [(selection)]="contribution"
             (lazyLoad)="loadContributions($event)"
-            (select)="handleUpdate()"
             (create)="handleCreateContribution()"
+            (edit)="handleUpdateContribution($event)"
+            (delete)="handleDeleteContribution($event)"
         />
       </div>
     }
@@ -38,12 +38,6 @@
     />
 
     <p-confirmdialog />
-
-    <app-update-dialog
-        [(visible)]="showUpdate"
-        (edit)="handleUpdateContribution(contribution()!)"
-        (delete)="handleDeleteContribution(contribution()!)"
-    />
 
     <app-contribution-form
         [(visible)]="showContributionDialog"

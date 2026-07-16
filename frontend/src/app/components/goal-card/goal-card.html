@@ -1,0 +1,56 @@
+<div class="goal-card" [class.goal-card--vertical]="variant() === 'vertical'">
+    <div class="goal-card_header">
+        <div>
+            <h2 class="goal-card_name">{{ goal().name }}</h2>
+            <p class="goal-card_meta">Target Age {{ goal().targetRetirementAge }}</p>
+        </div>
+        <span class="goal-card_pill">{{ goalStatus() }}</span>
+    </div>
+
+    <div class="goal-card_totals">
+        <div class="goal-card_totals-figures">
+            <span class="goal-card_contributed">{{ totalContributed() | currency }}</span>
+            <span class="goal-card_target">/ {{ goal().targetAmount | currency }}</span>
+        </div>
+        <app-contribution-limit
+            [showHeader]="false"
+            [shape]="variant() === 'vertical' ? 'circle' : 'bar'"
+            [current]="totalContributed()"
+            [target]="goal().targetAmount ?? 0"
+            [severity]="progressSeverity()"
+            [footLeft]="variant() === 'vertical' ? '' : (percentFunded() + '% funded by ' + contributionCount() + ' contributions')"
+            [footRight]="variant() === 'vertical' ? '' : ((remainingAmount() | currency) + ' remaining')"
+        />
+        @if (variant() === 'vertical') {
+            <div class="goal-card_breakdown">
+                <div class="goal-card_breakdown-row">
+                    <span class="goal-card_breakdown-label">Contributed</span>
+                    <span class="goal-card_breakdown-value">{{ totalContributed() | currency }}</span>
+                </div>
+                <div class="goal-card_breakdown-row">
+                    <span class="goal-card_breakdown-label">Target</span>
+                    <span class="goal-card_breakdown-value">{{ goal().targetAmount | currency }}</span>
+                </div>
+                <div class="goal-card_breakdown-row">
+                    <span class="goal-card_breakdown-label">Remaining</span>
+                    <span class="goal-card_breakdown-value">{{ remainingAmount() | currency }}</span>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (variant() === 'vertical') {
+        <hr class="goal-card_rule" />
+        <p class="goal-card_meta">{{ goal()?.notes }}</p>
+    }
+
+    <div class="goal-card_actions">
+        @if (variant() !== 'vertical') {
+            <p-button label="Open" styleClass="goal-card-action-btn" [text]="true" (click)="open.emit(goal())" />
+        }
+        <div class="goal-card_edit-delete">
+            <p-button label="Edit" icon="pi pi-pen-to-square" styleClass="goal-card-action-btn" [text]="true" (click)="edit.emit(goal())" />
+            <p-button label="Delete" icon="pi pi-trash" severity="danger" [text]="true" (click)="delete.emit(goal())" />
+        </div>
+    </div>
+</div>

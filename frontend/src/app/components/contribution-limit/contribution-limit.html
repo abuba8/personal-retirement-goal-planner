@@ -1,20 +1,47 @@
-<div class="limit-header" [class]="severity()">
-    <p class="limit-label">2026 IRS Limit</p>
-    <p class="limit-percentage">
-        {{ yearlyContributed() | currency }} / {{ yearlyLimit() | currency }} - {{ percentage() | number: "1.0-0" }}%
-    </p>
-</div>
-<div class="limit-comparison" [class]="severity()">
-    <div
-        class="limit-bar"
-        role="progressbar"
-        [attr.aria-valuenow]="yearlyContributed()"
-        [attr.aria-valuemin]="0"
-        [attr.aria-valuemax]="yearlyLimit() ?? 0"
-    >
-        <div class="limit-bar-fill" [style.width.%]="percentage()"></div>
+@if (showSummary()) {
+    <p class="limit-summary">{{ current() | currency }} Contributed {{ count() }} records</p>
+}
+@if (showHeader()) {
+    <div class="limit-header" [class]="severity()">
+        <p class="limit-label">{{ label() }}</p>
+        <p class="limit-percentage">
+            {{ current() | currency }} / {{ target() | currency }} - {{ percentage() | number: "1.0-0" }}%
+        </p>
     </div>
-</div>
+}
+@if (shape() === 'circle') {
+    <div
+        class="limit-ring"
+        [class]="severity()"
+        [style.--pct]="percentage()"
+        role="progressbar"
+        [attr.aria-valuenow]="current()"
+        [attr.aria-valuemin]="0"
+        [attr.aria-valuemax]="target() ?? 0"
+    >
+        <div class="limit-ring-label">
+            <span class="limit-ring-pct">{{ percentage() | number: "1.0-0" }}%</span>
+        </div>
+    </div>
+} @else {
+    <div class="limit-comparison" [class]="severity()">
+        <div
+            class="limit-bar"
+            role="progressbar"
+            [attr.aria-valuenow]="current()"
+            [attr.aria-valuemin]="0"
+            [attr.aria-valuemax]="target() ?? 0"
+        >
+            <div class="limit-bar-fill" [style.width.%]="percentage()"></div>
+        </div>
+    </div>
+}
 @if (message()) {
     <p class="limit-message" [class]="severity()">{{ message() }}</p>
+}
+@if (footLeft() || footRight()) {
+    <div class="limit-foot">
+        <span>{{ footLeft() }}</span>
+        <span>{{ footRight() }}</span>
+    </div>
 }

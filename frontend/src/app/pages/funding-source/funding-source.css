@@ -2,10 +2,9 @@
   display: flex;
   min-height: 100vh;
 }
-
 .content {
-  margin-Left: 1.25rem;
-  margin-Top: 0.5rem;
+  flex: 1;
+  padding: 1.75rem 3rem;
 }
 .funding-source-detail {
   display: grid;
