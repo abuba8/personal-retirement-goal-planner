@@ -5,10 +5,12 @@ import { UserService } from '../../services/UserService';
 import { UpdateProfile } from '../../types/UserProfile';
 import { AuthService } from '../../services/AuthService';
 import { SideBar } from '../../components/side-bar/side-bar';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-profile',
-  imports: [ReactiveFormsModule, SideBar],
+  imports: [ReactiveFormsModule, ConfirmDialog, SideBar],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
@@ -25,7 +27,8 @@ export class Profile {
     private formBuilder: FormBuilder,
     private userService: UserService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
@@ -82,6 +85,32 @@ export class Profile {
       error: () => this.error.set("Delete failed."),
     });
   }
+
+  confirmDelete() {
+    this.confirmationService.confirm({
+      header: "Confirm Delete",
+      message: "Are you sure you want to delete your account? This action cannot be undone.",
+      accept: () => this.deleteAccount()
+    });
+  }
+
+
+  // handleDeleteSource() {
+  //   this.confirmationService.confirm({
+  //     header: "Confirm Delete",
+  //     message: `Are you sure you want to delete ${this.source()!.name}? This action cannot be undone.`,
+  //     accept: () => this.deleteSource()
+  //   });
+  // }
+
+//   confirmDelete(): void {
+//   const ok = window.confirm(
+//     'Delete your account permanently? This cannot be undone.'
+//   );
+//   if (ok) {
+//     this.deleteAccount();
+//   }
+// }
 
   logout(): void {
     this.authService.logout();

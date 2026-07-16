@@ -6,10 +6,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { HomePage } from '../../components/home-page/home-page';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-verify',
-  imports: [ReactiveFormsModule, RouterLink, InputTextModule, ButtonModule, MessageModule, HomePage],
+  imports: [ReactiveFormsModule, RouterLink, InputTextModule, ButtonModule, MessageModule, ToastModule, HomePage],
   templateUrl: './verify.html',
   styleUrl: '../utils/css/auth/styles.css',
 })
@@ -24,7 +26,8 @@ export class Verify {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute      // lets us read the ?email= query param
+    private route: ActivatedRoute,      // lets us read the ?email= query param
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -41,7 +44,15 @@ export class Verify {
     this.error.set(null);
 
     this.authService.verify(this.form.value).subscribe({
-      next: () => this.router.navigate(["/login"]),
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Verified',
+          detail: 'Verification successful',
+          life: 3000
+        });
+        this.router.navigate(["/login"])
+      },
       error: (err) => {
         this.loading.set(false);
         this.error.set(typeof err.error === "string" ? err.error : "Verification failed");

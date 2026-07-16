@@ -47,6 +47,9 @@
             {{ loading() ? 'Saving…' : 'Save changes' }}
           </button>
           <button type="button" class="btn btn--danger" (click)="logout()">Sign out</button>
+          <button type="button" class="btn btn--danger" (click)="confirmDelete()">Delete account</button>
+          <p-confirmdialog />
+
         </div>
       </form>
     </div>

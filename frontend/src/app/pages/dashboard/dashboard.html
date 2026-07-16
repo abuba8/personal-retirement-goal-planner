@@ -63,7 +63,7 @@
       @for (goal of topGoals(); track goal.id) {
         <div class="goal-card">
           <div class="goal-card_top">
-            <span class="goal-card_name">{{ goal.name }}</span>
+            <span class="goal-card_name" [title]="goal.name">{{ goal.name | truncate:30 }}</span>
             <span class="goal-card_pill">{{ goalStatus(goalPercent(goal)) }}</span>
           </div>
           <p class="goal-card_amount">
