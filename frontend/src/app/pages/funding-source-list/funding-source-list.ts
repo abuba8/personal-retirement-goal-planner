@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { FundingSource } from '../../types/FundingSource';
 import { FundingSourceService } from '../../services/FundingSourceSevice';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
@@ -38,14 +38,14 @@ export class FundingSources {
     this.loadSources();
   }
 
-  loadSources(event? : TableLazyLoadEvent) {
-    const page = event ? event?.first! / event?.rows! : 0;
-
+  loadSources(page: number = 0) {
     this.service.getSources(page).subscribe({
-
       next: (data) => {
-        this.allSources.set(data.content);
-        this.totalSources.set(data.totalElements);   
+        this.allSources.update(current => page === 0 ? data.content : [...current, ...data.content]);
+        this.totalSources.set(data.totalElements);
+        if (data.number + 1 < data.totalPages) {
+          this.loadSources(data.number + 1);
+        }
       },
       error: (err) => {
         console.error(err);

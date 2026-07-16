@@ -15,13 +15,13 @@
 }
 
 :host ::ng-deep .funding-source-list_create-btn.p-button {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--overlay-ink);
+  border-color: var(--overlay-ink);
   color: var(--on-dark);
 }
 :host ::ng-deep .funding-source-list_create-btn.p-button:hover {
-  background: var(--overlay-ink);
-  border-color: var(--overlay-ink);
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
 .source-card-grid {

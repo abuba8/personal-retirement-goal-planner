@@ -4,7 +4,6 @@ import { Router, RouterModule } from '@angular/router';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
 import { GoalForm } from '../../components/goal-form/goal-form';
-import { TableLazyLoadEvent } from 'primeng/table';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { SideBar } from '../../components/side-bar/side-bar';
 import { GoalCard } from '../../components/goal-card/goal-card';
@@ -40,17 +39,19 @@ export class Goals {
     this.loadGoals();
   }
 
-  loadGoals(event? : TableLazyLoadEvent): void {
-    const goalPage = event ? event?.first! / event?.rows! : 0;
-
+  loadGoals(page: number = 0): void {
     this.loading.set(true);
     this.error.set(null);
-    this.goalService.getGoalsPage(goalPage).subscribe({
+    this.goalService.getGoalsPage(page).subscribe({
       next: (data) => {
-        this.allGoals.set(data.content);         // the array is inside .content
+        this.allGoals.update(current => page === 0 ? data.content : [...current, ...data.content]);
         this.page.set(data.number);
         this.totalPages.set(data.totalPages);
-        this.loading.set(false);
+        if (data.number + 1 < data.totalPages) {
+          this.loadGoals(data.number + 1);
+        } else {
+          this.loading.set(false);
+        }
       },
       error: (err) => {
         this.loading.set(false);

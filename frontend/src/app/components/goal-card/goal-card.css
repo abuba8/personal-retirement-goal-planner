@@ -15,9 +15,9 @@
   height: auto;
   gap: 0.75rem;
   padding: 1rem;
-  background: var(--primary);
-  border-color: var(--primary);
-  --ring-hole-bg: var(--primary);
+  background: var(--overlay-ink);
+  border-color: var(--overlay-ink);
+  --ring-hole-bg: var(--overlay-ink);
   --ring-label-color: var(--on-dark);
   --ring-size: 4.5rem;
   --ring-hole-size: 3.4rem;

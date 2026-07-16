@@ -14,13 +14,13 @@
     margin: 0;
 }
 :host ::ng-deep .goals_create-btn.p-button {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--overlay-ink);
+  border-color: var(--overlay-ink);
   color: var(--on-dark);
 }
 :host ::ng-deep .goals_create-btn.p-button:hover {
-  background: var(--overlay-ink);
-  border-color: var(--overlay-ink);
+  background: var(--primary);
+  border-color: var(--primary);
 }
 .goal-card {
   background: var(--card-surface);
