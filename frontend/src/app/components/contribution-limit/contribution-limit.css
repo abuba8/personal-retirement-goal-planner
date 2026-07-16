@@ -1,3 +1,9 @@
+.limit-summary {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--overlay-ink);
+}
 .limit-header {
   display: flex;
   align-items: baseline;
@@ -5,29 +11,24 @@
   gap: 0.5rem;
   margin: 0 0 0.25rem 0;
 }
-
 .limit-label,
 .limit-percentage {
   margin: 0;
   font-size: 0.875rem;
   color: var(--muted-text);
 }
-
 .limit-comparison {
   --bar-color: var(--primary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-
 .limit-comparison.warning {
   --bar-color: var(--warning-accent);
 }
-
 .limit-comparison.danger {
   --bar-color: var(--error-accent);
 }
-
 .limit-bar {
   flex: 1;
   height: 0.5rem;
@@ -35,34 +36,78 @@
   border-radius: 999px;
   overflow: hidden;
 }
-
 .limit-bar-fill {
   height: 100%;
   background: var(--bar-color);
   border-radius: 999px;
   transition: width 0.2s ease, background-color 0.2s ease;
 }
-
+.limit-ring {
+  --ring-color: var(--primary);
+  position: relative;
+  width: var(--ring-size, 6rem);
+  height: var(--ring-size, 6rem);
+  border-radius: 50%;
+  margin: 0.25rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: conic-gradient(
+    var(--ring-color) calc(min(var(--pct), 100) * 1%),
+    rgba(255, 255, 255, 0.2) 0
+  );
+}
+.limit-ring::after {
+  content: "";
+  position: absolute;
+  width: var(--ring-hole-size, 4.6rem);
+  height: var(--ring-hole-size, 4.6rem);
+  border-radius: 50%;
+  background: var(--ring-hole-bg, var(--card-surface));
+}
+.limit-ring.warning {
+  --ring-color: var(--warning-accent);
+}
+.limit-ring.danger {
+  --ring-color: var(--error-accent);
+}
+.limit-ring-label {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+.limit-ring-pct {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--ring-label-color, var(--overlay-ink));
+}
 .limit-message {
   margin: 0.25rem 0 0 0;
   font-size: 0.8125rem;
 }
-
+.limit-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0 0;
+  color: var(--muted-text);
+  font-size: 0.8125rem;
+}
+.limit-foot span {
+  white-space: nowrap;
+}
 .limit-header.warning .limit-percentage,
 .limit-message.warning {
   color: var(--warning-accent);
 }
-
 .limit-header.danger .limit-percentage,
 .limit-message.danger {
   color: var(--error-accent);
 }
-
 .limit-comparison.warning progress::-webkit-progress-value,
 .limit-comparison.warning progress::-moz-progress-bar {
   background: var(--warning-accent);
 }
-
 .limit-comparison.danger progress::-webkit-progress-value,
 .limit-comparison.danger progress::-moz-progress-bar {
   background: var(--error-accent);

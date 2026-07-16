@@ -1,58 +1,48 @@
 <div class="dash">
   <app-side-bar />
 
-  <a routerLink="/goals">&larr; Back to your Goals</a>
+  <div class="content">
+    <a routerLink="/goals">&larr; Back to Goals</a>
 
-  @if (goal(); as currentGoal) {
-    <div>
-      <h2>{{ currentGoal.name }}</h2>
-      <p>Target Retirement Age: {{ currentGoal.targetRetirementAge }}</p>
-      <p>Target Amount: {{ currentGoal.targetAmount | currency }}</p>
-      <p>Notes: {{ currentGoal.notes }}</p>
-      <app-contribution-summary 
-        [totalContributed]="totalContributed()"
-        [contributionCount]="contributionCount()"
-      />
+    @if (goal(); as currentGoal) {
+      <div class="goal-detail">
+        <app-goal-card
+          variant="vertical"
+          [goal]="currentGoal"
+          (edit)="showDialog.set(true)"
+          (delete)="handleDeleteGoal()"
+        />
 
-      <p-button label="Edit" icon="pi pi-pen-to-square" (click)="showDialog.set(true)" />
-      <p-button label="Delete" icon="pi pi-trash" severity="danger" [outlined]="true" (click)="handleDeleteGoal()" />
-    </div>
-  }
+        <app-contribution-table
+          variant="compact"
+          [contributions]="allContributions()"
+          [totalContributions]="totalContributions()"
+          [showSourceColumn]="true"
+          [showGoalColumn]="false"
+          [allSources]="allSources()"
+          (lazyLoad)="loadContributions($event)"
+          (create)="handleCreateContribution()"
+          (edit)="handleUpdateContribution($event)"
+          (delete)="handleDeleteContribution($event)"
+        />
+      </div>
+    }
 
-  <app-goal-form
-    [(visible)]="showDialog"
-    [goal]="goal()"
-    (save)="handleSaveGoal($event)"
-  />
+    <app-goal-form
+      [(visible)]="showDialog"
+      [goal]="goal()"
+      (save)="handleSaveGoal($event)"
+    />
 
-  <p-confirmdialog />
+    <p-confirmdialog />
 
-  <h3>Contributions</h3>
-  <app-contribution-table
-      variant="compact"
-      [contributions]="allContributions()"
-      [totalContributions]="totalContributions()"
-      [showSourceColumn]="true"
-      [showGoalColumn]="false"
-      [allSources]="allSources()"
-      [(selection)]="contribution"
-      (lazyLoad)="loadContributions($event)"
-      (select)="handleUpdate()"
-      (create)="handleCreateContribution()"
-  />
-
-  <app-update-dialog
-      [(visible)]="showUpdate"
-      (edit)="handleUpdateContribution(contribution()!)"
-      (delete)="handleDeleteContribution(contribution()!)"
-  />
-
-  <app-contribution-form
-      [(visible)]="showContributionDialog"
-      [contribution]="contribution()"
-      [allSources]="allSources()"
-      [lockedGoalId]="goalId"
-      (createdSource)="allSources.update(currentList => [...currentList, $event])"
-      (save)="handleSaveContribution($event)"
-  />
+    <app-contribution-form
+        [(visible)]="showContributionDialog"
+        [contribution]="contribution()"
+        [allSources]="allSources()"
+        [lockedGoalId]="goalId"
+        (createdSource)="allSources.update(currentList => [...currentList, $event])"
+        (save)="handleSaveContribution($event)"
+    />
+  </div>
 </div>

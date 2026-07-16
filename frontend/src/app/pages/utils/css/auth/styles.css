@@ -18,6 +18,14 @@
   max-width: 26rem;
 }
 
-@media (max-width: 900px) {
-  .auth-shell { grid-template-columns: 1fr; }
+@media (max-width: 400px) {
+  .auth-shell { 
+    grid-template-columns: 1fr; /* one column */
+  }
+  .auth-brand {
+    display: none;
+  }
+  .auth-panel {
+    min-height: 100vh;
+  }
 }

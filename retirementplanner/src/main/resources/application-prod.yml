@@ -12,7 +12,7 @@ spring:
     show-sql: true
   sql:
     init:
-      mode: always          # run schema.sql then data.sql on startup
+      mode: never          # run schema.sql then data.sql on startup, always vs never
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
