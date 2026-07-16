@@ -9,9 +9,10 @@ import { currencyPipe } from '../../pipes/currency-pipe';
 import { ContributionService } from '../../services/ContributionService';
 import { FundingSourceService } from '../../services/FundingSourceSevice';
 import { mergeMap, range, toArray } from 'rxjs';
+import { TruncatePipe } from '../../pipes/truncate-goal';
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, SideBar, currencyPipe],
+  imports: [RouterLink, SideBar, currencyPipe, TruncatePipe],
   templateUrl: './dashboard.html',
   styleUrl: '../utils/css/dashboard/styles.css',
 })
