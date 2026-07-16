@@ -3,7 +3,6 @@ import { Component, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Goal } from '../../types/Goal';
 import { GoalService } from '../../services/GoalService';
-import { DeleteConfirmationModal } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
 import { GoalForm } from '../../components/goal-form/goal-form';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { ConfirmDialog } from 'primeng/confirmdialog';
@@ -14,7 +13,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-goals',
-  imports: [DeleteConfirmationModal, GoalForm, RouterModule, SideBar, 
+  imports: [GoalForm, RouterModule, SideBar, 
     ButtonModule, GoalCard, ConfirmDialog],
   templateUrl: './goals.html',
   styleUrl: './goals.css',
