@@ -69,8 +69,13 @@ export class GoalPage {
     });
   }
 
-  loadSources() {
-    this.sourceService.getSources(0).subscribe(page => this.allSources.set(page.content));
+  loadSources(page: number = 0) {
+    this.sourceService.getSources(page).subscribe(data => {
+      this.allSources.update(current => page === 0 ? data.content : [...current, ...data.content]);
+      if (data.number + 1 < data.totalPages) {
+        this.loadSources(data.number + 1);
+      }
+    });
   }
 
   loadContributions(event?: TableLazyLoadEvent): void {
