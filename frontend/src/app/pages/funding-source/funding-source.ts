@@ -69,8 +69,13 @@ export class FundingSourcePage {
     });
   }
 
-  loadGoals() {
-    this.goalService.getGoalsPage(0).subscribe(page => this.allGoals.set(page.content));
+  loadGoals(page: number = 0) {
+    this.goalService.getGoalsPage(page).subscribe(data => {
+      this.allGoals.update(current => page === 0 ? data.content : [...current, ...data.content]);
+      if (data.number + 1 < data.totalPages) {
+        this.loadGoals(data.number + 1);
+      }
+    });
   }
 
   loadContributions(event?: TableLazyLoadEvent): void {

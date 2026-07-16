@@ -3,8 +3,9 @@
   min-height: 100vh;
 }
 .content {
-  flex: 1;
-  padding: 1.75rem 3rem;
+  flex: 1; 
+  padding: 2.5rem 3rem; 
+  background: var(--bg); 
 }
 .funding-source-list_title {
     font-size: 1.875rem;
@@ -14,17 +15,17 @@
 }
 
 :host ::ng-deep .funding-source-list_create-btn.p-button {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--overlay-ink);
+  border-color: var(--overlay-ink);
   color: var(--on-dark);
 }
 :host ::ng-deep .funding-source-list_create-btn.p-button:hover {
-  background: var(--overlay-ink);
-  border-color: var(--overlay-ink);
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
 .source-card-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(320px, 4fr));
+    grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
     gap: 1rem;
 }

@@ -14,7 +14,7 @@ import { Goal } from '../../types/Goal';
     currencyPipe, ButtonModule
   ],
   templateUrl: './contribution-table.html',
-  styleUrl: '../../pages/utils/css/dashboard/styles.css', 
+  styleUrl: './contribution-table.css', 
 })
 export class ContributionTable {
   contributions = input<Contribution[]>([]);

@@ -14,13 +14,13 @@
     margin: 0;
 }
 :host ::ng-deep .goals_create-btn.p-button {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--overlay-ink);
+  border-color: var(--overlay-ink);
   color: var(--on-dark);
 }
 :host ::ng-deep .goals_create-btn.p-button:hover {
-  background: var(--overlay-ink);
-  border-color: var(--overlay-ink);
+  background: var(--primary);
+  border-color: var(--primary);
 }
 .goal-card {
   background: var(--card-surface);
@@ -78,6 +78,6 @@
 }
 .goal-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
   gap: 1rem;
 }

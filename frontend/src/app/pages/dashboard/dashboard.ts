@@ -63,11 +63,7 @@ export class Dashboard {
     });
 
     // load the goals
-    this.goalService.getGoalsPage(0).subscribe({
-      next: (data) => 
-        this.goals.set(data.content),
-        error: () => this.goals.set([]),
-    });
+    this.loadAllGoals();
 
     // funding sources count
     this.sourceService.getSources(0).subscribe({
@@ -76,6 +72,30 @@ export class Dashboard {
         error: () => this.fundingSourcesCount.set(0),
     });
     this.loadAllContributions();
+  }
+
+  private loadAllGoals(): void {
+    this.goalService.getGoalsPage(0).subscribe({
+      next: (first) => {
+        if (first.totalPages <= 1) {
+          this.goals.set(first.content);
+          return;
+        }
+        // fetch pages 1..totalPages-1 and append them to page 0
+        const rest = range(1, first.totalPages - 1).pipe(
+          mergeMap((p) => this.goalService.getGoalsPage(p)),
+          toArray()
+        );
+        rest.subscribe({
+          next: (pages) => {
+            const all = [...first.content, ...pages.flatMap((p) => p.content)];
+            this.goals.set(all);
+          },
+          error: () => this.goals.set(first.content),
+        });
+      },
+      error: () => this.goals.set([]),
+    });
   }
 
   private loadAllContributions(): void {
