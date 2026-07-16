@@ -11,6 +11,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
   selector: 'app-goal-form',
   imports: [ReactiveFormsModule, DialogModule, SelectModule, ButtonModule, InputNumberModule],
   templateUrl: './goal-form.html',
+  styleUrl: './goal-form.css'
 })
 export class GoalForm {
   goal = input<Goal | null>(null);
@@ -28,7 +29,7 @@ export class GoalForm {
     this.form = this.formBuilder.group({
       name: ["", [Validators.required, Validators.maxLength(150)]],
       targetRetirementAge: [null, [Validators.required, Validators.min(1)]],
-      targetAmount: [null, [Validators.required, Validators.min(0.01)]],
+      targetAmount: [0, [Validators.required, Validators.min(0.01)]],
       notes: [""],
     });
 
@@ -62,7 +63,7 @@ export class GoalForm {
     this.form.setValue({
       name: currentGoal?.name ?? "",
       targetRetirementAge: currentGoal?.targetRetirementAge ?? null,
-      targetAmount: currentGoal?.targetAmount ?? null,
+      targetAmount: currentGoal?.targetAmount ?? 0,
       notes: currentGoal?.notes ?? "",
     });
   }

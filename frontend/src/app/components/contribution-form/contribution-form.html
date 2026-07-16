@@ -2,95 +2,111 @@
     [header]="title()"
     [modal]="true"
     [(visible)]="visible"
-    [style]="{width: '40rem', height: '40rem'}"
+    [style]="{width: '26rem'}"
 >
     <form
         [formGroup]="form"
         (ngSubmit)="saveContribution()"
+        class="contribution-form"
     >
-        <div><p-inputNumber 
-            id="contribution-amount" 
-            formControlName="amount" 
-            mode="currency" 
-            currency="USD" 
-            locale="en-US" 
-            /><label for="contribution-amount">Amount</label>
-            @if (form.get("amount")?.invalid && form.get("amount")?.touched) {
-                <small class="p-error">Amount must be greater than 0</small>
+        <div class="contribution-form_row">
+            @if (!lockedSourceId()) {
+                <div class="contribution-form_field contribution-form_row-field">
+                    <label for="contribution-source">Funding Source</label>
+                    <div class="contribution-form_select-row">
+                        <p-select
+                            id="contribution-source"
+                            formControlName="sourceId"
+                            [options]="sourceOptions()"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Select a Funding Source"
+                        ></p-select>
+                        <p-button icon="pi pi-plus" styleClass="contribution-form_add-btn" (onClick)="showCreateSourceDialog.set(true)" />
+                    </div>
+                    @if (form.get("sourceId")?.invalid && form.get("sourceId")?.touched) {
+                        <small class="p-error">Must pick a valid Funding Source</small>
+                    }
+                </div>
+            }
+            @if (!lockedGoalId()) {
+                <div class="contribution-form_field contribution-form_row-field">
+                    <label for="contribution-goal">Goal</label>
+                    <div class="contribution-form_select-row">
+                        <p-select
+                            id="contribution-goal"
+                            formControlName="goalId"
+                            [options]="goalOptions()"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Select a Goal"
+                        ></p-select>
+                        <p-button icon="pi pi-plus" styleClass="contribution-form_add-btn" (onClick)="showCreateGoalDialog.set(true)" />
+                    </div>
+                    @if (form.get("goalId")?.invalid && form.get("goalId")?.touched) {
+                        <small class="p-error">Must pick a valid Goal</small>
+                    }
+                </div>
             }
         </div>
-        <div>
-            <input id="contribution-notes" formControlName="notes" type="text" />
-            <label for="contribution-notes">Notes</label>
+        <div class="contribution-form_row">
+            <div class="contribution-form_field contribution-form_row-field">
+                <label for="contribution-date">Date</label>
+                <input id="contribution-date" formControlName="date" type="date" />
+                @if (form.get("date")?.invalid && form.get("date")?.touched) {
+                    <small class="p-error">Date is required</small>
+                }
+            </div>
+            <div class="contribution-form_field contribution-form_row-field">
+                <label for="contribution-amount">Amount</label>
+                <p-inputNumber
+                    id="contribution-amount"
+                    formControlName="amount"
+                    mode="currency"
+                    currency="USD"
+                    locale="en-US"
+                />
+                @if (form.get("amount")?.invalid && form.get("amount")?.touched) {
+                    <small class="p-error">Amount must be greater than 0</small>
+                }
+            </div>
         </div>
-        <div>
-            <input id="contribution-date" formControlName="date" type="date" />
-            <label for="contribution-date">Date</label>
-            @if (form.get("date")?.invalid && form.get("date")?.touched) {
-                <small class="p-error">Date is required</small>
-            }
-        </div>
-        <div><p-select 
+        <div class="contribution-form_field">
+            <label for="contribution-category">Contribution Category</label>
+            <p-select 
                 id="contribution-category" 
                 formControlName="category" 
                 [options]="contributionCategoryOptions" 
                 optionLabel="label" 
                 optionValue="value"
-            ></p-select><label for="contribution-category">Contribution Category</label>
+                placeholder="Select a Category"
+            ></p-select>
             @if (form.get("category")?.invalid && form.get("category")?.touched) {
                 <small class="p-error">Must pick a valid Contribution Category</small>
             }
         </div>
-        @if (!lockedSourceId()) {
-            <div style="display:flex; gap: 0.5rem; align-items:center;">
-                <p-select
-                    id="contribution-source"
-                    formControlName="sourceId"
-                    [options]="sourceOptions()"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select a Funding Source"
-                ></p-select>
-                <p-button icon="pi pi-plus" [text]="true" (onClick)="showCreateSourceDialog.set(true)" />
-            </div>
-            <label for="contribution-source">Funding Source</label>
-            @if (form.get("sourceId")?.invalid && form.get("sourceId")?.touched) {
-                <small class="p-error">Must pick a valid Funding Source</small>
-            }
-        }
-         @if (!lockedGoalId()) {
-            <div style="display:flex; gap: 0.5rem; align-items:center;">
-                <p-select
-                    id="contribution-goal"
-                    formControlName="goalId"
-                    [options]="goalOptions()"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select a Goal"
-                ></p-select>
-                <p-button icon="pi pi-plus" [text]="true" (onClick)="showCreateGoalDialog.set(true)" />
-            </div>
-            <label for="contribution-goal">Goal</label>
-            @if (form.get("goalId")?.invalid && form.get("goalId")?.touched) {
-                <small class="p-error">Must pick a valid Goal</small>
-            }
-        }
+        <div class="contribution-form_field">
+            <label for="contribution-notes">Notes</label>
+            <input id="contribution-notes" formControlName="notes" type="text" placeholder="Optional Notes" />
+        </div>
 
-        <p-button 
-            label="Cancel" 
-            type="button" 
-            severity="secondary" 
-            [outlined]="true"  
-            (onClick)="cancel()"
-            class="p-2 w-full"
-        />
+        <div class="contribution-form_actions">
+            <p-button 
+                label="Cancel" 
+                type="button" 
+                severity="secondary" 
+                [outlined]="true" 
+                styleClass="contribution-form_cancel-btn" 
+                (onClick)="cancel()"
+            />
 
-        <p-button 
-            label="Save" 
-            type="submit"   
-            [disabled]="form.invalid"   
-            class="p-2 w-full"
-        />
+            <p-button 
+                label="Save" 
+                type="submit"   
+                [disabled]="form.invalid"   
+                styleClass="contribution-form_save-btn"
+            />
+        </div>
     </form>
 </p-dialog>
 

@@ -4,8 +4,6 @@
 
   <main class="main">
 
-    <h2>Contribution Component</h2>
-
     <app-contribution-table
         [contributions]="allContributions()"
         [totalContributions]="totalContributions()"
@@ -13,16 +11,10 @@
         [showGoalColumn]="true"
         [allSources]="allSources()"
         [allGoals]="allGoals()"
-        [(selection)]="selectedContribution"
         (lazyLoad)="loadContributions($event)"
-        (select)="handleUpdate()"
         (create)="handleCreateContribution()"
-    />
-
-    <app-update-dialog
-        [(visible)]="showUpdate"
-        (edit)="handleUpdateContribution(selectedContribution()!)"
-        (delete)="handleDeleteContribution(selectedContribution()!)"
+        (edit)="handleUpdateContribution($event)"
+        (delete)="handleDeleteContribution($event)"
     />
 
     <app-contribution-form

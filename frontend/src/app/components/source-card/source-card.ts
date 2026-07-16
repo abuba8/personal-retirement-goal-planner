@@ -3,14 +3,14 @@ import { FundingSource } from '../../types/FundingSource';
 import { Contribution } from '../../types/Contribution';
 import { SourceTypeLabelPipe } from '../../pipes/source-type-label-pipe';
 import { ContributionLimit } from '../contribution-limit/contribution-limit';
-import { CurrencyPipe } from '@angular/common';
+import { currencyPipe } from '../../pipes/currency-pipe';
 import { ButtonModule } from 'primeng/button';
 import { ContributionService } from '../../services/ContributionService';
 import { SourceTypeLimit } from '../../types/enums/SourceType';
 
 @Component({
   selector: 'app-source-card',
-  imports: [SourceTypeLabelPipe, ContributionLimit, CurrencyPipe, ButtonModule],
+  imports: [SourceTypeLabelPipe, ContributionLimit, currencyPipe, ButtonModule],
   templateUrl: './source-card.html',
   styleUrl: './source-card.css',
 })
@@ -62,5 +62,24 @@ export class SourceCard {
         console.error(err)
       }
     })
+  }
+
+  limitPercentage(): number {
+    if (!this.yearlyLimit()) return 0;
+    return (this.yearlyContributed() / this.yearlyLimit()) * 100;
+  }
+
+  limitSeverity(): "ok" | "warning" | "danger" {
+    if (this.limitPercentage() >= 100) return "danger";
+    if (this.limitPercentage() >= 75) return "warning";
+    return "ok";
+  }
+
+  limitMessage(): string {
+    switch (this.limitSeverity()) {
+      case "danger": return "Over the 2026 IRS limit for this source type.";
+      case "warning": return "Approaching the 2026 IRS contribution limit.";
+      default: return "";
+    }
   }
 }

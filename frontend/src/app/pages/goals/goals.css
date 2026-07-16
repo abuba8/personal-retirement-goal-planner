@@ -1,0 +1,83 @@
+.dash {
+  display: flex;
+  min-height: 100vh;
+}
+.main { 
+  flex: 1; 
+  padding: 2.5rem 3rem; 
+  background: var(--bg); 
+}
+.goals_title {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--overlay-ink);
+    margin: 0;
+}
+:host ::ng-deep .goals_create-btn.p-button {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-dark);
+}
+:host ::ng-deep .goals_create-btn.p-button:hover {
+  background: var(--overlay-ink);
+  border-color: var(--overlay-ink);
+}
+.goal-card {
+  background: var(--card-surface);
+  border: 1px solid var(--p-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+.goal-card_top { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 1rem; 
+}
+.goal-card_name { 
+  font-weight: 600; 
+  color: var(--primary-ink); 
+}
+.goal-card_pill {
+  font-size: 0.75rem; 
+  padding: 0.2rem 0.6rem; 
+  border-radius: 999px;
+  background: var(--error-accent-soft, #F5E3DD); 
+  color: var(--muted-text);
+}
+.goal-card_amount { 
+  font-size: 1.5rem; 
+  font-weight: 700; 
+  color: var(--primary-ink); 
+  margin: 0 0 1rem; 
+}
+.goal-card_target { 
+  font-size: 0.9rem; 
+  font-weight: 400; 
+  color: var(--muted-text); 
+}
+.goal-card_bar { 
+  height: 8px; 
+  background: var(--p-border); 
+  border-radius: 999px; 
+  overflow: hidden; 
+}
+.goal-card_bar-fill { 
+  height: 100%; 
+  background: var(--primary); 
+}
+.goal-card_foot { 
+  display: flex; 
+  justify-content: space-between; 
+  margin-top: 0.75rem; 
+  color: var(--muted-text); 
+  font-size: 0.85rem; 
+}
+.glance_empty { 
+  color: var(--muted-text); 
+}
+.goal-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  gap: 1rem;
+}
