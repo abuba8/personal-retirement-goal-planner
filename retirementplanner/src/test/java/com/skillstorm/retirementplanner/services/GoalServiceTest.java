@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,8 +31,10 @@ import org.springframework.http.ResponseEntity;
 import com.skillstorm.retirementplanner.dtos.GoalRequest;
 import com.skillstorm.retirementplanner.dtos.GoalResponse;
 import com.skillstorm.retirementplanner.mappers.GoalMapper;
+import com.skillstorm.retirementplanner.models.Contribution;
 import com.skillstorm.retirementplanner.models.Goal;
 import com.skillstorm.retirementplanner.models.User;
+import com.skillstorm.retirementplanner.repositories.ContributionRepository;
 import com.skillstorm.retirementplanner.repositories.GoalRepository;
 import com.skillstorm.retirementplanner.repositories.UserRepository;
 
@@ -74,6 +77,9 @@ public class GoalServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ContributionRepository contributionRepository;
 
     @Mock
     private GoalMapper goalMapper;
@@ -294,13 +300,17 @@ public class GoalServiceTest {
         void returnsNoContentOnGoodDelete() {
             when(goalRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(testGoal));
 
+            Page<Contribution> emptyContributionPage = new PageImpl<>(List.of());
+            when(contributionRepository.findByGoalIdAndUserId(eq(1L), eq(1L), any(Pageable.class)))
+                    .thenReturn(emptyContributionPage);
+
             ResponseEntity<Void> results = goalService.deleteGoalById(1L, 1L);
 
             assertEquals(HttpStatus.NO_CONTENT, results.getStatusCode());
             assertNull(results.getBody());
 
             verify(goalRepository).findByIdAndUserId(1L, 1L);
-            verify(goalRepository).delete(any(Goal.class));
+            verify(goalRepository).deleteById(1L);
         }
 
         // not the user's goal -> 404 and nothing is deleted
@@ -316,6 +326,24 @@ public class GoalServiceTest {
 
             verify(goalRepository).findByIdAndUserId(1L, 2L);
             verify(goalRepository, never()).delete(any(Goal.class));
+        }
+
+        @Test
+        @DisplayName("returns 409 CONFLICT and never deletes when the goal is connected to contributions")
+        void returnsConflictWhenContributionsFound() {
+            when(goalRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(testGoal));
+
+            // one contribution is enough to make the list non-empty and trigger the conflict
+            Page<Contribution> contributionPage = new PageImpl<>(List.of(new Contribution()));
+            when(contributionRepository.findByGoalIdAndUserId(eq(1L), eq(1L), any(Pageable.class)))
+                    .thenReturn(contributionPage);
+
+            ResponseEntity<Void> results = goalService.deleteGoalById(1L, 1L);
+
+            assertEquals(HttpStatus.CONFLICT, results.getStatusCode());
+            assertNull(results.getBody());
+
+            verify(goalRepository, never()).deleteById(anyLong());
         }
     }
 }
