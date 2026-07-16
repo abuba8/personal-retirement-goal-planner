@@ -116,12 +116,21 @@ export class Goals {
         this.allGoals.update((list) => list.filter((g) => g.id !== goalId));
       },
       error: (err) => {
-        this.toastService.add({
-          severity: "warn",
-          summary: "Cannot Delete",
-          detail: "Goals cannot be deleted if there are contributions attached to them."
-        })
-      },
-    });
+        if(err.status === 409) {
+          this.toastService.add({
+            severity: "warn",
+            summary: "Cannot Delete",
+            detail: "This goal has contributions, delete the contributions then delete the goal."
+          });
+        } else {
+          this.toastService.add({
+            severity: 'error',
+            summary: "Error",
+            detail: "Something went wrong. Try again later"
+          })
+        }
+        console.error(err);
+      }
+    })
   }
 }

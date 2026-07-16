@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import com.skillstorm.retirementplanner.dtos.GoalRequest;
 import com.skillstorm.retirementplanner.dtos.GoalResponse;
 import com.skillstorm.retirementplanner.mappers.GoalMapper;
+import com.skillstorm.retirementplanner.models.Contribution;
 import com.skillstorm.retirementplanner.models.Goal;
 import com.skillstorm.retirementplanner.models.User;
+import com.skillstorm.retirementplanner.repositories.ContributionRepository;
 import com.skillstorm.retirementplanner.repositories.GoalRepository;
 import com.skillstorm.retirementplanner.repositories.UserRepository;
 
@@ -42,13 +44,15 @@ public class GoalService {
      */
     private final GoalRepository goalRepository;
     private final UserRepository userRepository;
+    private final ContributionRepository contributionRepository;
     private final GoalMapper goalMapper;
     private static final int PAGE_SIZE = 10;
 
     // parameterized constructor
-    public GoalService(GoalRepository goalRepository, UserRepository userRepository, GoalMapper goalMapper) {
+    public GoalService(GoalRepository goalRepository, UserRepository userRepository, GoalMapper goalMapper, ContributionRepository contributionRepository) {
         this.goalRepository = goalRepository;
         this.userRepository = userRepository;
+        this.contributionRepository = contributionRepository;
         this.goalMapper = goalMapper;
     }
 
@@ -149,11 +153,18 @@ public class GoalService {
      */
     public ResponseEntity<Void> deleteGoalById(Long userId, Long id){
         Optional<Goal> goalObj = this.goalRepository.findByIdAndUserId(id, userId);
-        if(goalObj.isEmpty()){
-            return ResponseEntity.notFound().build();
+        if(goalObj.isPresent()){
+            Pageable pages = PageRequest.of(0, PAGE_SIZE, Sort.by("id"));
+            Page<Contribution> contributionPage = this.contributionRepository.findByGoalIdAndUserId(id, userId, pages);
+            List<Contribution> contributionList = contributionPage.getContent();
+
+            if(contributionList.isEmpty()) {
+                this.goalRepository.deleteById(id);
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.status(409).build();
         }
-        this.goalRepository.delete(goalObj.get());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(404).build();
     }
 
     /**

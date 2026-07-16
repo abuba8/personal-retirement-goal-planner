@@ -22,24 +22,24 @@ export class GoalService {
     // Get /goals/{id}
     getGoalById(id: number): Observable<Goal> {
         return this.http.get<Goal>(this.URL + `/${id}`)
-            .pipe(catchError(() => throwError(() => new Error("Failed to load goal"))));
+            .pipe(catchError((err) => throwError(() => err)));
     }
 
     // Post /goals
     createGoal(goal: Goal): Observable<Goal> {
         return this.http.post<Goal>(this.URL, goal)
-            .pipe(catchError(() => throwError(() => new Error("Failed to create goal"))));
+            .pipe(catchError((err) => throwError(() => err)));
     }
 
     // Put /goals/{id}
     updateGoal(id: number, goal: Goal): Observable<Goal> {
         return this.http.put<Goal>(this.URL + `/${id}`, goal)
-            .pipe(catchError(() => throwError(() => new Error("Failed to update goal"))));
+            .pipe(catchError((err) => throwError(() => err)));
     }
 
     // Delete /goals/{id}
     deleteGoal(id: number): Observable<void> {
         return this.http.delete<void>(this.URL + `/${id}`)
-            .pipe(catchError(() => throwError(() => new Error("Failed to delete goal"))));
+            .pipe(catchError((err) => throwError(() => err)));
     }
 }

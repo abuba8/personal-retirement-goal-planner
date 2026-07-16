@@ -109,14 +109,23 @@ export class GoalPage {
       next: () => {
         this.router.navigate(["/goals"])
       },
-      error: () => {
-        this.toastService.add({
-          severity: "warn",
-          summary: "Cannot Delete",
-          detail: "Something went wrong."
-        })
+      error: (err) => {
+        if(err.status === 409) {
+          this.toastService.add({
+            severity: "warn",
+            summary: "Cannot Delete",
+            detail: "This goal has contributions, delete the contributions then delete the goal."
+          });
+        } else {
+          this.toastService.add({
+            severity: 'error',
+            summary: "Error",
+            detail: "Something went wrong. Try again later"
+          })
+        }
+        console.error(err);
       }
-    });
+    })
   }
 
   handleCreateContribution() {
